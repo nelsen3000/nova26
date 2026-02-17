@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.nova/agents/
+.nova/atlas/builds.json
+.nova/atlas/patterns.json
+.nova/output/
+.DS_Store
+*.log
+.env

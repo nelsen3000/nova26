@@ -1,0 +1,33 @@
+{
+  "name": "nova26",
+  "version": "0.1.0",
+  "description": "NOVA26 Orchestrator - AI agent system for building apps",
+  "type": "module",
+  "main": "src/index.ts",
+  "bin": {
+    "nova": "src/index.ts"
+  },
+  "scripts": {
+    "nova": "tsx src/index.ts",
+    "nova:run": "tsx src/index.ts run",
+    "nova:status": "tsx src/index.ts status",
+    "nova:reset": "tsx src/index.ts reset"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "orchestrator",
+    "nova",
+    "llm"
+  ],
+  "author": "Matrix Agent",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "projectName": "Nova26 Test Run",
+  "version": "0.1.0",
+  "phases": [
+    {
+      "id": 0,
+      "name": "Foundation",
+      "tasks": [
+        {
+          "id": "task-001",
+          "title": "Define company data model",
+          "description": "Write a plain-English product spec for a company data model. The model needs: company name, company ID, sector, CEO persona name, chip balance (3 accounts: savings, spending, investment), creation date, and status (active/suspended). Describe each field, its purpose, constraints, and relationships. This is a spec document, NOT code.",
+          "agent": "EARTH",
+          "status": "ready",
+          "dependencies": [],
+          "phase": 0,
+          "attempts": 0,
+          "createdAt": "2026-02-17T08:00:00Z"
+        },
+        {
+          "id": "task-002",
+          "title": "Design company schema",
+          "description": "Based on the product spec from task-001, define the Convex database schema for the companies table. Use defineTable with Convex validators. Include companyId as root entity, all fields from the spec, and appropriate indexes. Follow the pattern: every table gets companyId for row-level isolation (except companies table itself which IS the root).",
+          "agent": "PLUTO",
+          "status": "ready",
+          "dependencies": ["task-001"],
+          "phase": 0,
+          "attempts": 0,
+          "createdAt": "2026-02-17T08:00:00Z"
+        },
+        {
+          "id": "task-003",
+          "title": "Review spec and schema for consistency",
+          "description": "Validate that task-001 spec and task-002 schema are consistent. Check: all fields from spec exist in schema, types are correct, indexes make sense for likely queries, no fields are missing. Return PASS or FAIL with specific issues.",
+          "agent": "MERCURY",
+          "status": "ready",
+          "dependencies": ["task-001", "task-002"],
+          "phase": 0,
+          "attempts": 0,
+          "createdAt": "2026-02-17T08:00:00Z"
+        }
+      ]
+    }
+  ]
+}
