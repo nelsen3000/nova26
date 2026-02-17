@@ -2,14 +2,14 @@
 
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { pickNextTask, updateTaskStatus, savePRD, setTaskOutput, promotePendingTasks } from './task-picker.js';
+import { pickNextTask, updateTaskStatus, savePRD, setTaskOutput } from './task-picker.js';
 import { buildPrompt, buildRetryPrompt } from './prompt-builder.js';
 import { runGates, allGatesPassed, getGatesSummary } from './gate-runner.js';
-import { callLLM as defaultCallLLM } from '../llm/ollama-client.js';
-import type { PRD, Task, LLMResponse, LLMCaller } from '../types/index.js';
+import { runCouncilVote, requiresCouncilApproval } from './council-runner.js';
+import { callLLM } from '../llm/ollama-client.js';
+import type { PRD, Task, LLMResponse } from '../types/index.js';
 
-export async function ralphLoop(prd: PRD, prdPath: string, llmCaller?: LLMCaller): Promise<void> {
-  const callLLM = llmCaller || defaultCallLLM;
+export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
   console.log('Starting Ralph Loop...');
   
   let maxIterations = prd.tasks.length * 3; // Prevent infinite loops
@@ -17,13 +17,6 @@ export async function ralphLoop(prd: PRD, prdPath: string, llmCaller?: LLMCaller
   
   while (iteration < maxIterations) {
     iteration++;
-    
-    // Promote pending tasks whose dependencies are now met
-    const promoted = promotePendingTasks(prd);
-    if (promoted > 0) {
-      console.log(`Promoted ${promoted} task(s) from pending to ready.`);
-      savePRD(prd, prdPath);
-    }
     
     // Pick next task
     const task = pickNextTask(prd);
@@ -141,7 +134,25 @@ export async function ralphLoop(prd: PRD, prdPath: string, llmCaller?: LLMCaller
         }
       }
       
-      // Gates passed - save output
+      // Gates passed - optionally run council approval for critical tasks
+      if (requiresCouncilApproval(task)) {
+        console.log('\n🏛️ Task requires Council approval...');
+        
+        const councilDecision = await runCouncilVote(task, response.content);
+        
+        if (councilDecision.finalVerdict === 'rejected') {
+          console.log(`Council rejected: ${councilDecision.summary}`);
+          updateTaskStatus(prd, task.id, 'failed', `Council rejected: ${councilDecision.summary}`);
+          savePRD(prd, prdPath);
+          continue;
+        }
+        
+        if (councilDecision.finalVerdict === 'pending') {
+          console.log(`Council split - proceeding anyway: ${councilDecision.summary}`);
+        }
+      }
+      
+      // Save output
       const outputPath = await saveTaskOutput(task, response);
       setTaskOutput(prd, task.id, outputPath);
       
