@@ -2,13 +2,14 @@
 
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { pickNextTask, updateTaskStatus, savePRD, setTaskOutput } from './task-picker.js';
+import { pickNextTask, updateTaskStatus, savePRD, setTaskOutput, promotePendingTasks } from './task-picker.js';
 import { buildPrompt, buildRetryPrompt } from './prompt-builder.js';
 import { runGates, allGatesPassed, getGatesSummary } from './gate-runner.js';
-import { callLLM } from '../llm/ollama-client.js';
-import type { PRD, Task, LLMResponse } from '../types/index.js';
+import { callLLM as defaultCallLLM } from '../llm/ollama-client.js';
+import type { PRD, Task, LLMResponse, LLMCaller } from '../types/index.js';
 
-export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
+export async function ralphLoop(prd: PRD, prdPath: string, llmCaller?: LLMCaller): Promise<void> {
+  const callLLM = llmCaller || defaultCallLLM;
   console.log('Starting Ralph Loop...');
   
   let maxIterations = prd.tasks.length * 3; // Prevent infinite loops
@@ -16,6 +17,13 @@ export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
   
   while (iteration < maxIterations) {
     iteration++;
+    
+    // Promote pending tasks whose dependencies are now met
+    const promoted = promotePendingTasks(prd);
+    if (promoted > 0) {
+      console.log(`Promoted ${promoted} task(s) from pending to ready.`);
+      savePRD(prd, prdPath);
+    }
     
     // Pick next task
     const task = pickNextTask(prd);

@@ -1,5 +1,6 @@
 // Task Picker - Finds the next ready task to execute
 
+import { writeFileSync } from 'fs';
 import type { Task, PRD } from '../types/index.js';
 
 export function pickNextTask(prd: PRD): Task | null {
@@ -76,6 +77,25 @@ export function setTaskOutput(prd: PRD, taskId: string, outputPath: string): voi
 }
 
 export function savePRD(prd: PRD, prdPath: string): void {
-  const { writeFileSync } = require('fs');
   writeFileSync(prdPath, JSON.stringify(prd, null, 2));
+}
+
+/**
+ * Promote pending tasks to ready if all their dependencies are done.
+ * Returns the number of tasks promoted.
+ */
+export function promotePendingTasks(prd: PRD): number {
+  let promoted = 0;
+  
+  for (const task of prd.tasks) {
+    if (task.status === 'pending') {
+      const allDepsDone = allDependenciesMet(task, prd);
+      if (allDepsDone) {
+        task.status = 'ready';
+        promoted++;
+      }
+    }
+  }
+  
+  return promoted;
 }

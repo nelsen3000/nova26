@@ -5,8 +5,12 @@ node_modules/
 dist/
 
 # Nova runtime data
+.nova/agents/
+.nova/atlas/builds.json
+.nova/atlas/patterns.json
 .nova/output/*
 !.nova/output/.gitkeep
+.nova/test-run/
 
 # OS files
 .DS_Store

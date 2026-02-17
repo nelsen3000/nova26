@@ -75,6 +75,13 @@ export interface LLMResponse {
   tokens: number;
 }
 
+/** Function signature for LLM callers (real or mock) */
+export type LLMCaller = (
+  systemPrompt: string,
+  userPrompt: string,
+  agentName?: string
+) => Promise<LLMResponse>;
+
 export interface GateConfig {
   name: string;
   type: 'response-validation' | 'mercury-validator' | 'typescript-check' | 'test-runner';

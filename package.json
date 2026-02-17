@@ -8,7 +8,8 @@
     "dev": "tsx src/index.ts",
     "build": "tsc",
     "test": "vitest",
-    "test:mock": "tsx src/test/mock-run.ts"
+    "test:mock": "tsx src/test/mock-run.ts",
+    "test:integration": "tsx src/test/integration-test.ts"
   },
   "keywords": ["ai", "agents", "orchestration", "llm", "code-generation"],
   "author": "Matrix Agent",
