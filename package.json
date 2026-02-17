@@ -1,33 +1,26 @@
 {
   "name": "nova26",
-  "version": "0.1.0",
-  "description": "NOVA26 Orchestrator - AI agent system for building apps",
+  "version": "1.0.0",
+  "description": "AI-powered IDE that uses 21 specialized agents to build software through orchestrated task execution",
   "type": "module",
   "main": "src/index.ts",
-  "bin": {
-    "nova": "src/index.ts"
-  },
   "scripts": {
-    "nova": "tsx src/index.ts",
-    "nova:run": "tsx src/index.ts run",
-    "nova:status": "tsx src/index.ts status",
-    "nova:reset": "tsx src/index.ts reset"
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "test": "vitest",
+    "test:mock": "tsx src/test/mock-run.ts"
   },
-  "keywords": [
-    "ai",
-    "agents",
-    "orchestrator",
-    "nova",
-    "llm"
-  ],
+  "keywords": ["ai", "agents", "orchestration", "llm", "code-generation"],
   "author": "Matrix Agent",
   "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "tsx": "^4.0.0",
-    "typescript": "^5.4.0"
+  "dependencies": {
+    "convex": "^1.16.0",
+    "ollama": "^0.5.0"
   },
-  "engines": {
-    "node": ">=18.0.0"
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
   }
 }

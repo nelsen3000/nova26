@@ -1,0 +1,174 @@
+{
+  "meta": {
+    "name": "UA Dashboard PRD",
+    "version": "1.0.0",
+    "createdAt": "2026-02-17T10:00:00Z"
+  },
+  "tasks": [
+    {
+      "id": "ua-001",
+      "title": "Company data model spec",
+      "description": "Write a product spec for the Company entity. Fields: name (string, unique, 3-50 chars), sector (string, one of 11 stock market sectors: Technology, Healthcare, Financials, Consumer Discretionary, Consumer Staples, Energy, Industrials, Materials, Utilities, Real Estate, Communication Services), ceoPersona (string, historical figure name), status (active/suspended/bankrupt), createdAt (ISO timestamp). Describe each field's purpose, constraints, validation rules, and edge cases. Include the 5 UI states (loading, empty, error, partial, populated). Output plain English spec, NOT code.",
+      "agent": "EARTH",
+      "status": "ready",
+      "dependencies": [],
+      "phase": 0,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-002",
+      "title": "Chip accounts data model spec",
+      "description": "Write a product spec for the Chip Account system. Each company has exactly 3 accounts: savings (minimum 20% of all income, withdrawals need owner approval), spending (daily operations, seat tax deducted here), investment (funding new tools/upgrades, CAS-gated). Fields per account: balance (integer, never negative, use Math.floor for all conversions), type (savings/spending/investment), lastTransactionAt (ISO timestamp). Rules: $1 revenue = 1 chip, no debt ever (Article V), Math.floor for all conversions (never round up), 50% weekly seat tax from spending. Describe transfer rules between accounts. 5 UI states. Plain English spec, NOT code.",
+      "agent": "EARTH",
+      "status": "ready",
+      "dependencies": [],
+      "phase": 0,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-003",
+      "title": "Division data model spec",
+      "description": "Write a product spec for the Division entity. Each company has exactly 5 divisions. Fields: name (string), companyId (reference to parent company), revenue (integer chips), expenses (integer chips), agentCount (integer, max 101 per division), status (active/paused), skills (array of skill references, max 10 per division in Phase 0). Include division leaderboard requirements: ranked by revenue, ties broken by efficiency ratio (revenue/expenses). Plain English spec, NOT code.",
+      "agent": "EARTH",
+      "status": "ready",
+      "dependencies": [],
+      "phase": 0,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-004",
+      "title": "Agent data model spec",
+      "description": "Write a product spec for the Agent entity. 101 agents per division (505 per company). Fields: name (string), divisionId (reference to parent division), role (string), status (active/idle/suspended), currentTaskId (optional reference to active task), idleMinutes (integer, triggers reassignment at 10 min per zero-waste mandate), skillIds (array from division's skill pool). Include zero-waste rule: agent idle > 10 minutes triggers automatic reassignment. Plain English spec, NOT code.",
+      "agent": "EARTH",
+      "status": "ready",
+      "dependencies": [],
+      "phase": 0,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-005",
+      "title": "Company table schema",
+      "description": "Based on the Company spec from ua-001, write the Convex defineTable() with validators. Include indexes: by_status, by_sector. Companies table is the ROOT entity — it does NOT have a companyId field (it IS the company). Use v.string(), v.number(), v.union(v.literal(...)) from convex/values. Output ONLY the defineTable code block.",
+      "agent": "PLUTO",
+      "status": "pending",
+      "dependencies": ["ua-001"],
+      "phase": 1,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-006",
+      "title": "Chip accounts table schema",
+      "description": "Based on the Chip Account spec from ua-002, write Convex defineTable(). Must include companyId: v.id('companies') for row-level isolation. Indexes: by_company, by_company_type. Balance is v.number() — integer enforcement happens at mutation level with Math.floor, not at schema level. Output ONLY the defineTable code block.",
+      "agent": "PLUTO",
+      "status": "pending",
+      "dependencies": ["ua-002", "ua-005"],
+      "phase": 1,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-007",
+      "title": "Division table schema",
+      "description": "Based on the Division spec from ua-003, write Convex defineTable(). Must include companyId: v.id('companies'). Indexes: by_company, by_company_revenue (for leaderboard queries sorted by revenue descending). Output ONLY the defineTable code block.",
+      "agent": "PLUTO",
+      "status": "pending",
+      "dependencies": ["ua-003", "ua-005"],
+      "phase": 1,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-008",
+      "title": "Agent table schema",
+      "description": "Based on the Agent spec from ua-004, write Convex defineTable(). Must include companyId: v.id('companies') AND divisionId: v.id('divisions') for dual isolation. Indexes: by_company, by_division, by_status. Output ONLY the defineTable code block.",
+      "agent": "PLUTO",
+      "status": "pending",
+      "dependencies": ["ua-004", "ua-007"],
+      "phase": 1,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-009",
+      "title": "Validate company spec vs schema",
+      "description": "Compare the Company spec (ua-001 output) against the Company schema (ua-005 output). Check: all spec fields exist in schema, types match constraints, indexes support likely queries (list by status, filter by sector). Return PASS with confirmation or FAIL with specific issues listed.",
+      "agent": "MERCURY",
+      "status": "pending",
+      "dependencies": ["ua-001", "ua-005"],
+      "phase": 2,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-010",
+      "title": "Validate chip accounts spec vs schema",
+      "description": "Compare Chip Account spec (ua-002 output) against schema (ua-006 output). Verify: 3-account constraint enforceable, Math.floor rule documented, no-debt constraint (balance >= 0) enforceable at mutation level, companyId isolation present, transfer rules documented. PASS or FAIL with specifics.",
+      "agent": "MERCURY",
+      "status": "pending",
+      "dependencies": ["ua-002", "ua-006"],
+      "phase": 2,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-011",
+      "title": "Validate division spec vs schema",
+      "description": "Compare Division spec (ua-003 output) against schema (ua-007 output). Verify: 5-division-per-company constraint documentable, leaderboard index exists and supports revenue-descending queries, skill reference structure works with max-10 constraint. PASS or FAIL with specifics.",
+      "agent": "MERCURY",
+      "status": "pending",
+      "dependencies": ["ua-003", "ua-007"],
+      "phase": 2,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-012",
+      "title": "Validate agent spec vs schema",
+      "description": "Compare Agent spec (ua-004 output) against schema (ua-008 output). Verify: 101-agent-per-division constraint documentable, zero-waste idle tracking (idleMinutes field exists), dual isolation (companyId + divisionId), status transitions make sense. PASS or FAIL with specifics.",
+      "agent": "MERCURY",
+      "status": "pending",
+      "dependencies": ["ua-004", "ua-008"],
+      "phase": 2,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-013",
+      "title": "ADR: Row-level isolation pattern",
+      "description": "Write an Architecture Decision Record. Context: every table except companies has companyId for data isolation. Decision: all queries MUST filter by companyId first — no query may return data across companies. Consequences: Company A never sees Company B data, all indexes lead with companyId, missing companyId in a query is a security bug. Include concrete Convex query pattern examples showing correct and incorrect usage.",
+      "agent": "JUPITER",
+      "status": "pending",
+      "dependencies": ["ua-005", "ua-006", "ua-007", "ua-008"],
+      "phase": 3,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-014",
+      "title": "ADR: Chip math precision",
+      "description": "Write an Architecture Decision Record. Context: $1 revenue = 1 chip, all conversions use Math.floor (never round up, per stewardship principle). Decision: chips are integers stored as numbers, all division and percentage calculations use Math.floor, fractional cents are lost by design. Consequences: balance checks before every transaction, no floating point in chip math, include a chipMath utility pattern with functions for: transfer, tax calculation (50% weekly seat tax), savings allocation (20% minimum).",
+      "agent": "JUPITER",
+      "status": "pending",
+      "dependencies": ["ua-006"],
+      "phase": 3,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    },
+    {
+      "id": "ua-015",
+      "title": "ADR: Convex mutation pattern",
+      "description": "Write an Architecture Decision Record. Context: every Convex mutation must follow a mandatory pattern for safety. Decision: all mutations follow this exact order — requireAuth(ctx), checkSundayCompliance(ctx), requireRateLimit(ctx), validate(args), business logic, logSecurityEvent(ctx). No exceptions. Consequences: no anonymous mutations, no Sunday operations, all actions auditable. Include a concrete mutation template showing the pattern with TypeScript code.",
+      "agent": "JUPITER",
+      "status": "pending",
+      "dependencies": ["ua-005"],
+      "phase": 3,
+      "attempts": 0,
+      "createdAt": "2026-02-17T10:00:00Z"
+    }
+  ]
+}

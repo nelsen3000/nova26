@@ -1,172 +1,121 @@
-/**
- * ATLAS Convex Schema
- * 
- * This schema defines the tables for the ATLAS meta-learner system.
- * It is NOT deployed in Phase 0 - this is a definition file for future use.
- * 
- * For Phase 0, ATLAS uses file-based JSON storage (.nova/atlas/).
- * When Convex deployment is ready, this schema can be deployed.
- */
-
-import { defineSchema, defineTable } from './server.js';
-import { v } from './values.js';
+import { defineSchema, defineTable } from 'convex/server';
+import { v } from 'convex/values';
 
 export default defineSchema({
-  // Build logs — every task attempt
-  atlasBuilds: defineTable({
-    companyId: v.id('companies'),
+  // =====================
+  // ATLAS Tables (6)
+  // =====================
+  
+  builds: defineTable({
+    prdId: v.string(),
+    prdName: v.string(),
+    status: v.union(v.literal('running'), v.literal('completed'), v.literal('failed')),
+    startedAt: v.string(),
+    completedAt: v.optional(v.string()),
+    error: v.optional(v.string()),
+  }).index('by_prd', ['prdId'])
+    .index('by_status', ['status']),
+
+  patterns: defineTable({
+    name: v.string(),
+    description: v.string(),
+    code: v.string(),
+    language: v.string(),
+    tags: v.array(v.string()),
+    createdAt: v.string(),
+  }).index('by_language', ['language'])
+    .index('by_tags', ['tags']),
+
+  agents: defineTable({
+    name: v.string(),
+    role: v.string(),
+    domain: v.string(),
+    systemPrompt: v.string(),
+    model: v.string(),
+    gates: v.array(v.string()),
+    createdAt: v.string(),
+  }).index('by_name', ['name'])
+    .index('by_domain', ['domain']),
+
+  tasks: defineTable({
+    buildId: v.id('builds'),
     taskId: v.string(),
+    title: v.string(),
+    agent: v.string(),
+    status: v.union(v.literal('pending'), v.literal('ready'), v.literal('running'), v.literal('done'), v.literal('failed'), v.literal('blocked')),
+    dependencies: v.array(v.string()),
+    phase: v.number(),
+    attempts: v.number(),
+    createdAt: v.string(),
+    output: v.optional(v.string()),
+    error: v.optional(v.string()),
+  }).index('by_build', ['buildId'])
+    .index('by_status', ['status'])
+    .index('by_agent', ['agent']),
+
+  executions: defineTable({
+    taskId: v.id('tasks'),
     agent: v.string(),
     model: v.string(),
-    attempt: v.number(),
-    startedAt: v.string(),
-    completedAt: v.string(),
-    durationMs: v.number(),
-    gateResults: v.array(v.object({
-      gateName: v.string(),
-      passed: v.boolean(),
-      message: v.string(),
-      severity: v.string(),
-    })),
-    success: v.boolean(),
-    outputPath: v.optional(v.string()),
-  })
-    .index('by_company', ['companyId'])
-    .index('by_agent', ['companyId', 'agent'])
-    .index('by_task', ['companyId', 'taskId']),
+    prompt: v.string(),
+    response: v.string(),
+    gatesPassed: v.boolean(),
+    duration: v.number(),
+    timestamp: v.string(),
+    error: v.optional(v.string()),
+  }).index('by_task', ['taskId'])
+    .index('by_timestamp', ['timestamp']),
 
-  // Patterns — what works, what doesn't
-  atlasPatterns: defineTable({
-    companyId: v.id('companies'),
-    agent: v.string(),
-    patternType: v.string(), // "success" | "failure" | "optimization"
-    description: v.string(),
-    evidence: v.array(v.string()), // Build IDs that support this pattern
-    confidence: v.number(), // 0-100
+  learnings: defineTable({
+    buildId: v.id('builds'),
+    taskId: v.string(),
+    pattern: v.string(),
+    insight: v.string(),
+    code: v.optional(v.string()),
     createdAt: v.string(),
-    lastValidated: v.string(),
-  })
-    .index('by_company', ['companyId'])
-    .index('by_agent', ['companyId', 'agent']),
+  }).index('by_build', ['buildId'])
+    .index('by_task', ['taskId']),
 
-  // Retrospectives — post-build analysis
-  atlasRetrospectives: defineTable({
-    companyId: v.id('companies'),
-    buildIds: v.array(v.string()),
-    findings: v.array(v.object({
-      finding: v.string(),
-      category: v.string(),
-      actionable: v.boolean(),
-    })),
+  // =====================
+  // UA Dashboard Tables (4)
+  // =====================
+
+  companies: defineTable({
+    name: v.string(),
+    sector: v.string(),
+    ceoPersona: v.string(),
+    status: v.union(v.literal('active'), v.literal('suspended'), v.literal('bankrupt')),
     createdAt: v.string(),
-  })
-    .index('by_company', ['companyId']),
+  }).index("by_status", ["status"])
+    .index("by_sector", ["sector"]),
 
-  // Briefings — pre-task advice
-  atlasBriefings: defineTable({
-    companyId: v.id('companies'),
-    agent: v.string(),
-    taskType: v.string(),
-    briefing: v.string(), // ~200 tokens of actionable advice
-    basedOnBuilds: v.array(v.string()),
-    createdAt: v.string(),
-  })
-    .index('by_company_agent', ['companyId', 'agent']),
+  chipAccounts: defineTable({
+    companyId: v.id("companies"),
+    type: v.union(v.literal("savings"), v.literal("spending"), v.literal("investment")),
+    balance: v.number(),
+    lastTransactionAt: v.string(),
+  }).index("by_company", ["companyId"])
+    .index("by_company_type", ["companyId", "type"]),
 
-  // Improvement proposals
-  atlasImprovements: defineTable({
-    companyId: v.id('companies'),
-    proposal: v.string(),
-    rationale: v.string(),
-    estimatedImpact: v.string(),
-    status: v.string(), // "proposed" | "approved" | "rejected" | "implemented"
-    createdAt: v.string(),
-  })
-    .index('by_company', ['companyId']),
+  divisions: defineTable({
+    companyId: v.id("companies"),
+    name: v.string(),
+    revenue: v.number(),
+    expenses: v.number(),
+    agentCount: v.number(),
+    status: v.union(v.literal("active"), v.literal("paused")),
+  }).index("by_company", ["companyId"])
+    .index("by_company_revenue", ["companyId", "revenue"]),
 
-  // Agent performance metrics
-  atlasAgentMetrics: defineTable({
-    companyId: v.id('companies'),
-    agent: v.string(),
-    totalBuilds: v.number(),
-    successRate: v.number(), // 0-1
-    avgDurationMs: v.number(),
-    commonFailures: v.array(v.string()),
-    lastUpdated: v.string(),
-  })
-    .index('by_company_agent', ['companyId', 'agent']),
+  agents: defineTable({
+    companyId: v.id("companies"),
+    divisionId: v.id("divisions"),
+    name: v.string(),
+    role: v.string(),
+    status: v.union(v.literal("active"), v.literal("idle"), v.literal("suspended")),
+    currentTaskId: v.optional(v.string()),
+    idleMinutes: v.number(),
+  }).index("by_company", ["companyId"])
+    .index("by_division", ["divisionId"])
+    .index("by_status", ["companyId", "status"]),
 });
-
-/**
- * TypeScript types for ATLAS tables (for reference)
- * These would be auto-generated in a real Convex deployment
- */
-
-export type AtlasBuild = {
-  companyId: string;
-  taskId: string;
-  agent: string;
-  model: string;
-  attempt: number;
-  startedAt: string;
-  completedAt: string;
-  durationMs: number;
-  gateResults: Array<{
-    gateName: string;
-    passed: boolean;
-    message: string;
-    severity: string;
-  }>;
-  success: boolean;
-  outputPath?: string;
-};
-
-export type AtlasPattern = {
-  companyId: string;
-  agent: string;
-  patternType: 'success' | 'failure' | 'optimization';
-  description: string;
-  evidence: string[];
-  confidence: number;
-  createdAt: string;
-  lastValidated: string;
-};
-
-export type AtlasRetrospective = {
-  companyId: string;
-  buildIds: string[];
-  findings: Array<{
-    finding: string;
-    category: string;
-    actionable: boolean;
-  }>;
-  createdAt: string;
-};
-
-export type AtlasBriefing = {
-  companyId: string;
-  agent: string;
-  taskType: string;
-  briefing: string;
-  basedOnBuilds: string[];
-  createdAt: string;
-};
-
-export type AtlasImprovement = {
-  companyId: string;
-  proposal: string;
-  rationale: string;
-  estimatedImpact: string;
-  status: 'proposed' | 'approved' | 'rejected' | 'implemented';
-  createdAt: string;
-};
-
-export type AtlasAgentMetrics = {
-  companyId: string;
-  agent: string;
-  totalBuilds: number;
-  successRate: number;
-  avgDurationMs: number;
-  commonFailures: string[];
-  lastUpdated: string;
-};

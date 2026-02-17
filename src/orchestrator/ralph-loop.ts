@@ -1,285 +1,185 @@
-import { PRD, Task, AgentTemplate, LLMResponse, GateResult } from '../types/index.js';
-import { readJSON, writeJSON, getNovaPath, ensureDir, writeMarkdown } from '../utils/file-io.js';
-import { log, success, error, warn, taskStart, taskComplete, taskBlocked, gateFailed, summaryTable } from '../utils/logger.js';
-import { callOllama } from '../llm/ollama-client.js';
-import { selectModel } from '../llm/model-router.js';
-import { loadAgent } from './agent-loader.js';
-import { buildPrompt, buildRetryPrompt, isResponseBlocked, extractBlockedReason } from './prompt-builder.js';
-import { pickNextTask, updateTaskStatus, allTasksComplete, getTaskCounts } from './task-picker.js';
-import { runGates } from '../gates/gate-runner.js';
-import { logBuild } from '../atlas/build-logger.js';
+// Ralph Loop - Core execution loop
 
-const OUTPUT_DIR = '.nova/output';
-const DEFAULT_PRD_PATH = '.nova/prd.json';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
+import { pickNextTask, updateTaskStatus, savePRD, setTaskOutput } from './task-picker.js';
+import { buildPrompt, buildRetryPrompt } from './prompt-builder.js';
+import { runGates, allGatesPassed, getGatesSummary } from './gate-runner.js';
+import { callLLM } from '../llm/ollama-client.js';
+import type { PRD, Task, LLMResponse } from '../types/index.js';
 
-/**
- * Run the Ralph Loop - the main execution engine for NOVA26
- */
-export async function runRalphLoop(prdPath: string = DEFAULT_PRD_PATH): Promise<void> {
-  const startTime = Date.now();
+export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
+  console.log('Starting Ralph Loop...');
   
-  // Load PRD
-  log(`Loading PRD from ${prdPath}`);
-  const prd = await readJSON<PRD>(prdPath);
+  let maxIterations = prd.tasks.length * 3; // Prevent infinite loops
+  let iteration = 0;
   
-  // Ensure output directory exists
-  await ensureDir(getNovaPath('output'));
-  
-  // Count tasks
-  const counts = getTaskCounts(prd);
-  log(`Ralph Loop starting. ${counts.total} tasks total.`);
-  log(`Status: ${counts.ready} ready, ${counts.inProgress} in progress, ${counts.done} done, ${counts.blocked} blocked.`);
-  
-  let currentPrd = prd;
-  let loopCount = 0;
-  const maxLoops = currentPrd.phases.flatMap(p => p.tasks).length * 2; // Prevent infinite loops
-  
-  while (loopCount < maxLoops) {
-    loopCount++;
+  while (iteration < maxIterations) {
+    iteration++;
     
     // Pick next task
-    const task = pickNextTask(currentPrd);
+    const task = pickNextTask(prd);
     
-    // If no task ready, check if we're done
     if (!task) {
-      if (allTasksComplete(currentPrd)) {
+      console.log('\nNo more ready tasks. Checking status...');
+      
+      // Check if all tasks are done
+      const allDone = prd.tasks.every(t => t.status === 'done');
+      const anyFailed = prd.tasks.some(t => t.status === 'failed');
+      const anyRunning = prd.tasks.some(t => t.status === 'running');
+      
+      if (allDone) {
+        console.log('\n=== All tasks completed successfully! ===');
         break;
       }
       
-      // All remaining tasks are blocked or waiting on dependencies
-      const blocked = currentPrd.phases
-        .flatMap(p => p.tasks)
-        .filter(t => t.status === 'blocked');
+      if (anyFailed) {
+        console.log('\n=== Some tasks failed ===');
+        break;
+      }
       
-      const waiting = currentPrd.phases
-        .flatMap(p => p.tasks)
-        .filter(t => t.status === 'ready');
+      if (anyRunning) {
+        console.log('\nTasks still running...');
+        await sleep(2000);
+        continue;
+      }
+      
+      // Check for blocked tasks
+      const blocked = prd.tasks.filter(t => t.status === 'pending').filter(t => {
+        return !t.dependencies.every(depId => {
+          const dep = prd.tasks.find(d => d.id === depId);
+          return dep?.status === 'done';
+        });
+      });
       
       if (blocked.length > 0) {
-        warn(`All remaining tasks are blocked:`);
-        blocked.forEach(t => {
-          warn(`  - ${t.id}: ${t.blockedReason}`);
-        });
+        console.log(`\n=== ${blocked.length} tasks blocked by dependencies ===`);
+        for (const t of blocked) {
+          const deps = t.dependencies.map(depId => {
+            const dep = prd.tasks.find(d => d.id === depId);
+            return `${depId} (${dep?.status})`;
+          }).join(', ');
+          console.log(`  - ${t.id}: waiting on ${deps}`);
+        }
+        break;
       }
       
-      if (waiting.length > 0) {
-        warn(`${waiting.length} task(s) waiting on dependencies.`);
-      }
-      
+      console.log('\n=== No more tasks to process ===');
       break;
     }
     
-    // Mark task as in_progress
-    currentPrd = updateTaskStatus(currentPrd, task.id, 'in_progress');
-    await writeJSON(prdPath, currentPrd);
+    console.log(`\n--- Processing: ${task.id} (${task.title}) [Phase ${task.phase}] ---`);
     
-    // Execute task
-    const result = await executeTask(currentPrd, task, prdPath);
+    // Mark as running
+    updateTaskStatus(prd, task.id, 'running');
+    savePRD(prd, prdPath);
     
-    // Update PRD with result
-    currentPrd = result.prd;
+    try {
+      // Build prompt
+      const { systemPrompt, userPrompt } = await buildPrompt(task, prd);
+      
+      // Call LLM
+      let response: LLMResponse;
+      
+      try {
+        response = await callLLM(systemPrompt, userPrompt, task.agent);
+      } catch (llmError: any) {
+        // If first attempt fails, don't retry
+        console.log(`LLM call failed: ${llmError.message}`);
+        
+        // Mark as failed
+        updateTaskStatus(prd, task.id, 'failed', llmError.message);
+        savePRD(prd, prdPath);
+        continue;
+      }
+      
+      console.log(`LLM response: ${response.content.substring(0, 100)}...`);
+      
+      // Run gates
+      const gateResults = await runGates(task, response);
+      console.log(getGatesSummary(gateResults));
+      
+      if (!allGatesPassed(gateResults)) {
+        // Gates failed - retry once
+        if (task.attempts < 2) {
+          console.log(`Gates failed, retrying... (attempt ${task.attempts + 1})`);
+          
+          const retryPrompt = buildRetryPrompt(task, getGatesSummary(gateResults), response.content);
+          
+          try {
+            response = await callLLM(systemPrompt, retryPrompt, task.agent);
+          } catch {
+            // Retry failed too
+            const failedMessage = `Gates failed after retry: ${getGatesSummary(gateResults)}`;
+            updateTaskStatus(prd, task.id, 'failed', failedMessage);
+            savePRD(prd, prdPath);
+            continue;
+          }
+          
+          const retryGateResults = await runGates(task, response);
+          console.log(getGatesSummary(retryGateResults));
+          
+          if (!allGatesPassed(retryGateResults)) {
+            const failedMessage = `Gates failed after retry: ${getGatesSummary(retryGateResults)}`;
+            updateTaskStatus(prd, task.id, 'failed', failedMessage);
+            savePRD(prd, prdPath);
+            continue;
+          }
+        } else {
+          const failedMessage = `Gates failed: ${getGatesSummary(gateResults)}`;
+          updateTaskStatus(prd, task.id, 'failed', failedMessage);
+          savePRD(prd, prdPath);
+          continue;
+        }
+      }
+      
+      // Gates passed - save output
+      const outputPath = await saveTaskOutput(task, response);
+      setTaskOutput(prd, task.id, outputPath);
+      
+      // Mark as done
+      updateTaskStatus(prd, task.id, 'done');
+      savePRD(prd, prdPath);
+      
+      console.log(`Task ${task.id} completed successfully.`);
+      
+    } catch (error: any) {
+      console.error(`Error processing task ${task.id}:`, error.message);
+      updateTaskStatus(prd, task.id, 'failed', error.message);
+      savePRD(prd, prdPath);
+    }
   }
   
-  // Print summary
-  const finalCounts = getTaskCounts(currentPrd);
-  const durationMs = Date.now() - startTime;
-  
-  summaryTable({
-    total: finalCounts.total,
-    done: finalCounts.done,
-    blocked: finalCounts.blocked,
-    durationMs,
-  });
+  console.log('\n=== Ralph Loop finished ===');
 }
 
-/**
- * Execute a single task
- */
-async function executeTask(
-  prd: PRD,
-  task: Task,
-  prdPath: string
-): Promise<{ prd: PRD; success: boolean }> {
-  const startedAt = new Date().toISOString();
+async function saveTaskOutput(task: Task, response: LLMResponse): Promise<string> {
+  const outputDir = join(process.cwd(), '.nova', 'output');
   
-  // Log task start
-  taskStart(task.id, task.title, task.agent);
-  
-  try {
-    // Load agent template
-    const agent = await loadAgent(task.agent);
-    
-    // Select model
-    const model = selectModel(task.agent, task);
-    
-    // Build prompt
-    const llmRequest = buildPrompt(agent, task);
-    llmRequest.model = model;
-    
-    // Call LLM
-    let llmResponse: LLMResponse;
-    try {
-      llmResponse = await callOllama(llmRequest);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      error(`LLM call failed: ${errorMessage}`);
-      
-      // Mark as blocked
-      const updatedPrd = updateTaskStatus(prd, task.id, 'blocked', {
-        blockedReason: `LLM call failed: ${errorMessage}`,
-      });
-      await writeJSON(prdPath, updatedPrd);
-      taskBlocked(task.id, errorMessage);
-      
-      return { prd: updatedPrd, success: false };
-    }
-    
-    // Check for self-reported block
-    if (isResponseBlocked(llmResponse.content)) {
-      const reason = extractBlockedReason(llmResponse.content) ?? 'Unknown reason';
-      const updatedPrd = updateTaskStatus(prd, task.id, 'blocked', {
-        blockedReason: `Agent self-reported block: ${reason}`,
-      });
-      await writeJSON(prdPath, updatedPrd);
-      taskBlocked(task.id, `Agent self-reported block: ${reason}`);
-      
-      return { prd: updatedPrd, success: false };
-    }
-    
-    // Run gates
-    const gateResults = await runGates(task, llmResponse, agent);
-    
-    // Check if all gates passed
-    const allPassed = gateResults.every(g => g.passed);
-    const criticalFailed = gateResults.some(g => !g.passed && g.severity === 'critical');
-    
-    if (allPassed) {
-      // Save output
-      const outputPath = getNovaPath('output', `${task.id}.md`);
-      await writeMarkdown(outputPath, llmResponse.content);
-      
-      // Update task status
-      const updatedPrd = updateTaskStatus(prd, task.id, 'done', {
-        output: outputPath,
-      });
-      await writeJSON(prdPath, updatedPrd);
-      
-      // Log build to ATLAS
-      await logBuild({
-        taskId: task.id,
-        agent: task.agent,
-        model: llmResponse.model,
-        attempt: task.attempts,
-        startedAt,
-        completedAt: new Date().toISOString(),
-        durationMs: llmResponse.durationMs,
-        gateResults,
-        success: true,
-        outputPath,
-      });
-      
-      taskComplete(task.id);
-      
-      return { prd: updatedPrd, success: true };
-    }
-    
-    // Gates failed - retry once
-    if (task.attempts < 2) {
-      const failureMessages = gateResults
-        .filter(g => !g.passed)
-        .map(g => `${g.gateName}: ${g.message}`);
-      
-      warn(`Gate failed. Retrying with feedback...`);
-      
-      // Rebuild prompt with failure context
-      const retryRequest = buildRetryPrompt(agent, task, failureMessages, llmResponse.content);
-      retryRequest.model = model;
-      
-      let retryResponse: LLMResponse;
-      try {
-        retryResponse = await callOllama(retryRequest);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        
-        const updatedPrd = updateTaskStatus(prd, task.id, 'blocked', {
-          blockedReason: `Retry LLM call failed: ${errorMessage}`,
-        });
-        await writeJSON(prdPath, updatedPrd);
-        taskBlocked(task.id, errorMessage);
-        
-        return { prd: updatedPrd, success: false };
-      }
-      
-      // Run gates again
-      const retryGateResults = await runGates(task, retryResponse, agent);
-      const retryPassed = retryGateResults.every(g => g.passed);
-      
-      if (retryPassed) {
-        const outputPath = getNovaPath('output', `${task.id}.md`);
-        await writeMarkdown(outputPath, retryResponse.content);
-        
-        const updatedPrd = updateTaskStatus(prd, task.id, 'done', {
-          output: outputPath,
-        });
-        await writeJSON(prdPath, updatedPrd);
-        
-        await logBuild({
-          taskId: task.id,
-          agent: task.agent,
-          model: retryResponse.model,
-          attempt: task.attempts + 1,
-          startedAt,
-          completedAt: new Date().toISOString(),
-          durationMs: retryResponse.durationMs,
-          gateResults: retryGateResults,
-          success: true,
-          outputPath,
-        });
-        
-        taskComplete(task.id);
-        
-        return { prd: updatedPrd, success: true };
-      }
-    }
-    
-    // Failed after retry - mark as blocked
-    const failureMessages = gateResults
-      .filter(g => !g.passed)
-      .map(g => `${g.gateName}: ${g.message}`)
-      .join('; ');
-    
-    const updatedPrd = updateTaskStatus(prd, task.id, 'blocked', {
-      blockedReason: `Gates failed: ${failureMessages}`,
-    });
-    await writeJSON(prdPath, updatedPrd);
-    
-    await logBuild({
-      taskId: task.id,
-      agent: task.agent,
-      model: llmResponse.model,
-      attempt: task.attempts,
-      startedAt,
-      completedAt: new Date().toISOString(),
-      durationMs: llmResponse.durationMs,
-      gateResults,
-      success: false,
-    });
-    
-    taskBlocked(task.id, failureMessages);
-    
-    return { prd: updatedPrd, success: false };
-    
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
-    error(`Task execution error: ${errorMessage}`);
-    
-    const updatedPrd = updateTaskStatus(prd, task.id, 'blocked', {
-      blockedReason: `Execution error: ${errorMessage}`,
-    });
-    await writeJSON(prdPath, updatedPrd);
-    
-    taskBlocked(task.id, errorMessage);
-    
-    return { prd: updatedPrd, success: false };
+  // Ensure output directory exists
+  if (!existsSync(outputDir)) {
+    mkdirSync(outputDir, { recursive: true });
   }
+  
+  const outputPath = join(outputDir, `${task.id}.md`);
+  
+  const header = `# Output: ${task.title}
+**Task ID:** ${task.id}
+**Agent:** ${task.agent}
+**Model:** ${response.model}
+**Completed:** ${new Date().toISOString()}
+**Gates:** all passed
+
+---
+
+${response.content}
+`;
+  
+  writeFileSync(outputPath, header);
+  
+  return outputPath;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

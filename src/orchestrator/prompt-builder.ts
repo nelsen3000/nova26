@@ -1,80 +1,115 @@
-import { AgentTemplate, LLMRequest, Task } from '../types/index.js';
-import { getTemperature } from '../llm/model-router.js';
+// Prompt Builder - Builds prompts for LLM calls
 
-/**
- * Build a prompt for the LLM from an agent template and task
- */
-export function buildPrompt(
-  agent: AgentTemplate,
-  task: Task,
-  context?: string
-): LLMRequest {
-  const temperature = getTemperature(agent.name);
+import { readFileSync, existsSync } from 'fs';
+import { loadAgent } from './agent-loader.js';
+import type { Task, PRD } from '../types/index.js';
+
+export interface PromptContext {
+  systemPrompt: string;
+  userPrompt: string;
+}
+
+export async function buildPrompt(task: Task, prd: PRD): Promise<PromptContext> {
+  // Load the agent template
+  const agentTemplate = await loadAgent(task.agent);
   
-  const userPrompt = buildUserPrompt(task, context);
+  // Build the user prompt with task info and dependency context
+  const userPrompt = buildUserPrompt(task, prd);
   
   return {
-    model: '', // Will be set by model-router
-    systemPrompt: agent.content,
-    userPrompt,
-    temperature,
+    systemPrompt: agentTemplate,
+    userPrompt
   };
 }
 
-/**
- * Build the user prompt portion with task details
- */
-function buildUserPrompt(task: Task, context?: string): string {
-  let prompt = `## Task: ${task.title}\n\n`;
-  prompt += `${task.description}\n\n`;
-  prompt += `## Requirements\n`;
-  prompt += `- Output must be production-ready\n`;
-  prompt += `- Follow all constraints in your agent definition above\n`;
-  prompt += `- If you need information you don't have, say BLOCKED: [reason]\n\n`;
-  prompt += `## Context\n`;
-  prompt += context ?? 'No additional context.';
+function buildUserPrompt(task: Task, prd: PRD): string {
+  let prompt = `# Task: ${task.title}
+
+## Task ID
+${task.id}
+
+## Description
+${task.description}
+
+## Agent
+${task.agent}
+
+## Phase
+${task.phase}
+
+`;
+  
+  // Add dependency context if there are dependencies
+  if (task.dependencies && task.dependencies.length > 0) {
+    prompt += buildDependencyContext(task, prd);
+  }
+  
+  // Add instructions
+  prompt += `
+## Instructions
+Complete this task according to your role as ${task.agent}. 
+
+Your output will be validated against quality gates. Ensure:
+- All requirements are addressed
+- Output follows the specified format
+- Edge cases are considered
+
+`;
   
   return prompt;
 }
 
-/**
- * Rebuild prompt with gate failure feedback for retry
- */
-export function buildRetryPrompt(
-  agent: AgentTemplate,
-  task: Task,
-  gateFailures: string[],
-  originalResponse: string
-): LLMRequest {
-  const context = `
-## Previous Attempt Failed
+function buildDependencyContext(task: Task, prd: PRD): string {
+  let context = `## Context from Completed Dependencies
 
-The following gates failed:
-${gateFailures.map(f => `- ${f}`).join('\n')}
-
-## Original Output
-${originalResponse}
-
-## Please fix the issues above and try again.
-`.trim();
+`;
   
-  return buildPrompt(agent, task, context);
-}
-
-/**
- * Extract any BLOCKED: marker from LLM response
- */
-export function extractBlockedReason(response: string): string | null {
-  const match = response.match(/^BLOCKED:\s*(.+)$/m);
-  if (match) {
-    return match[1].trim();
+  for (const depId of task.dependencies) {
+    const depTask = prd.tasks.find(t => t.id === depId);
+    
+    if (!depTask) {
+      context += `### ${depId}: NOT FOUND\n\nDependency task not found in PRD.\n\n`;
+      continue;
+    }
+    
+    if (depTask.status !== 'done') {
+      context += `### ${depId}: ${depTask.title}\n\nDependency ${depId} output not yet available (status: ${depTask.status})\n\n`;
+      continue;
+    }
+    
+    // Try to read the output file
+    context += `### ${depId} — ${depTask.title}:\n`;
+    
+    if (depTask.output && existsSync(depTask.output.replace(process.cwd(), '.'))) {
+      try {
+        const outputContent = readFileSync(depTask.output, 'utf-8');
+        context += `${outputContent}\n\n`;
+      } catch {
+        context += `(Output file not readable)\n\n`;
+      }
+    } else {
+      context += `(No output file found - task marked as done)\n\n`;
+    }
   }
-  return null;
+  
+  return context;
 }
 
-/**
- * Check if response indicates the agent blocked itself
- */
-export function isResponseBlocked(response: string): boolean {
-  return extractBlockedReason(response) !== null;
+export function buildRetryPrompt(task: Task, error: string, previousResponse: string): string {
+  return `# Retry Task: ${task.title}
+
+## Task ID
+${task.id}
+
+## Previous Error
+${error}
+
+## Previous Response
+${previousResponse}
+
+## Instructions
+Please retry this task. The previous attempt failed with the above error.
+
+Address the issues and provide a corrected output.
+`;
 }

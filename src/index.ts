@@ -1,177 +1,180 @@
 #!/usr/bin/env node
 
-import { readJSON, writeJSON, getNovaPath } from './utils/file-io.js';
-import { log, success, error, info, sectionHeader } from './utils/logger.js';
-import { runRalphLoop } from './orchestrator/ralph-loop.js';
-import { getTaskCounts, resetAllTasks } from './orchestrator/task-picker.js';
-import { checkOllamaConnection } from './llm/ollama-client.js';
-import { PRD } from './types/index.js';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
 
-const DEFAULT_PRD_PATH = '.nova/prd.json';
+// Ensure .nova directory exists
+const novaDir = join(process.cwd(), '.nova');
+const outputDir = join(novaDir, 'output');
+const agentsDir = join(novaDir, 'agents');
+const atlasDir = join(novaDir, 'atlas');
 
-/**
- * Main CLI entry point
- */
-async function main() {
-  const args = process.argv.slice(2);
-  const command = args[0] ?? 'help';
-  
-  switch (command) {
-    case 'run':
-      await runCommand(args[1] ?? DEFAULT_PRD_PATH);
-      break;
-    case 'status':
-      await statusCommand(args[1] ?? DEFAULT_PRD_PATH);
-      break;
-    case 'reset':
-      await resetCommand(args[1] ?? DEFAULT_PRD_PATH);
-      break;
-    case 'help':
-    default:
-      printHelp();
-      break;
-  }
+function ensureDirectories(): void {
+  if (!existsSync(novaDir)) mkdirSync(novaDir, { recursive: true });
+  if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
+  if (!existsSync(agentsDir)) mkdirSync(agentsDir, { recursive: true });
+  if (!existsSync(atlasDir)) mkdirSync(atlasDir, { recursive: true });
 }
 
-/**
- * Run the Ralph Loop
- */
-async function runCommand(prdPath: string): Promise<void> {
-  sectionHeader('NOVA26 Orchestrator');
-  
-  // Check Ollama connection
-  info('Checking Ollama connection...');
-  const ollamaRunning = await checkOllamaConnection();
-  
-  if (!ollamaRunning) {
-    error('Cannot connect to Ollama at http://localhost:11434');
-    error('Please ensure Ollama is running: ollama serve');
+function loadPRD(prdPath: string): any {
+  const fullPath = join(process.cwd(), prdPath);
+  if (!existsSync(fullPath)) {
+    console.error(`PRD file not found: ${fullPath}`);
     process.exit(1);
   }
-  
-  success('Ollama is running');
-  
-  // Run the orchestrator
-  try {
-    await runRalphLoop(prdPath);
-    success('Build complete!');
-  } catch (err) {
-    error(`Build failed: ${err}`);
-    process.exit(1);
-  }
+  const content = readFileSync(fullPath, 'utf-8');
+  return JSON.parse(content);
 }
 
-/**
- * Show task status
- */
-async function statusCommand(prdPath: string): Promise<void> {
-  sectionHeader('Task Status');
-  
-  try {
-    const prd = await readJSON<PRD>(prdPath);
-    const counts = getTaskCounts(prd);
-    
-    log(`Project: ${prd.projectName}`);
-    log(`Version: ${prd.version}`);
-    console.log('');
-    
-    console.log(`Total tasks:    ${counts.total}`);
-    console.log(`Ready:          ${counts.ready}`);
-    console.log(`In Progress:    ${counts.inProgress}`);
-    success(`Done:          ${counts.done}`);
-    error(`Blocked:        ${counts.blocked}`);
-    console.log('');
-    
-    // Show task details by phase
-    for (const phase of prd.phases) {
-      console.log(`\n${'='.repeat(40)}`);
-      console.log(`Phase ${phase.id}: ${phase.name}`);
-      console.log('='.repeat(40));
-      
-      for (const task of phase.tasks) {
-        const statusIcon = getStatusIcon(task.status);
-        console.log(`${statusIcon} ${task.id}: ${task.title} (${task.agent})`);
-        
-        if (task.status === 'blocked' && task.blockedReason) {
-          console.log(`   Reason: ${task.blockedReason}`);
-        }
-      }
+function savePRD(prdPath: string, prd: any): void {
+  const fullPath = join(process.cwd(), prdPath);
+  writeFileSync(fullPath, JSON.stringify(prd, null, 2));
+}
+
+function getTaskStatus(prd: any): { ready: number; pending: number; running: number; done: number; failed: number; blocked: number } {
+  const status = { ready: 0, pending: 0, running: 0, done: 0, failed: 0, blocked: 0 };
+  for (const task of prd.tasks) {
+    if (status[task.status as keyof typeof status] !== undefined) {
+      status[task.status as keyof typeof status]++;
     }
-    
-  } catch (err) {
-    error(`Failed to read PRD: ${err}`);
-    process.exit(1);
   }
+  return status;
 }
 
-/**
- * Reset all tasks to ready
- */
-async function resetCommand(prdPath: string): Promise<void> {
-  sectionHeader('Reset Tasks');
+function cmdStatus(prdPath: string): void {
+  const prd = loadPRD(prdPath);
+  const status = getTaskStatus(prd);
   
+  console.log(`\n=== PRD Status: ${prd.meta?.name || prdPath} ===\n`);
+  console.log(`Total Tasks: ${prd.tasks.length}`);
+  console.log(`  Ready:    ${status.ready}`);
+  console.log(`  Pending:  ${status.pending}`);
+  console.log(`  Running:  ${status.running}`);
+  console.log(`  Done:     ${status.done}`);
+  console.log(`  Failed:   ${status.failed}`);
+  console.log(`  Blocked:  ${status.blocked}`);
+  
+  // Show tasks by phase
+  const phases = new Map<number, { total: number; done: number }>();
+  for (const task of prd.tasks) {
+    if (!phases.has(task.phase)) {
+      phases.set(task.phase, { total: 0, done: 0 });
+    }
+    const p = phases.get(task.phase)!;
+    p.total++;
+    if (task.status === 'done') p.done++;
+  }
+  
+  console.log(`\nBy Phase:`);
+  for (const [phase, stats] of phases) {
+    console.log(`  Phase ${phase}: ${stats.done}/${stats.total} done`);
+  }
+  
+  // Show ready tasks
+  const readyTasks = prd.tasks.filter((t: any) => t.status === 'ready');
+  if (readyTasks.length > 0) {
+    console.log(`\nReady Tasks:`);
+    for (const task of readyTasks) {
+      const deps = task.dependencies?.length ? ` (deps: ${task.dependencies.join(', ')})` : '';
+      console.log(`  - ${task.id}: ${task.title}${deps}`);
+    }
+  }
+  
+  console.log('');
+}
+
+function cmdReset(prdPath: string): void {
+  const prd = loadPRD(prdPath);
+  
+  // Reset all tasks to pending/ready based on phase
+  for (const task of prd.tasks) {
+    if (task.phase === 0) {
+      task.status = 'ready';
+    } else {
+      task.status = 'pending';
+    }
+    task.attempts = 0;
+    task.error = undefined;
+    task.output = undefined;
+  }
+  
+  savePRD(prdPath, prd);
+  console.log('PRD reset complete. Phase 0 tasks set to ready, others to pending.');
+}
+
+async function cmdRun(prdPath: string): Promise<void> {
+  const prd = loadPRD(prdPath);
+  
+  console.log(`\n=== Running PRD: ${prd.meta?.name || prdPath} ===\n`);
+  
+  // Import and run the orchestrator
   try {
-    const prd = await readJSON<PRD>(prdPath);
-    const counts = getTaskCounts(prd);
-    
-    log(`Current status: ${counts.done} done, ${counts.blocked} blocked`);
-    
-    const resetPrd = resetAllTasks(prd);
-    await writeJSON(prdPath, resetPrd);
-    
-    success('All tasks reset to ready');
-    
-  } catch (err) {
-    error(`Failed to reset: ${err}`);
+    const { ralphLoop } = await import('./orchestrator/ralph-loop.js');
+    await ralphLoop(prd, prdPath);
+  } catch (error) {
+    console.error('Error running orchestrator:', error);
     process.exit(1);
   }
 }
 
-/**
- * Get status icon for console output
- */
-function getStatusIcon(status: string): string {
-  switch (status) {
-    case 'ready':
-      return '○';
-    case 'in_progress':
-      return '◐';
-    case 'done':
-      return '●';
-    case 'blocked':
-      return '✗';
-    case 'pending':
-      return '·';
-    default:
-      return '?';
-  }
-}
-
-/**
- * Print help text
- */
-function printHelp(): void {
+function cmdHelp(): void {
   console.log(`
-NOVA26 Orchestrator
+NOVA26 CLI
 
-Usage: nova <command> [options]
-
-Commands:
-  run [prd]     Run the Ralph Loop on the PRD (default: .nova/prd.json)
-  status [prd]  Show task statuses (default: .nova/prd.json)
-  reset [prd]  Reset all tasks to ready (default: .nova/prd.json)
-  help          Show this help message
+Usage:
+  nova26 status <prd-file>   Show PRD status
+  nova26 reset <prd-file>    Reset PRD tasks
+  nova26 run <prd-file>      Run PRD tasks
 
 Examples:
-  nova run                    # Run default PRD
-  nova run .nova/prd-test.json # Run test PRD
-  nova status                 # Show task status
-  nova reset                  # Reset all tasks
-  `);
+  nova26 status .nova/prd-test.json
+  nova26 reset .nova/prd-test.json
+  nova26 run .nova/prd-test.json
+`);
 }
 
-// Run the CLI
-main().catch(err => {
-  error(`Fatal error: ${err}`);
-  process.exit(1);
-});
+// CLI main
+async function main(): Promise<void> {
+  ensureDirectories();
+  
+  const args = process.argv.slice(2);
+  const command = args[0];
+  
+  if (!command) {
+    cmdHelp();
+    process.exit(1);
+  }
+  
+  switch (command) {
+    case 'status':
+      if (!args[1]) {
+        console.error('Missing PRD file path');
+        process.exit(1);
+      }
+      cmdStatus(args[1]);
+      break;
+      
+    case 'reset':
+      if (!args[1]) {
+        console.error('Missing PRD file path');
+        process.exit(1);
+      }
+      cmdReset(args[1]);
+      break;
+      
+    case 'run':
+      if (!args[1]) {
+        console.error('Missing PRD file path');
+        process.exit(1);
+      }
+      await cmdRun(args[1]);
+      break;
+      
+    default:
+      console.error(`Unknown command: ${command}`);
+      cmdHelp();
+      process.exit(1);
+  }
+}
+
+main().catch(console.error);
