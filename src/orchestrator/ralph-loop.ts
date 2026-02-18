@@ -18,6 +18,9 @@ import { recordCost, checkBudgetAlerts, getTodaySpending } from '../cost/cost-tr
 import { recordTaskResult } from '../analytics/agent-analytics.js';
 import { createConvexSyncClient, type ConvexSyncClient } from '../convex/sync.js';
 import type { PRD, Task, LLMResponse, TodoItem, PlanningPhase } from '../types/index.js';
+import { AgentLoop, type AgentLoopResult } from '../agent-loop/agent-loop.js';
+import { getToolRegistry, type ToolExecution } from '../tools/tool-registry.js';
+import type { AutonomyLevel } from '../config/autonomy.js';
 
 export interface RalphLoopOptions {
   parallelMode?: boolean;
@@ -31,6 +34,8 @@ export interface RalphLoopOptions {
   costTracking?: boolean;      // Enable per-call cost tracking (C-04)
   budgetLimit?: number;        // Daily budget limit in USD — halt builds when exceeded (C-05)
   convexSync?: boolean;        // Enable real-time Convex cloud dashboard sync (MEGA-04)
+  agenticMode?: boolean;       // Enable agentic inner loop with tools
+  autonomyLevel?: AutonomyLevel;  // Autonomy level for agent behavior (1-5)
 }
 
 // --- Planning phases (pre-execution plan approval) ---
@@ -397,6 +402,83 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
+ * Determines if agentic mode should be used for this agent and options
+ */
+function shouldUseAgenticMode(agent: string, options: RalphLoopOptions | undefined): boolean {
+  if (!options) return false;
+  
+  const autonomyLevel = options.autonomyLevel ?? 3;
+  const toolsAvailable = getToolRegistry().listForAgent(agent).length > 0;
+  
+  if (!toolsAvailable) return false;
+  if (options.agenticMode === false) return false;
+  if (options.agenticMode === true) return true;
+  
+  // Default: use agentic mode for autonomy level >= 3
+  return autonomyLevel >= 3;
+}
+
+/**
+ * Get AgentLoop configuration based on autonomy level
+ */
+function getAgentLoopConfig(autonomyLevel: AutonomyLevel = 3): Partial<import('../agent-loop/agent-loop.js').AgentLoopConfig> {
+  const baseConfig = {
+    maxTurns: 8,
+    confidenceThreshold: 0.85,
+    tokenBudget: 50000,
+    enableTools: true,
+  };
+  
+  switch (autonomyLevel) {
+    case 1: // Manual - minimal automation
+      return { ...baseConfig, maxTurns: 3, enableTools: false };
+    case 2: // Guided - limited tool use
+      return { ...baseConfig, maxTurns: 5, confidenceThreshold: 0.9 };
+    case 3: // Balanced - default
+      return baseConfig;
+    case 4: // Autonomous - more aggressive
+      return { ...baseConfig, maxTurns: 12, confidenceThreshold: 0.8 };
+    case 5: // Full Auto - maximum
+      return { ...baseConfig, maxTurns: 20, confidenceThreshold: 0.75, tokenBudget: 100000 };
+    default:
+      return baseConfig;
+  }
+}
+
+/**
+ * Record tool usage to analytics and event store
+ */
+function recordToolUsage(
+  agent: string,
+  taskId: string,
+  executions: ToolExecution[],
+  eventStore?: EventStore
+): void {
+  if (executions.length === 0) return;
+  
+  // Log each tool execution
+  for (const exec of executions) {
+    const { call, result } = exec;
+    
+    // Log to EventStore (using checkpoint for custom events)
+    eventStore?.emit('checkpoint', {
+      description: `Tool execution: ${call.name}`,
+      toolName: call.name,
+      success: result.success,
+      duration: result.duration,
+      error: result.error,
+    }, taskId, agent);
+    
+    // Log tool usage summary
+    console.log(`  Tool: ${call.name} ${result.success ? '✓' : '✗'} (${result.duration}ms)`);
+  }
+  
+  // Log summary
+  const successCount = executions.filter(e => e.result.success).length;
+  console.log(`Tool usage: ${successCount}/${executions.length} successful`);
+}
+
+/**
  * Process a single task - extracted for parallel execution support
  */
 /**
@@ -613,17 +695,63 @@ async function processTask(
     }
   }
 
-  // Call LLM
+  // Call LLM (or use AgentLoop if agentic mode enabled)
   let response: LLMResponse;
+  let agentLoopResult: AgentLoopResult | undefined;
+  let useAgenticMode = false;
+  
+  // Check if we should use agentic mode
+  if (shouldUseAgenticMode(task.agent, loopOptions)) {
+    useAgenticMode = true;
+    console.log(`  Using agentic mode (autonomy level: ${loopOptions?.autonomyLevel ?? 3})`);
+  }
   
   try {
-    if (useStructuredOutput && hasAgentSchema(task.agent)) {
+    if (useAgenticMode) {
+      // Use AgentLoop for agentic execution
+      const registry = getToolRegistry();
+      const autonomyLevel = loopOptions?.autonomyLevel ?? 3;
+      const agentLoopConfig = getAgentLoopConfig(autonomyLevel);
+      const agentLoop = new AgentLoop(registry, agentLoopConfig);
+      
+      // Run the agent loop
+      agentLoopResult = await agentLoop.run(task.agent, systemPrompt, userPrompt, task.id);
+      
+      // Convert AgentLoopResult to LLMResponse for compatibility
+      response = {
+        content: agentLoopResult.output,
+        model: 'agent-loop',
+        tokens: agentLoopResult.totalTokens,
+        duration: 0, // Duration tracking is per-turn in agent loop
+        fromCache: false,
+      };
+      
+      // Log agentic mode completion
+      console.log(`  Agent loop completed: ${agentLoopResult.turns} turns, ${agentLoopResult.toolExecutions.length} tool calls`);
+      console.log(`  Confidence: ${(agentLoopResult.confidence * 100).toFixed(1)}% (${agentLoopResult.stoppedBecause})`);
+      
+      // Record tool usage to analytics and event store
+      if (agentLoopResult.toolExecutions.length > 0) {
+        recordToolUsage(task.agent, task.id, agentLoopResult.toolExecutions, eventStore);
+      }
+      
+      // Emit agentic mode completion event
+      eventStore?.emit('checkpoint', {
+        description: 'Agent loop completed',
+        turns: agentLoopResult.turns,
+        toolCalls: agentLoopResult.toolExecutions.length,
+        confidence: agentLoopResult.confidence,
+        stoppedBecause: agentLoopResult.stoppedBecause,
+      }, task.id, task.agent);
+      
+    } else if (useStructuredOutput && hasAgentSchema(task.agent)) {
       response = await callLLMWithSchema(systemPrompt, userPrompt, task.agent);
     } else if (llmCaller) {
       response = await llmCaller(systemPrompt, userPrompt, task.agent);
     } else {
       response = await callLLM(systemPrompt, userPrompt, task.agent);
     }
+    
     tracer.logLLMCall(trace, userPrompt, response.content, response.model, response.duration, response.tokens);
     eventStore?.emit('llm_call_complete', { model: response.model, tokens: response.tokens, duration: response.duration }, task.id, task.agent);
     

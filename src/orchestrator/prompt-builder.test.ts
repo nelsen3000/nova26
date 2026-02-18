@@ -18,6 +18,19 @@ vi.mock('../memory/session-memory.js', () => ({
   buildMemoryContext: vi.fn().mockReturnValue(''),
 }));
 
+// Mock tool-registry to avoid initialization
+vi.mock('../tools/tool-registry.js', () => ({
+  getToolRegistry: vi.fn().mockReturnValue({
+    formatToolsForPrompt: vi.fn().mockReturnValue('<available_tools>test</available_tools>'),
+  }),
+}));
+
+// Mock tools/repo-map to avoid filesystem
+vi.mock('../tools/repo-map.js', () => ({
+  getRepoMap: vi.fn().mockReturnValue({ files: [], totalFiles: 0, totalSize: 0 }),
+  formatRepoMapForPrompt: vi.fn().mockReturnValue('<repo_map>test</repo_map>'),
+}));
+
 function makeTask(overrides: Partial<Task> = {}): Task {
   return {
     id: 'T1',

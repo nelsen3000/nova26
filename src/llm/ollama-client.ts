@@ -38,6 +38,7 @@ const modelConfigs: Record<string, ModelConfig> = {
 export interface CallLLMOptions {
   cache?: boolean;        // Enable response caching (default: true)
   cacheMaxAgeHours?: number; // Cache TTL in hours (default: 24)
+  model?: string;         // Override model to use
 }
 
 export async function callLLM(
@@ -49,8 +50,8 @@ export async function callLLM(
   const startTime = Date.now();
   const useCache = options?.cache !== false; // Cache enabled by default
 
-  // Determine which model to use
-  const model = getModelForAgent(agentName || 'default');
+  // Determine which model to use (options.model takes precedence)
+  const model = options?.model ?? getModelForAgent(agentName || 'default');
   const config = modelConfigs[model] || modelConfigs[DEFAULT_MODEL];
 
   // Cache check — combine prompts for cache key
