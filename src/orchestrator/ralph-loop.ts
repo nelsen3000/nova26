@@ -11,6 +11,9 @@ import { callLLM, type LLMCaller } from '../llm/ollama-client.js';
 import { callLLMWithSchema, hasAgentSchema } from '../llm/structured-output.js';
 import { getTracer } from '../observability/index.js';
 import { ParallelRunner, getIndependentTasks } from './parallel-runner.js';
+import { createEventStore, type EventStore } from './event-store.js';
+import { buildMemoryContext, learnFromTask, learnFromFailure } from '../memory/session-memory.js';
+import { initWorkflow } from '../git/workflow.js';
 import type { PRD, Task, LLMResponse, TodoItem, PlanningPhase } from '../types/index.js';
 
 export interface RalphLoopOptions {
@@ -19,6 +22,9 @@ export interface RalphLoopOptions {
   autoTestFix?: boolean;       // Auto test→fix→retest loop
   maxTestRetries?: number;     // Max retries for test loop (default: 3)
   planApproval?: boolean;      // Require plan approval before execution
+  eventStore?: boolean;        // Enable event-sourced session logging
+  sessionMemory?: boolean;     // Enable cross-session memory (learn from tasks)
+  gitWorkflow?: boolean;       // Enable auto branch/commit/PR workflow
 }
 
 // --- Planning phases (pre-execution plan approval) ---
@@ -198,7 +204,29 @@ export async function ralphLoop(
   console.log('Starting Ralph Loop...');
   console.log(useStructuredOutput ? 'Using structured output for supported agents' : 'Using standard LLM calls');
   console.log(parallelMode ? 'Parallel mode enabled' : 'Sequential mode');
-  
+
+  // --- Initialize event store (durable session logging) ---
+  let eventStore: EventStore | undefined;
+  if (options?.eventStore) {
+    eventStore = createEventStore(prdPath);
+    console.log(`Event store: session ${eventStore.getState().sessionId}`);
+  }
+
+  // --- Initialize session memory ---
+  if (options?.sessionMemory) {
+    const memoryCtx = buildMemoryContext(prd.meta.name);
+    if (memoryCtx) {
+      console.log('Session memory: loaded prior knowledge');
+    }
+  }
+
+  // --- Initialize git workflow ---
+  let gitWf: ReturnType<typeof initWorkflow> | undefined;
+  if (options?.gitWorkflow) {
+    gitWf = initWorkflow(prd.meta.name);
+    console.log(`Git workflow: branch ${gitWf.branch}`);
+  }
+
   let maxIterations = prd.tasks.length * 3; // Prevent infinite loops
   let iteration = 0;
   
@@ -265,7 +293,7 @@ export async function ralphLoop(
         
         // Process tasks in parallel
         const taskResults = await parallelRunner.runPhase(independentTasks, async (task) => {
-          await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options);
+          await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf);
         });
         
         // Check results and promote tasks
@@ -290,7 +318,7 @@ export async function ralphLoop(
     console.log(`\n--- Processing: ${task.id} (${task.title}) [Phase ${task.phase}] ---`);
     
     try {
-      await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options);
+      await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf);
 
       // Promote pending tasks after each task completes
       promotePendingTasks(prd);
@@ -303,7 +331,18 @@ export async function ralphLoop(
   
   // Flush tracer before exiting
   await tracer.flush();
-  
+
+  // Event store: session end
+  const allDone = prd.tasks.every(t => t.status === 'done');
+  eventStore?.emit('session_end', { success: allDone, tasksCompleted: prd.tasks.filter(t => t.status === 'done').length });
+
+  // Git workflow: finalize (create PR if all tasks done)
+  if (gitWf && allDone) {
+    const taskSummary = prd.tasks.map(t => `${t.agent}: ${t.title}`);
+    const prUrl = gitWf.finalize(taskSummary);
+    if (prUrl) console.log(`\nPR created: ${prUrl}`);
+  }
+
   console.log('\n=== Ralph Loop finished ===');
 }
 
@@ -495,9 +534,14 @@ async function processTask(
   useStructuredOutput: boolean,
   tracer: ReturnType<typeof getTracer>,
   sessionId: string | null,
-  loopOptions?: RalphLoopOptions
+  loopOptions?: RalphLoopOptions,
+  eventStore?: EventStore,
+  gitWf?: ReturnType<typeof initWorkflow>
 ): Promise<void> {
   const trace = tracer.startTrace(sessionId, task.id, task.agent);
+
+  // Event store: task_start
+  eventStore?.emit('task_start', { title: task.title, agent: task.agent, phase: task.phase }, task.id, task.agent);
   
   // Initialize todos for complex tasks
   if (shouldCreateTodos(task) && !task.todos) {
@@ -558,8 +602,11 @@ async function processTask(
       response = await callLLM(systemPrompt, userPrompt, task.agent);
     }
     tracer.logLLMCall(trace, userPrompt, response.content, response.model, response.duration, response.tokens);
+    eventStore?.emit('llm_call_complete', { model: response.model, tokens: response.tokens, duration: response.duration }, task.id, task.agent);
   } catch (llmError: any) {
     console.log(`LLM call failed: ${llmError.message}`);
+    eventStore?.emit('llm_call_fail', { error: llmError.message }, task.id, task.agent);
+    if (loopOptions?.sessionMemory) learnFromFailure(task.agent, task.title, llmError.message);
     updateTaskStatus(prd, task.id, 'failed', llmError.message);
     savePRD(prd, prdPath);
     tracer.endTrace(trace, 'failed', llmError.message);
@@ -670,7 +717,18 @@ async function processTask(
   // Mark as done
   updateTaskStatus(prd, task.id, 'done');
   savePRD(prd, prdPath);
-  
+
+  // Event store: task_complete
+  eventStore?.emit('task_complete', { outputPath }, task.id, task.agent);
+
+  // Session memory: learn from success
+  if (loopOptions?.sessionMemory) {
+    learnFromTask(task.agent, task.title, task.description, response.content);
+  }
+
+  // Git workflow: commit phase
+  gitWf?.commitPhase(task.id, task.title, task.agent, task.phase);
+
   console.log(`\n✅ Task ${task.id} completed successfully.`);
   tracer.endTrace(trace, 'done');
 }

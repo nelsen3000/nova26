@@ -2,7 +2,29 @@
 
 import { readFileSync, existsSync } from 'fs';
 import { loadAgent } from './agent-loader.js';
+import { buildRepoMap, formatRepoContext, type RepoMap } from '../codebase/repo-map.js';
+import { buildMemoryContext } from '../memory/session-memory.js';
 import type { Task, PRD } from '../types/index.js';
+
+// Cache the repo map so we don't rebuild it for every task
+let cachedRepoMap: RepoMap | null = null;
+
+/**
+ * Get or build the repo map (cached per session)
+ */
+export function getRepoMap(): RepoMap {
+  if (!cachedRepoMap) {
+    cachedRepoMap = buildRepoMap(process.cwd());
+  }
+  return cachedRepoMap;
+}
+
+/**
+ * Reset the cached repo map (call when codebase changes)
+ */
+export function invalidateRepoMap(): void {
+  cachedRepoMap = null;
+}
 
 export interface PromptContext {
   systemPrompt: string;
@@ -44,10 +66,30 @@ ${task.phase}
     prompt += buildDependencyContext(task, prd);
   }
   
+  // Add codebase context (relevant symbols from repo map)
+  try {
+    const repoMap = getRepoMap();
+    const repoCtx = formatRepoContext(repoMap, task.description, 1500);
+    if (repoCtx && repoCtx.length > 50) {
+      prompt += `${repoCtx}\n\n`;
+    }
+  } catch {
+    // Repo map unavailable — skip silently
+  }
+
+  // Add session memory context (patterns learned from prior builds)
+  try {
+    const memCtx = buildMemoryContext(task.agent);
+    if (memCtx) {
+      prompt += `${memCtx}\n\n`;
+    }
+  } catch {
+    // Memory unavailable — skip silently
+  }
+
   // Add instructions
-  prompt += `
-## Instructions
-Complete this task according to your role as ${task.agent}. 
+  prompt += `## Instructions
+Complete this task according to your role as ${task.agent}.
 
 Your output will be validated against quality gates. Ensure:
 - All requirements are addressed
@@ -55,7 +97,7 @@ Your output will be validated against quality gates. Ensure:
 - Edge cases are considered
 
 `;
-  
+
   return prompt;
 }
 
