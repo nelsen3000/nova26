@@ -62,6 +62,8 @@ export class SwarmOrchestrator {
   private runningAgents: Set<string> = new Set();
   private completedTasks: Set<string> = new Set();
   private failedTasks: Set<string> = new Set();
+  private shouldStop = false;
+  private stopError?: string;
   private messageCounter = 0;
 
   // Default LLM caller - can be overridden for testing
@@ -127,8 +129,12 @@ export class SwarmOrchestrator {
     }
 
     // Main execution loop - process waves until all tasks complete
-    while (this.hasPendingTasks()) {
+    while (!this.shouldStop && this.hasPendingTasks()) {
       const scheduled = await this.scheduleWave();
+
+      if (this.shouldStop) {
+        break;
+      }
 
       if (scheduled === 0 && this.runningAgents.size === 0) {
         // Deadlock detection - no tasks scheduled and none running
@@ -155,6 +161,11 @@ export class SwarmOrchestrator {
       content: `Swarm session ${this.sessionId} completed in ${totalDuration}ms`,
       timestamp: new Date().toISOString(),
     });
+
+    // If we stopped due to an error and continueOnFailure is false, throw
+    if (this.shouldStop && !this.options.continueOnFailure && this.stopError) {
+      throw new Error(this.stopError);
+    }
 
     return this.buildResult(totalDuration);
   }
@@ -186,6 +197,11 @@ export class SwarmOrchestrator {
    * Execute a single agent with tracking and error handling
    */
   private async executeAgentWithTracking(task: Task): Promise<void> {
+    // Don't start new agents if we should stop
+    if (this.shouldStop) {
+      return;
+    }
+
     this.runningAgents.add(task.id);
 
     try {
@@ -228,6 +244,9 @@ export class SwarmOrchestrator {
 
       // Mark task as completed
       this.completedTasks.add(task.id);
+
+      // Save result to context
+      context.results.set(task.id, result);
 
       // Update shared memory with output
       if (result.output) {
@@ -272,9 +291,10 @@ export class SwarmOrchestrator {
         timestamp: new Date().toISOString(),
       });
 
-      // Error isolation: don't throw, just return the failed result
+      // If continueOnFailure is false, mark swarm to stop
       if (!this.options.continueOnFailure) {
-        throw error;
+        this.shouldStop = true;
+        this.stopError = errorMessage;
       }
 
       return failedResult;
@@ -400,9 +420,16 @@ ${sharedContext ? `Context from dependencies:\n${sharedContext}\n\n` : ''}Comple
       }
 
       // Check if all dependencies are satisfied
-      const depsSatisfied = task.dependencies.every(
-        dep => this.completedTasks.has(dep) || (this.options.continueOnFailure && this.failedTasks.has(dep))
-      );
+      const depsSatisfied = task.dependencies.every(dep => {
+        if (this.completedTasks.has(dep)) {
+          return true; // Dependency completed successfully
+        }
+        if (this.failedTasks.has(dep)) {
+          // Dependency failed - only consider satisfied if continueOnFailure is true
+          return this.options.continueOnFailure;
+        }
+        return false; // Dependency still pending/running
+      });
 
       return depsSatisfied;
     });

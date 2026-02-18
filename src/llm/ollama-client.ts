@@ -157,7 +157,8 @@ export async function* callLLMStream(
     stream: true,
   };
 
-  const response = await fetch(`${OLLAMA_HOST}/api/chat`, {
+  const configHost = getConfig().ollama.host;
+  const response = await fetch(`${configHost}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

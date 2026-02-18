@@ -227,7 +227,7 @@ describe('MessageBus', () => {
         priority: 'normal',
       });
 
-      const msg2 = bus.post({
+      bus.post({
         type: 'answer',
         from: 'MARS',
         to: 'EARTH',

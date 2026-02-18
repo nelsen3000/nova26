@@ -33,6 +33,7 @@ vi.mock('fs', () => ({
   existsSync: mockExistsSync,
   readFileSync: mockReadFileSync,
   readdirSync: mockReaddirSync,
+  mkdirSync: vi.fn(),
 }));
 
 vi.mock('../agents/sun-prd-generator.js', () => ({

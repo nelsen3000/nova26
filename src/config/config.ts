@@ -67,16 +67,8 @@ const ConfigSchema = z.object({
 });
 
 export type NovaConfig = z.infer<typeof ConfigSchema>;
-export type PartialNovaConfig = {
-  ollama?: Partial<z.infer<typeof OllamaSchema>>;
-  models?: Partial<z.infer<typeof ModelsSchema>>;
-  budget?: Partial<z.infer<typeof BudgetSchema>>;
-  cache?: Partial<z.infer<typeof CacheSchema>>;
-  git?: Partial<z.infer<typeof GitSchema>>;
-  security?: Partial<z.infer<typeof SecuritySchema>>;
-  convex?: Partial<z.infer<typeof ConvexSchema>>;
-  ui?: Partial<z.infer<typeof UISchema>>;
-};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type PartialNovaConfig = Record<string, any>;
 
 // ============================================================================
 // Configuration Cache
@@ -153,27 +145,32 @@ function deepMerge(target: Record<string, unknown>, source: Record<string, unkno
  * Supports: NOVA26_OLLAMA_HOST, NOVA26_TIER, NOVA26_BUDGET_DAILY, etc.
  */
 export function getConfigFromEnv(): PartialNovaConfig {
-  const env: Partial<NovaConfig> = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const env: Record<string, any> = {};
 
   // Ollama settings
   if (process.env.NOVA26_OLLAMA_HOST) {
-    env.ollama = { ...env.ollama, host: process.env.NOVA26_OLLAMA_HOST };
+    env.ollama = env.ollama || {};
+    env.ollama.host = process.env.NOVA26_OLLAMA_HOST;
   }
   if (process.env.NOVA26_OLLAMA_TIMEOUT) {
     const timeout = parseInt(process.env.NOVA26_OLLAMA_TIMEOUT, 10);
     if (!isNaN(timeout)) {
-      env.ollama = { ...env.ollama, timeout };
+      env.ollama = env.ollama || {};
+      env.ollama.timeout = timeout;
     }
   }
 
   // Model settings
   if (process.env.NOVA26_MODEL) {
-    env.models = { ...env.models, default: process.env.NOVA26_MODEL };
+    env.models = env.models || {};
+    env.models.default = process.env.NOVA26_MODEL;
   }
   if (process.env.NOVA26_TIER) {
     const tier = process.env.NOVA26_TIER;
     if (tier === 'free' || tier === 'paid' || tier === 'hybrid') {
-      env.models = { ...env.models, tier };
+      env.models = env.models || {};
+      env.models.tier = tier;
     }
   }
   // Parse agent overrides: NOVA26_AGENT_SUN=gpt-4o
@@ -185,97 +182,133 @@ export function getConfigFromEnv(): PartialNovaConfig {
     }
   }
   if (Object.keys(agentOverrides).length > 0) {
-    env.models = { ...env.models, agentOverrides };
+    env.models = env.models || {};
+    env.models.agentOverrides = agentOverrides;
   }
 
   // Budget settings
   if (process.env.NOVA26_BUDGET_DAILY) {
     const daily = parseFloat(process.env.NOVA26_BUDGET_DAILY);
     if (!isNaN(daily)) {
-      env.budget = { ...env.budget, daily };
+      env.budget = env.budget || {};
+      env.budget.daily = daily;
     }
   }
   if (process.env.NOVA26_BUDGET_WEEKLY) {
     const weekly = parseFloat(process.env.NOVA26_BUDGET_WEEKLY);
     if (!isNaN(weekly)) {
-      env.budget = { ...env.budget, weekly };
+      env.budget = env.budget || {};
+      env.budget.weekly = weekly;
     }
   }
   if (process.env.NOVA26_BUDGET_MONTHLY) {
     const monthly = parseFloat(process.env.NOVA26_BUDGET_MONTHLY);
     if (!isNaN(monthly)) {
-      env.budget = { ...env.budget, monthly };
+      env.budget = env.budget || {};
+      env.budget.monthly = monthly;
     }
   }
 
   // Cache settings
   if (process.env.NOVA26_CACHE_ENABLED !== undefined) {
-    env.cache = { ...env.cache, enabled: process.env.NOVA26_CACHE_ENABLED === 'true' };
+    env.cache = env.cache || {};
+    env.cache.enabled = process.env.NOVA26_CACHE_ENABLED === 'true';
   }
   if (process.env.NOVA26_CACHE_MAX_AGE_HOURS) {
     const maxAgeHours = parseInt(process.env.NOVA26_CACHE_MAX_AGE_HOURS, 10);
     if (!isNaN(maxAgeHours)) {
-      env.cache = { ...env.cache, maxAgeHours };
+      env.cache = env.cache || {};
+      env.cache.maxAgeHours = maxAgeHours;
     }
   }
   if (process.env.NOVA26_CACHE_MAX_SIZE_MB) {
     const maxSizeMB = parseInt(process.env.NOVA26_CACHE_MAX_SIZE_MB, 10);
     if (!isNaN(maxSizeMB)) {
-      env.cache = { ...env.cache, maxSizeMB };
+      env.cache = env.cache || {};
+      env.cache.maxSizeMB = maxSizeMB;
     }
   }
 
   // Git settings
   if (process.env.NOVA26_GIT_ENABLED !== undefined) {
-    env.git = { ...env.git, enabled: process.env.NOVA26_GIT_ENABLED === 'true' };
+    env.git = env.git || {};
+    env.git.enabled = process.env.NOVA26_GIT_ENABLED === 'true';
   }
   if (process.env.NOVA26_GIT_BRANCH_PREFIX) {
-    env.git = { ...env.git, branchPrefix: process.env.NOVA26_GIT_BRANCH_PREFIX };
+    env.git = env.git || {};
+    env.git.branchPrefix = process.env.NOVA26_GIT_BRANCH_PREFIX;
   }
   if (process.env.NOVA26_GIT_AUTO_COMMIT !== undefined) {
-    env.git = { ...env.git, autoCommit: process.env.NOVA26_GIT_AUTO_COMMIT === 'true' };
+    env.git = env.git || {};
+    env.git.autoCommit = process.env.NOVA26_GIT_AUTO_COMMIT === 'true';
   }
   if (process.env.NOVA26_GIT_AUTO_PR !== undefined) {
-    env.git = { ...env.git, autoPR: process.env.NOVA26_GIT_AUTO_PR === 'true' };
+    env.git = env.git || {};
+    env.git.autoPR = process.env.NOVA26_GIT_AUTO_PR === 'true';
   }
 
   // Security settings
   if (process.env.NOVA26_SECURITY_SCAN_ON_BUILD !== undefined) {
-    env.security = { ...env.security, scanOnBuild: process.env.NOVA26_SECURITY_SCAN_ON_BUILD === 'true' };
+    env.security = env.security || {};
+    env.security.scanOnBuild = process.env.NOVA26_SECURITY_SCAN_ON_BUILD === 'true';
   }
   if (process.env.NOVA26_SECURITY_BLOCK_ON_CRITICAL !== undefined) {
-    env.security = { ...env.security, blockOnCritical: process.env.NOVA26_SECURITY_BLOCK_ON_CRITICAL === 'true' };
+    env.security = env.security || {};
+    env.security.blockOnCritical = process.env.NOVA26_SECURITY_BLOCK_ON_CRITICAL === 'true';
   }
 
   // Convex settings
   if (process.env.NOVA26_CONVEX_URL) {
-    env.convex = { ...env.convex, url: process.env.NOVA26_CONVEX_URL };
+    env.convex = env.convex || {};
+    env.convex.url = process.env.NOVA26_CONVEX_URL;
   }
   if (process.env.NOVA26_CONVEX_SYNC_ENABLED !== undefined) {
-    env.convex = { ...env.convex, syncEnabled: process.env.NOVA26_CONVEX_SYNC_ENABLED === 'true' };
+    env.convex = env.convex || {};
+    env.convex.syncEnabled = process.env.NOVA26_CONVEX_SYNC_ENABLED === 'true';
   }
 
   // UI settings
   if (process.env.NOVA26_VERBOSE !== undefined) {
-    env.ui = { ...env.ui, verbose: process.env.NOVA26_VERBOSE === 'true' };
+    env.ui = env.ui || {};
+    env.ui.verbose = process.env.NOVA26_VERBOSE === 'true';
   }
   if (process.env.NOVA26_THEME) {
     const theme = process.env.NOVA26_THEME;
     if (theme === 'dark' || theme === 'light' || theme === 'auto') {
-      env.ui = { ...env.ui, theme };
+      env.ui = env.ui || {};
+      env.ui.theme = theme;
     }
   }
 
-  return env;
+  return env as PartialNovaConfig;
 }
 
 // ============================================================================
 // File Loading
 // ============================================================================
 
-const PROJECT_CONFIG_PATH = join(process.cwd(), '.nova', 'config.json');
-const USER_CONFIG_DIR = join(homedir(), '.nova26');
-const USER_CONFIG_PATH = join(USER_CONFIG_DIR, 'config.json');
+let customProjectConfigPath: string | null = null;
+
+export const PROJECT_CONFIG_PATH = join(process.cwd(), '.nova', 'config.json');
+export const USER_CONFIG_DIR = join(homedir(), '.nova26');
+export const USER_CONFIG_PATH = join(USER_CONFIG_DIR, 'config.json');
+
+/**
+ * Set a custom path for the project config (used for testing).
+ * Set to null to reset to default.
+ */
+export function setProjectConfigPath(path: string | null): void {
+  customProjectConfigPath = path;
+  // Clear cache when config path changes
+  resetConfig();
+}
+
+/**
+ * Get the effective project config path.
+ */
+function getProjectConfigPath(): string {
+  return customProjectConfigPath ?? PROJECT_CONFIG_PATH;
+}
 
 /**
  * Load a JSON config file from the specified path.
@@ -288,7 +321,7 @@ export function loadConfigFile(path: string): PartialNovaConfig {
 
   try {
     const content = readFileSync(path, 'utf-8');
-    const parsed = JSON.parse(content) as Partial<NovaConfig>;
+    const parsed = JSON.parse(content) as PartialNovaConfig;
     return parsed;
   } catch {
     // Return empty object on parse error - individual validation happens in mergeConfigs
@@ -299,14 +332,14 @@ export function loadConfigFile(path: string): PartialNovaConfig {
 /**
  * Load project config from .nova/config.json
  */
-function loadProjectConfig(): Partial<NovaConfig> {
-  return loadConfigFile(PROJECT_CONFIG_PATH);
+function loadProjectConfig(): PartialNovaConfig {
+  return loadConfigFile(getProjectConfigPath());
 }
 
 /**
  * Load user config from ~/.nova26/config.json
  */
-function loadUserConfig(): Partial<NovaConfig> {
+function loadUserConfig(): PartialNovaConfig {
   return loadConfigFile(USER_CONFIG_PATH);
 }
 
@@ -379,7 +412,8 @@ export function resetConfig(): void {
  * Creates the .nova directory if it doesn't exist.
  */
 export function saveProjectConfig(config: PartialNovaConfig): void {
-  const configDir = dirname(PROJECT_CONFIG_PATH);
+  const configPath = getProjectConfigPath();
+  const configDir = dirname(configPath);
   
   // Create .nova directory if needed
   if (!existsSync(configDir)) {
@@ -388,7 +422,7 @@ export function saveProjectConfig(config: PartialNovaConfig): void {
 
   // Write config as formatted JSON
   const content = JSON.stringify(config, null, 2) + '\n';
-  writeFileSync(PROJECT_CONFIG_PATH, content, 'utf-8');
+  writeFileSync(configPath, content, 'utf-8');
 }
 
 /**
@@ -453,5 +487,4 @@ export function getConfigSources(): {
   };
 }
 
-// Export paths for testing
-export { PROJECT_CONFIG_PATH, USER_CONFIG_PATH };
+// PROJECT_CONFIG_PATH and USER_CONFIG_PATH are already exported above

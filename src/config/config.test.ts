@@ -13,8 +13,8 @@ import {
   resetConfig,
   saveProjectConfig,
   saveUserConfig,
-  PROJECT_CONFIG_PATH,
-  type NovaConfig,
+  setProjectConfigPath,
+  type PartialNovaConfig,
 } from './config.js';
 
 // ============================================================================
@@ -27,12 +27,14 @@ describe('Configuration System', () => {
   const originalEnv = { ...process.env };
 
   beforeEach(() => {
-    // Reset config cache before each test
-    resetConfig();
-    
-    // Create a temp directory for test files
+    // Create a temp directory for test files first
     tempDir = mkdtempSync(join(tmpdir(), 'nova26-config-test-'));
     originalCwd = process.cwd();
+    
+    // Set a non-existent config path to prevent loading real project config
+    // Must be done before any getConfig() call
+    setProjectConfigPath(join(tempDir, 'non-existent-config.json'));
+    resetConfig();
     
     // Clean up NOVA26_ env vars
     for (const key of Object.keys(process.env)) {
@@ -289,19 +291,19 @@ describe('Configuration System', () => {
     });
 
     it('should load project config from .nova/config.json', () => {
-      process.chdir(tempDir);
-      resetConfig(); // Reset to pick up new cwd
-      
       const novaDir = join(tempDir, '.nova');
       mkdirSync(novaDir, { recursive: true });
-      
-      const configData = {
-        models: { tier: 'hybrid' },
+
+      const configData: PartialNovaConfig = {
+        models: { tier: 'hybrid', default: 'qwen2.5:7b', agentOverrides: {} },
       };
-      writeFileSync(join(novaDir, 'config.json'), JSON.stringify(configData), 'utf-8');
-      
+      const configPath = join(novaDir, 'config.json');
+      writeFileSync(configPath, JSON.stringify(configData), 'utf-8');
+
+      setProjectConfigPath(configPath);
+
       const config = getConfig();
-      
+
       expect(config.models.tier).toBe('hybrid');
     });
   });
@@ -312,6 +314,9 @@ describe('Configuration System', () => {
 
   describe('Merge Priority (args > env > project > user > defaults)', () => {
     it('should use defaults when nothing else is set', () => {
+      // Use a non-existent path to ensure we only get defaults
+      setProjectConfigPath(join(tempDir, 'non-existent-config.json'));
+      
       const config = getConfig();
       
       expect(config.ollama.host).toBe('http://localhost:11434');
@@ -320,7 +325,7 @@ describe('Configuration System', () => {
     });
 
     it('should override defaults with user config', () => {
-      const userConfig: Partial<NovaConfig> = {
+      const userConfig: PartialNovaConfig = {
         models: { default: 'llama3:8b' },
       };
       
@@ -331,10 +336,10 @@ describe('Configuration System', () => {
     });
 
     it('should override user config with project config', () => {
-      const userConfig: Partial<NovaConfig> = {
+      const userConfig: PartialNovaConfig = {
         models: { default: 'llama3:8b', tier: 'free' },
       };
-      const projectConfig: Partial<NovaConfig> = {
+      const projectConfig: PartialNovaConfig = {
         models: { tier: 'hybrid' },
       };
       
@@ -345,17 +350,18 @@ describe('Configuration System', () => {
     });
 
     it('should override project config with environment variables', () => {
-      process.chdir(tempDir);
-      resetConfig();
-      
       // Create project config
       const novaDir = join(tempDir, '.nova');
       mkdirSync(novaDir, { recursive: true });
+      const configPath = join(novaDir, 'config.json');
       writeFileSync(
-        join(novaDir, 'config.json'),
-        JSON.stringify({ models: { tier: 'free' } }),
+        configPath,
+        JSON.stringify({ models: { tier: 'free', default: 'qwen2.5:7b', agentOverrides: {} } }),
         'utf-8'
       );
+      
+      // Use custom config path
+      setProjectConfigPath(configPath);
       
       // Set env override
       process.env.NOVA26_TIER = 'paid';
@@ -368,7 +374,7 @@ describe('Configuration System', () => {
     it('should override env with runtime arguments', () => {
       process.env.NOVA26_OLLAMA_HOST = 'http://env-host:11434';
       
-      const overrides: Partial<NovaConfig> = {
+      const overrides: PartialNovaConfig = {
         ollama: { host: 'http://arg-host:11434' },
       };
       
@@ -379,7 +385,7 @@ describe('Configuration System', () => {
 
     it('should handle deep merge of nested objects', () => {
       const defaults = getDefaultConfig();
-      const userConfig: Partial<NovaConfig> = {
+      const userConfig: PartialNovaConfig = {
         models: { default: 'custom-model' }, // Only override default
       };
       
@@ -391,10 +397,10 @@ describe('Configuration System', () => {
     });
 
     it('should properly merge null values (explicit override to null)', () => {
-      const config1: Partial<NovaConfig> = {
+      const config1: PartialNovaConfig = {
         budget: { daily: 10, weekly: 50 },
       };
-      const config2: Partial<NovaConfig> = {
+      const config2: PartialNovaConfig = {
         budget: { daily: null }, // Explicitly set to null
       };
       
@@ -411,39 +417,39 @@ describe('Configuration System', () => {
 
   describe('Zod Validation', () => {
     it('should throw on invalid tier value', () => {
-      const invalidConfig = {
-        models: { tier: 'invalid' },
+      const invalidConfig: PartialNovaConfig = {
+        models: { tier: 'invalid' as 'free' },
       };
       
       expect(() => mergeConfigs(invalidConfig)).toThrow('Configuration validation failed');
     });
 
     it('should throw on invalid theme value', () => {
-      const invalidConfig = {
-        ui: { theme: 'purple' },
+      const invalidConfig: PartialNovaConfig = {
+        ui: { theme: 'purple' as 'dark' },
       };
       
       expect(() => mergeConfigs(invalidConfig)).toThrow('Configuration validation failed');
     });
 
     it('should throw on wrong type for timeout', () => {
-      const invalidConfig = {
-        ollama: { timeout: 'not-a-number' },
+      const invalidConfig: PartialNovaConfig = {
+        ollama: { timeout: 'not-a-number' as unknown as number },
       };
       
       expect(() => mergeConfigs(invalidConfig)).toThrow('Configuration validation failed');
     });
 
     it('should throw on wrong type for enabled flags', () => {
-      const invalidConfig = {
-        cache: { enabled: 'yes' },
+      const invalidConfig: PartialNovaConfig = {
+        cache: { enabled: 'yes' as unknown as boolean },
       };
       
       expect(() => mergeConfigs(invalidConfig)).toThrow('Configuration validation failed');
     });
 
     it('should apply defaults after validation', () => {
-      const partialConfig: Partial<NovaConfig> = {
+      const partialConfig: PartialNovaConfig = {
         ollama: { host: 'http://custom:11434' },
       };
       
@@ -476,8 +482,8 @@ describe('Configuration System', () => {
     });
 
     it('should cache configs with different overrides separately', () => {
-      const overrides1: Partial<NovaConfig> = { ollama: { host: 'http://host1:11434' } };
-      const overrides2: Partial<NovaConfig> = { ollama: { host: 'http://host2:11434' } };
+      const overrides1: PartialNovaConfig = { ollama: { host: 'http://host1:11434' } };
+      const overrides2: PartialNovaConfig = { ollama: { host: 'http://host2:11434' } };
       
       const config1a = getConfig(overrides1);
       const config1b = getConfig(overrides1);
@@ -495,39 +501,45 @@ describe('Configuration System', () => {
 
   describe('saveProjectConfig', () => {
     it('should write config to .nova/config.json', () => {
-      process.chdir(tempDir);
-      resetConfig();
+      const novaDir = join(tempDir, '.nova');
+      const configPath = join(novaDir, 'config.json');
       
-      const config: Partial<NovaConfig> = {
-        models: { tier: 'paid' },
-        cache: { enabled: false },
+      // Set custom path for saving
+      setProjectConfigPath(configPath);
+      
+      const config: PartialNovaConfig = {
+        models: { tier: 'paid', default: 'gpt-4o', agentOverrides: {} },
+        cache: { enabled: false, maxAgeHours: 24, maxSizeMB: 500 },
       };
       
       saveProjectConfig(config);
       
-      const configPath = join(tempDir, '.nova', 'config.json');
       const savedContent = loadConfigFile(configPath);
       
       expect(savedContent).toEqual(config);
     });
 
     it('should create .nova directory if it does not exist', () => {
-      process.chdir(tempDir);
-      resetConfig();
-      
-      saveProjectConfig({ ollama: { host: 'http://test:11434' } });
-      
       const novaDir = join(tempDir, '.nova');
+      const configPath = join(novaDir, 'config.json');
+      
+      // Set custom path for saving
+      setProjectConfigPath(configPath);
+      
+      saveProjectConfig({ ollama: { host: 'http://test:11434', timeout: 30000 } });
+      
       expect(existsSync(novaDir)).toBe(true);
     });
 
     it('should write formatted JSON', () => {
-      process.chdir(tempDir);
-      resetConfig();
+      const novaDir = join(tempDir, '.nova');
+      const configPath = join(novaDir, 'config.json');
       
-      saveProjectConfig({ models: { default: 'gpt-4o' } });
+      // Set custom path for saving
+      setProjectConfigPath(configPath);
       
-      const configPath = join(tempDir, '.nova', 'config.json');
+      saveProjectConfig({ models: { default: 'gpt-4o', tier: 'paid', agentOverrides: {} } });
+      
       const content = readFileSync(configPath, 'utf-8');
       
       // Should be pretty-printed with 2-space indentation
@@ -542,12 +554,8 @@ describe('Configuration System', () => {
 
   describe('saveUserConfig', () => {
     it('should write config to ~/.nova26/config.json', () => {
-      // Mock home directory
-      const originalHomedir = homedir();
-      // Note: We can't easily mock homedir(), but we can verify the function works
-      
-      const config: Partial<NovaConfig> = {
-        ui: { theme: 'dark' },
+      const config: PartialNovaConfig = {
+        ui: { theme: 'dark', verbose: false },
       };
       
       // Just verify it doesn't throw
@@ -561,34 +569,30 @@ describe('Configuration System', () => {
 
   describe('Integration', () => {
     it('should handle full config stack', () => {
-      process.chdir(tempDir);
-      resetConfig();
-      
-      // 1. Set up user config
-      const userConfig: Partial<NovaConfig> = {
-        models: { default: 'llama3:8b', tier: 'free' },
-        cache: { maxAgeHours: 12 },
-      };
-      // We'll use env var as a proxy for user config priority testing
+      // 1. We'll use env var as a proxy for user config priority testing
       
       // 2. Create project config
       const novaDir = join(tempDir, '.nova');
       mkdirSync(novaDir, { recursive: true });
+      const configPath = join(novaDir, 'config.json');
       writeFileSync(
-        join(novaDir, 'config.json'),
+        configPath,
         JSON.stringify({
-          models: { tier: 'hybrid' },
-          git: { enabled: true },
+          models: { tier: 'hybrid', default: 'qwen2.5:7b', agentOverrides: {} },
+          git: { enabled: true, branchPrefix: 'nova26/', autoCommit: true, autoPR: false },
         }),
         'utf-8'
       );
+      
+      // Use custom config path
+      setProjectConfigPath(configPath);
       
       // 3. Set env vars
       process.env.NOVA26_CACHE_MAX_AGE_HOURS = '48';
       
       // 4. Runtime overrides
-      const overrides: Partial<NovaConfig> = {
-        ollama: { timeout: 60000 },
+      const overrides: PartialNovaConfig = {
+        ollama: { timeout: 60000, host: 'http://localhost:11434' },
       };
       
       const config = getConfig(overrides);
