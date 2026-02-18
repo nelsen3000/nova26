@@ -1,7 +1,11 @@
 {
+  "ollama": {
+    "host": "http://custom:11434",
+    "timeout": 120000
+  },
   "models": {
-    "default": "gpt-4o",
-    "tier": "paid",
+    "default": "qwen2.5:7b",
+    "tier": "free",
     "agentOverrides": {}
   }
 }
