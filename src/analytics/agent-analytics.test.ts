@@ -227,8 +227,8 @@ describe('Agent Analytics', () => {
       recordTaskResult('VENUS', 'task-3', true, 1000, 2000, 0);
       recordTaskResult('VENUS', 'task-4', false, 1000, 2000, 0);
       
-      // Use a description that won't match any agent patterns
-      const rec = getRecommendation('qwertyuiop zxcvbnm asdfghjkl');
+      // Use a description with characters that won't match any agent patterns
+      const rec = getRecommendation('qqqqqqqqq xxxxxxxx pppppppp');
       
       // When no pattern matches, should recommend based on overall success
       expect(rec).toContain('Recommendation');
@@ -246,8 +246,8 @@ describe('Agent Analytics', () => {
     });
 
     it('should handle empty database gracefully', () => {
-      // Use a description that won't match any agent patterns
-      const rec = getRecommendation('qwertyuiop zxcvbnm lkjhgfdsa');
+      // Use a description with characters that won't match any agent patterns
+      const rec = getRecommendation('qqqqqqqqq xxxxxxxx vvvvvvvv');
       
       // When no data exists and no pattern matches
       expect(rec).toContain('No analytics data');
@@ -462,12 +462,14 @@ describe('Agent Analytics', () => {
     });
 
     it('should handle high gate retry counts', () => {
-      recordTaskResult('MARS', 'task-1', true, 1000, 2000, 999);
+      // Use a unique agent to avoid state from previous tests
+      recordTaskResult('HIGHRETRY', 'task-1', true, 1000, 2000, 999);
       
-      const stats = getAgentStats('MARS');
+      const stats = getAgentStats('HIGHRETRY');
+      
       // With 999 retries (not 0), gate pass rate should be 0
-      // Note: SQLite may return 0 or a very small number due to integer division
-      expect(stats.gatePassRate).toBeLessThan(0.5);
+      // The calculation is: tasks with 0 retries / total tasks = 0/1 = 0
+      expect(stats.gatePassRate).toBe(0);
     });
 
     it('should track multiple builds independently', () => {

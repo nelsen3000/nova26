@@ -107,7 +107,7 @@ export function getAgentStats(agent: string): AgentStats {
     successRate: total > 0 ? successes / total : 0,
     avgTokens: Math.round(totalRow?.avg_tokens || 0),
     avgDuration: Math.round(totalRow?.avg_duration || 0),
-    gatePassRate: totalRow?.gate_pass_rate || 1,
+    gatePassRate: total > 0 ? (totalRow?.gate_pass_rate ?? 0) : 1,
     topFailures: topFailures || [],
   };
 }
