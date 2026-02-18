@@ -20,27 +20,34 @@ export class KronosAtlas {
    * Dual-write: logs to file-based builds.json AND ingests into Kronos.
    * File-based write always happens. Kronos ingest is best-effort.
    */
-  async logBuild(log: BuildLog, project: string): Promise<void> {
+  async logBuild(log: BuildLog, project: string, phase: number = 0): Promise<void> {
     // 1. Always write to file-based builds.json
     this.appendToBuildLog(log);
 
     // 2. Best-effort Kronos ingest
-    const isHealthy = await this.kronos.healthCheck();
-    if (!isHealthy) {
-      console.warn('[KronosAtlas] Kronos unavailable — skipping memory ingest');
-      return;
+    try {
+      const isHealthy = await this.kronos.healthCheck();
+      if (!isHealthy) {
+        console.warn('[KronosAtlas] Kronos unavailable — skipping memory ingest');
+        return;
+      }
+
+      const entry: KronosEntry = {
+        project,
+        taskId: log.taskId,
+        agent: log.agent,
+        phase,
+        content: log.response,
+        tags: [log.agent, `phase-${phase}`, log.gatesPassed ? 'gates-passed' : 'gates-failed'],
+      };
+
+      await this.kronos.ingest(entry);
+      const tokenEstimate = Math.ceil(log.response.length / 4);
+      console.log(`[KronosAtlas] Logged build ${log.taskId} (~${tokenEstimate} tokens)`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn(`[KronosAtlas] Kronos ingest failed: ${message}`);
     }
-
-    const entry: KronosEntry = {
-      project,
-      taskId: log.taskId,
-      agent: log.agent,
-      phase: 0,
-      content: log.response,
-      tags: [log.agent, log.gatesPassed ? 'gates-passed' : 'gates-failed'],
-    };
-
-    await this.kronos.ingest(entry);
   }
 
   /** Search Kronos for relevant patterns. Returns empty result if unavailable. */

@@ -4,10 +4,14 @@ import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { pickNextTask, updateTaskStatus, savePRD, setTaskOutput } from './task-picker.js';
 import { buildPrompt, buildRetryPrompt } from './prompt-builder.js';
-import { runGates, allGatesPassed, getGatesSummary, postGateKronosIngest } from './gate-runner.js';
+import { runGates, allGatesPassed, getGatesSummary } from './gate-runner.js';
 import { runCouncilVote, requiresCouncilApproval } from './council-runner.js';
 import { callLLM } from '../llm/ollama-client.js';
-import type { PRD, Task, LLMResponse } from '../types/index.js';
+import { KronosAtlas } from '../atlas/index.js';
+import type { PRD, Task, LLMResponse, BuildLog } from '../types/index.js';
+
+// Singleton KronosAtlas — reused across all loop iterations
+const atlas = new KronosAtlas();
 
 export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
   console.log('Starting Ralph Loop...');
@@ -152,9 +156,20 @@ export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
         }
       }
       
-      // Kronos memory ingest (best-effort, never blocks the loop)
+      // Dual-write: file-based builds.json + Kronos ingest (best-effort)
       const projectName = prd.meta?.name || 'nova26';
-      await postGateKronosIngest(task, response.content, projectName);
+      const buildLog: BuildLog = {
+        id: `${task.id}-${Date.now()}`,
+        taskId: task.id,
+        agent: task.agent,
+        model: response.model,
+        prompt: '',
+        response: response.content,
+        gatesPassed: true,
+        duration: response.duration,
+        timestamp: new Date().toISOString(),
+      };
+      await atlas.logBuild(buildLog, projectName, task.phase);
 
       // Save output
       const outputPath = await saveTaskOutput(task, response);

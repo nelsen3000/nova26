@@ -1,6 +1,8 @@
 // Kronos HTTP Client - Wraps the Kronos REST API (port 8765)
 // All methods gracefully degrade: if Kronos is unreachable, log a warning and continue.
 
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
 import type { KronosEntry, KronosPointer, KronosSearchResult } from './types.js';
 
 const KRONOS_BASE_URL = 'http://localhost:8765';
@@ -52,14 +54,38 @@ export class KronosClient {
     this.baseUrl = baseUrl;
   }
 
-  /** POST task output to Kronos after a successful gate pass. */
+  /**
+   * POST task output to Kronos after a successful gate pass.
+   * Writes content to .nova/kronos/{taskId}.md then calls Kronos /ingest
+   * with the directory path (Kronos ingests from the filesystem).
+   */
   async ingest(entry: KronosEntry): Promise<void> {
     try {
+      // Kronos /ingest expects a filesystem path, not raw content.
+      // Write the task output to a staging directory for Kronos to index.
+      const kronosDir = join(process.cwd(), '.nova', 'kronos', entry.project);
+      if (!existsSync(kronosDir)) {
+        mkdirSync(kronosDir, { recursive: true });
+      }
+
+      const filePath = join(kronosDir, `${entry.taskId}.md`);
+      const fileContent = [
+        `# ${entry.taskId}`,
+        `agent: ${entry.agent}`,
+        `phase: ${entry.phase}`,
+        `tags: ${entry.tags.join(', ')}`,
+        '',
+        '---',
+        '',
+        entry.content,
+      ].join('\n');
+      writeFileSync(filePath, fileContent);
+
       const response = await this.fetchWithTimeout(`${this.baseUrl}/ingest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          path: entry.content,
+          path: kronosDir,
           recursive: false,
         }),
       });
