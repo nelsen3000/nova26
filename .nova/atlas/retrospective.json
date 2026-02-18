@@ -1,28 +1,28 @@
 {
-  "generatedAt": "2026-02-18T04:45:08.151Z",
+  "generatedAt": "2026-02-18T05:08:25.429Z",
   "project": "Integration Test PRD",
-  "totalBuilds": 4,
+  "totalBuilds": 10,
   "agentStats": [
     {
       "agent": "EARTH",
-      "totalTasks": 2,
-      "passedTasks": 2,
+      "totalTasks": 4,
+      "passedTasks": 4,
       "failedTasks": 0,
       "successRate": 1,
       "avgDuration": 50
     },
     {
       "agent": "PLUTO",
-      "totalTasks": 1,
-      "passedTasks": 1,
+      "totalTasks": 3,
+      "passedTasks": 3,
       "failedTasks": 0,
       "successRate": 1,
       "avgDuration": 50
     },
     {
       "agent": "MERCURY",
-      "totalTasks": 1,
-      "passedTasks": 1,
+      "totalTasks": 3,
+      "passedTasks": 3,
       "failedTasks": 0,
       "successRate": 1,
       "avgDuration": 50
@@ -31,10 +31,24 @@
   "effectivePatterns": [
     {
       "name": "EARTH consistent success",
-      "description": "EARTH has passed gates 2 times consistently",
+      "description": "EARTH has passed gates 4 times consistently",
       "agent": "EARTH",
-      "occurrences": 2,
-      "lastSeen": "2026-02-18T04:45:08.113Z"
+      "occurrences": 4,
+      "lastSeen": "2026-02-18T05:08:25.386Z"
+    },
+    {
+      "name": "PLUTO consistent success",
+      "description": "PLUTO has passed gates 3 times consistently",
+      "agent": "PLUTO",
+      "occurrences": 3,
+      "lastSeen": "2026-02-18T05:08:25.405Z"
+    },
+    {
+      "name": "MERCURY consistent success",
+      "description": "MERCURY has passed gates 3 times consistently",
+      "agent": "MERCURY",
+      "occurrences": 3,
+      "lastSeen": "2026-02-18T05:08:25.423Z"
     }
   ],
   "failurePatterns": [],
