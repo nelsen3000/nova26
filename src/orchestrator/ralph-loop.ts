@@ -8,6 +8,7 @@ import { runGates, allGatesPassed, getGatesSummary } from './gate-runner.js';
 import { runCouncilVote, requiresCouncilApproval } from './council-runner.js';
 import { callLLM } from '../llm/ollama-client.js';
 import { KronosAtlas, KronosRetrospective } from '../atlas/index.js';
+import type { LogBuildOptions } from '../atlas/index.js';
 import type { PRD, Task, LLMResponse, BuildLog } from '../types/index.js';
 
 // Singleton instances — reused across all loop iterations
@@ -157,7 +158,7 @@ export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
         }
       }
       
-      // Dual-write: file-based builds.json + Kronos ingest (best-effort)
+      // Triple-write: local builds.json + Kronos + Convex cloud (best-effort)
       const projectName = prd.meta?.name || 'nova26';
       const buildLog: BuildLog = {
         id: `${task.id}-${Date.now()}`,
@@ -170,7 +171,13 @@ export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
         duration: response.duration,
         timestamp: new Date().toISOString(),
       };
-      await atlas.logBuild(buildLog, projectName, task.phase);
+      const convexOptions: LogBuildOptions = {
+        prdId: prdPath,
+        prdName: projectName,
+        taskTitle: task.title,
+        phase: task.phase,
+      };
+      await atlas.logBuild(buildLog, projectName, task.phase, convexOptions);
 
       // Save output
       const outputPath = await saveTaskOutput(task, response);
@@ -189,6 +196,17 @@ export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
     }
   }
   
+  // Mark build completion in Convex cloud (best-effort)
+  try {
+    const allDone = prd.tasks.every(t => t.status === 'done');
+    const finalStatus = allDone ? 'completed' as const : 'failed' as const;
+    const failedTasks = prd.tasks.filter(t => t.status === 'failed').map(t => t.id);
+    const errorMsg = failedTasks.length > 0 ? `Failed tasks: ${failedTasks.join(', ')}` : undefined;
+    await atlas.completeBuild(prdPath, finalStatus, errorMsg);
+  } catch {
+    // Convex completion is optional — never block loop
+  }
+
   // Phase 3: ATLAS retrospective after loop completes (best-effort)
   try {
     const projectName = prd.meta?.name || 'nova26';

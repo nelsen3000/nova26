@@ -15,12 +15,12 @@
    - Consensus types: unanimous, majority, split, deadlock
    - Integrated into Ralph Loop for Phase 1-2 tasks
 
-### Claude - Kronos Integration All 3 Phases Complete (2026-02-18)
+### Claude - Kronos + Convex Integration Complete (2026-02-18)
 
 **Phase 1 — Sidecar (zero risk):**
 1. `src/atlas/types.ts` — KronosEntry, KronosPointer, KronosSearchResult
 2. `src/atlas/kronos-client.ts` — HTTP client wrapping Kronos REST API (port 8765)
-3. `src/atlas/index.ts` — KronosAtlas dual-write layer (builds.json + Kronos)
+3. `src/atlas/index.ts` — KronosAtlas triple-write layer (builds.json + Kronos + Convex)
 4. `scripts/start-with-kronos.sh` — Startup script with server detection
 5. Wired into `ralph-loop.ts` via `KronosAtlas.logBuild()` after gate pass
 
@@ -35,10 +35,20 @@
 11. Computes agent stats, effective/failure patterns, recommendations
 12. `generateBriefing()` — pre-task briefings with agent track record + Kronos patterns
 
-**All Kronos calls gracefully degrade.** No new npm dependencies (native `fetch`).
+**Phase 4 — Convex cloud redundancy (triple-write):**
+13. `convex/atlas.ts` — Convex server mutations/queries (logExecution, completeBuild, logLearning, getBuildStatus, getAgentExecutions, getLearnings)
+14. `src/atlas/convex-client.ts` — ConvexAtlasClient with graceful degradation (disabled if CONVEX_URL not set)
+15. `src/atlas/index.ts` — Upgraded KronosAtlas from dual-write to triple-write
+16. `ralph-loop.ts` — Passes LogBuildOptions for Convex sync, calls `atlas.completeBuild()` after loop ends
+
+**All external calls (Kronos, Convex) gracefully degrade.** No new npm dependencies (native `fetch`).
 
 **Kronos dependency:** https://github.com/Ja1Denis/Kronos (Python, port 8765)
 - Provides: pointer-based RAG, hybrid search (SQLite FTS5 + ChromaDB), knowledge graph
+- Nova26 works fine without it — completely optional
+
+**Convex dependency:** Set `CONVEX_URL` env var to enable cloud sync
+- Provides: cloud-hosted builds/tasks/executions/learnings database
 - Nova26 works fine without it — completely optional
 
 ## Recent Changes
@@ -53,6 +63,7 @@
 | 2026-02-18 | Both | Merged council + Kronos into unified branch |
 | 2026-02-18 | Claude | Phase 2: Kronos semantic context in prompt-builder.ts |
 | 2026-02-18 | Claude | Phase 3: ATLAS retrospective engine + auto-run after loop |
+| 2026-02-18 | Claude | Phase 4: Convex cloud triple-write (local + Kronos + Convex) |
 
 ## Files Structure
 
@@ -65,10 +76,11 @@ src/
 │   ├── prompt-builder.ts  # Prompt generation + Kronos context (Phase 2)
 │   ├── agent-loader.ts    # Agent loading
 │   └── gate-runner.ts     # Quality gates
-├── atlas/                 # Kronos integration (Claude)
+├── atlas/                 # Kronos + Convex integration (Claude)
 │   ├── types.ts           # KronosEntry, KronosPointer, KronosSearchResult
 │   ├── kronos-client.ts   # HTTP client for Kronos REST API
-│   ├── index.ts           # KronosAtlas dual-write layer
+│   ├── convex-client.ts   # Convex cloud HTTP client
+│   ├── index.ts           # KronosAtlas triple-write layer
 │   └── retrospective.ts  # ATLAS retrospective engine (Phase 3)
 ├── llm/
 │   └── ollama-client.ts   # Ollama LLM client
@@ -92,7 +104,7 @@ scripts/
 
 - **Shared files:** Both agents modified `ralph-loop.ts` and `gate-runner.ts`. Claude's changes add Kronos ingest calls after gates pass. MiniMax's council integration also hooks into ralph-loop. Both should merge cleanly since they touch different sections.
 - **Claude's Kronos client** never throws — all methods return safe defaults on failure, so MiniMax's council flow is unaffected.
-- **Full Ralph Loop flow:** Kronos prompt context -> LLM call -> gates -> council -> dual-write (builds.json + Kronos) -> save output -> (after loop) ATLAS retrospective.
+- **Full Ralph Loop flow:** Kronos prompt context -> LLM call -> gates -> council -> triple-write (builds.json + Kronos + Convex) -> save output -> completeBuild (Convex) -> ATLAS retrospective.
 - **Testing:** Run `npx tsx src/test/mock-run.ts` to verify the loop still works after merging both agents' changes.
 
 ## Next Steps Ideas
@@ -100,6 +112,6 @@ scripts/
 - [ ] Live LLM test with Ollama
 - [ ] Expand council members
 - [ ] Add more quality gates
-- [ ] Convex database integration
+- [x] Convex database integration (triple-write: local + Kronos + Convex)
 - [x] Kronos Phase 2 — Kronos semantic context injected into prompt-builder.ts
 - [x] Kronos Phase 3 — ATLAS retrospective engine with pattern analysis
