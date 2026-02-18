@@ -105,9 +105,18 @@ export const extendedSlashCommands = {
       const taskArgs = args.filter(a => a !== '--full');
       const task = taskArgs.join(' ');
       
-      if (!task) {
+      if (!task || task.trim().length === 0) {
+        console.log('❌ Error: Task description required');
         console.log('Usage: /swarm [--full] "task description"');
         console.log('  --full: Activate all 21 agents');
+        console.log('Example: /swarm "Build a user dashboard with charts"');
+        console.log('Example: /swarm --full "Redesign the entire authentication system"');
+        return;
+      }
+      
+      if (task.length < 10) {
+        console.log('❌ Error: Task description too short (min 10 characters)');
+        console.log('Please provide a more detailed description of what you want to build.');
         return;
       }
       
@@ -124,8 +133,28 @@ export const extendedSlashCommands = {
     description: 'Analyze project dependencies and architecture',
     usage: '/dependencies [path]',
     handler: async (args: string[]) => {
-      const path = args[0] || process.cwd();
-      await analyzeDependencies(path);
+      let targetPath = args[0] || process.cwd();
+      
+      // Validate path
+      if (targetPath.includes('..')) {
+        console.log('❌ Error: Invalid path');
+        console.log('Path cannot contain ".."');
+        return;
+      }
+      
+      // Resolve relative paths
+      if (!targetPath.startsWith('/')) {
+        targetPath = join(process.cwd(), targetPath);
+      }
+      
+      // Check path exists
+      const fs = await import('fs');
+      if (!fs.existsSync(targetPath)) {
+        console.log(`❌ Error: Path does not exist: ${targetPath}`);
+        return;
+      }
+      
+      await analyzeDependencies(targetPath);
     }
   },
 
@@ -418,16 +447,42 @@ export const extendedSlashCommands = {
     usage: '/decompose "task title" "task description" [agent]',
     handler: async (args: string[]) => {
       if (args.length < 2) {
+        console.log('❌ Error: Task title and description required');
         console.log('Usage: /decompose "task title" "task description" [agent]');
-        console.log('Example: /decompose "Build payment system" "Integrate Stripe" MARS');
+        console.log('Example: /decompose "Build payment system" "Integrate Stripe payment processing" MARS');
+        console.log('\nValid agents: SUN, EARTH, MARS, VENUS, PLUTO, MERCURY, SATURN, JUPITER, etc.');
         return;
       }
       
       const title = args[0];
       const description = args[1];
-      const agent = args[2] || 'MARS';
+      const agent = (args[2] || 'MARS').toUpperCase();
+      
+      // Validate agent name
+      const validAgents = ['SUN', 'EARTH', 'MARS', 'VENUS', 'PLUTO', 'MERCURY', 'SATURN', 
+                          'JUPITER', 'TITAN', 'EUROPA', 'CHARON', 'NEPTUNE', 'ATLAS', 
+                          'URANUS', 'TRITON', 'ENCELADUS', 'GANYMEDE', 'IO', 'MIMAS', 
+                          'CALLISTO', 'ANDROMEDA'];
+      
+      if (!validAgents.includes(agent)) {
+        console.log(`❌ Error: Invalid agent "${agent}"`);
+        console.log('Valid agents: ' + validAgents.join(', '));
+        return;
+      }
+      
+      // Validate title and description length
+      if (title.length < 3) {
+        console.log('❌ Error: Task title too short (min 3 characters)');
+        return;
+      }
+      
+      if (description.length < 10) {
+        console.log('❌ Error: Task description too short (min 10 characters)');
+        return;
+      }
       
       // Check if decomposition is needed
+      const { analyzeComplexity, shouldDecompose, decomposeTask, formatDecomposition } = await import('../orchestrator/task-decomposer.js');
       const complexity = analyzeComplexity(title, description);
       console.log(`\n📊 Complexity Analysis:`);
       console.log(`  Risk Level: ${complexity.riskLevel}`);
