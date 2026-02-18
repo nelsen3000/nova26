@@ -3,6 +3,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { cmdWatch } from './cli/watch.js';
+import { cmdInit } from './cli/init.js';
 
 // Ensure .nova directory exists
 const novaDir = join(process.cwd(), '.nova');
@@ -158,6 +159,7 @@ Usage:
   nova26 run <prd-file>       Run PRD tasks
   nova26 watch <prd-file>     Watch src/ for changes and auto-rebuild
   nova26 generate <desc>      Generate PRD using SUN agent
+  nova26 init [options]       Initialize NOVA26 project
   nova26 -h, --help           Show this help
 
 Examples:
@@ -166,6 +168,8 @@ Examples:
   nova26 run .nova/prd-test.json
   nova26 watch .nova/prd-test.json
   nova26 generate "Build a task management app"
+  nova26 init                 # Interactive setup
+  nova26 init --yes           # Non-interactive setup
 `);
 }
 
@@ -224,6 +228,10 @@ async function main(): Promise<void> {
         process.exit(1);
       }
       await cmdWatch(args[1]);
+      break;
+      
+    case 'init':
+      await cmdInit(args.slice(1));
       break;
       
     case '-h':
