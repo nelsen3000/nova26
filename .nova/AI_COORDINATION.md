@@ -730,3 +730,205 @@ Add VENUS hard limits for:
 - VENUS.md and hard-limits.json are in .nova/ — Kimi's territory
 - Use the existing stack: React 19, Tailwind CSS, shadcn/ui, TypeScript
 - Reference the monday.com screenshot at `.nova/reference-monday-homepage.jpeg`
+
+---
+
+## Phase 5: BistroLens Knowledge Extraction → Nova26 Adaptation (Kimi — 2026-02-18)
+
+**Status:** 🔄 ASSIGNED — WAITING FOR KIMI
+**Owner:** Kimi
+**Scope:** Extract patterns from BistroLens and adapt them for Nova26's agent system
+
+**BistroLens Location:** `/Users/jonathannelsen/bistrolens-2`
+**Output Location:** `/Users/jonathannelsen/nova26/.nova/bistrolens-knowledge/`
+
+> **IMPORTANT:** Kiro is running a parallel extraction on the SAME BistroLens codebase doing raw documentation. YOUR job is different — you EXTRACT and ADAPT patterns specifically for Nova26. You write to the `17-nova26-adaptations/` subfolder AND the relevant category folders. Do NOT just document BistroLens — transform every finding into something Nova26 can use.
+
+### What You're Looking For
+
+Read every file listed below in BistroLens. For each valuable pattern, ask: "How does this apply to Nova26's 21-agent system?" Then write the adaptation.
+
+### Priority 1: Steering File System → Nova26 Agent Steering
+
+**Read these files:**
+```
+.kiro/steering/README-STEERING-USAGE.md
+.kiro/steering/00-KIRO-MASTER-PROMPT.md
+```
+
+**What to extract and adapt:**
+- BistroLens uses a steering file system with inclusion patterns (always/fileMatch/manual), priority levels, and context management. Nova26 has 21 agent .md files but NO steering system.
+- **ADAPT:** Create a steering architecture for Nova26. How should agent templates be loaded? Which agents get always-included context vs. on-demand? How do we prevent context bloat when loading 21 agents?
+- **Output to:** `02-steering-system/nova26-steering-architecture.md` AND `17-nova26-adaptations/steering-system.md`
+
+### Priority 2: Security Architecture → Nova26 Agent Security
+
+**Read these files:**
+```
+.kiro/steering/29-SECURITY-STEERING.md
+.kiro/steering/39-AUTHENTICATION-AUTHORIZATION.md
+utils/advancedRateLimiter.ts
+utils/dataEncryption.ts
+utils/contentSafety.ts
+utils/ddosProtection.ts
+api/waf-middleware.ts
+scripts/enhanced-rls-policies.sql
+```
+
+**What to extract and adapt:**
+- BistroLens has layered security: rate limiting, encryption, WAF, RLS, content safety, bot detection. Nova26's ENCELADUS agent handles security but has no enforcement layer.
+- **ADAPT:** Create security enforcement for Nova26's agent outputs. How should ENCELADUS validate that MARS/VENUS/GANYMEDE outputs don't introduce vulnerabilities? Rate limiting for LLM calls? Content safety for generated code?
+- **Output to:** `01-security/nova26-security-enforcement.md` AND `17-nova26-adaptations/security-patterns.md`
+
+### Priority 3: Quality Gates & Hooks → Nova26 Gate System
+
+**Read these files:**
+```
+.kiro/hooks/pre-commit-quality.json
+.kiro/hooks/security-scan.json
+.kiro/hooks/accessibility-audit.json
+.kiro/hooks/performance-check.json
+.kiro/hooks/api-cost-monitor.json
+.kiro/hooks/test-runner.json
+.kiro/hooks/release-checklist.json
+.kiro/hooks/i18n-string-check.json
+.kiro/hooks/documentation-sync.json
+```
+
+**What to extract and adapt:**
+- BistroLens has 9 automated hooks that trigger on different events (pre-commit, save, release). Nova26 has `gate-runner.ts` with 4 gates (response-validation, mercury-validator, hard-limits, schema-validation).
+- **ADAPT:** Design new gates for Nova26 inspired by BistroLens hooks. Which of their 9 hooks translate to Nova26 gates? Create specs for: accessibility gate, performance gate, security scan gate, i18n gate, documentation gate, cost monitor gate.
+- **Output to:** `03-quality-gates/nova26-expanded-gates.md` AND `17-nova26-adaptations/quality-gates.md`
+
+### Priority 4: Image Governance → Nova26 Asset Governance
+
+**Read these files:**
+```
+.kiro/steering/04-IMAGE-SYSTEM-MASTER.md
+.kiro/steering/30-IMAGE-GENERATION-GOVERNANCE.md
+.kiro/steering/35-IMAGE-GOVERNANCE-ENFORCEMENT.md
+.kiro/steering/36-IMAGE-SYSTEM-RED-LINES.md
+.kiro/steering/37-IMAGE-DATASET-ABSOLUTE-NO.md
+```
+
+**What to extract and adapt:**
+- BistroLens has comprehensive image governance: policies, red lines, kill switches, admin approval, deduplication, quality scoring. Nova26 generates CODE not images, but the governance MODEL is valuable.
+- **ADAPT:** Create a "Code Generation Governance" system for Nova26 modeled after BistroLens image governance. Red lines for generated code (no secrets, no eval, no SQL injection). Quality scoring for outputs. Kill switch if agents produce dangerous code. Deduplication of generated patterns.
+- **Output to:** `04-image-governance/nova26-code-governance.md` AND `17-nova26-adaptations/code-governance.md`
+
+### Priority 5: API Cost Protection → Nova26 LLM Cost Protection
+
+**Read these files:**
+```
+.kiro/steering/31-API-COST-PROTECTION.md
+api/rateLimiter.ts
+```
+
+**What to extract and adapt:**
+- BistroLens tracks API costs per user with daily/monthly limits, caching, circuit breakers. Nova26 has `model-router.ts` with tier selection but NO cost tracking or limits.
+- **ADAPT:** Design cost protection for Nova26's LLM calls. Per-build budgets, per-agent token limits, circuit breaker if costs exceed threshold, cache-first for repeated prompts.
+- **Output to:** `06-api-cost-protection/nova26-cost-protection.md` AND `17-nova26-adaptations/cost-protection.md`
+
+### Priority 6: Spec-Driven Development → Nova26 PRD Enhancement
+
+**Read these spec directories (read the requirements.md, design.md, tasks.md in each):**
+```
+.kiro/specs/stripe-integration-hardening/
+.kiro/specs/ui-ux-elevation/
+.kiro/specs/daily-cooking-prompt/
+.kiro/specs/recipe-pdf-landscape/
+```
+
+**What to extract and adapt:**
+- BistroLens uses structured specs with requirements → design → tasks breakdown. Nova26 has PRD files but they're flat task lists with no design phase.
+- **ADAPT:** Enhance Nova26's PRD format to include a design phase between requirements and tasks. Add acceptance criteria format. Add user story templates.
+- **Output to:** `17-nova26-adaptations/enhanced-prd-format.md`
+
+### Priority 7: Database Patterns → Nova26 Convex Patterns
+
+**Read these files:**
+```
+.kiro/steering/38-CONVEX-DATABASE-PATTERNS.md
+convex/schema.ts
+convex/auth.ts
+scripts/enhanced-rls-policies.sql
+```
+
+**What to extract and adapt:**
+- Both projects use Convex. Extract BistroLens's Convex best practices and compare against Nova26's PLUTO agent patterns.
+- **ADAPT:** Update PLUTO's constraints or style guide with any BistroLens Convex patterns we're missing.
+- **Output to:** `05-database-patterns/nova26-convex-improvements.md` AND `17-nova26-adaptations/convex-patterns.md`
+
+### Priority 8: Error Handling + Accessibility + Testing
+
+**Read these files:**
+```
+.kiro/steering/48-ERROR-HANDLING-UX.md
+.kiro/steering/50-ACCESSIBILITY-WCAG-COMPLIANCE.md
+.kiro/steering/01-QA-TEST-SUITE.md
+.kiro/steering/33-CODE-QUALITY-STANDARDS.md
+.kiro/testing/TESTPLAN.md
+```
+
+**What to extract and adapt:**
+- BistroLens has detailed error UX patterns, WCAG compliance rules, and a structured test plan. Nova26's visual-validator checks some accessibility but is thin.
+- **ADAPT:** Enhance Nova26's `visual-validator.ts` checks based on BistroLens's WCAG patterns. Create a test plan template for Nova26 builds. Add error handling patterns to CHARON agent.
+- **Output to:** `09-error-handling/nova26-error-patterns.md`, `08-design-system/nova26-accessibility-rules.md`, `07-testing-strategies/nova26-test-plan.md` AND `17-nova26-adaptations/` for each
+
+### Priority 9: AI Prompt Engineering + Content Safety
+
+**Read these files:**
+```
+.kiro/steering/40-AI-PROMPT-ENGINEERING.md
+.kiro/steering/42-RECIPE-GENERATION-RULES.md
+.kiro/prompts/GEMINI_IMAGE_GENERATION_SUB_PROMPT.md
+utils/contentSafety.ts
+```
+
+**What to extract and adapt:**
+- BistroLens has structured prompt engineering patterns, sub-prompt delegation, and content safety validation.
+- **ADAPT:** Improve Nova26's `prompt-builder.ts` with BistroLens's prompt structuring techniques. Add content safety validation to generated code outputs.
+- **Output to:** `15-ai-prompts/nova26-prompt-improvements.md` AND `17-nova26-adaptations/prompt-engineering.md`
+
+### Priority 10: Everything Else of Value
+
+**Read these files for any remaining patterns:**
+```
+.kiro/steering/32-INTERNATIONALIZATION.md
+.kiro/steering/34-BRAND-VOICE-UX.md
+.kiro/steering/41-SUBSCRIPTION-TIER-ENFORCEMENT.md
+.kiro/steering/44-SOCIAL-FEATURES-MODERATION.md
+.kiro/steering/45-AFFILIATE-PROGRAM-RULES.md
+.kiro/steering/46-PWA-OFFLINE-BEHAVIOR.md
+.kiro/steering/47-ANALYTICS-TRACKING-POLICY.md
+.kiro/steering/49-DEPLOYMENT-RELEASE-PROCESS.md
+.kiro/steering/52-SEO-EDITORIAL-PROMOTION.md
+.kiro/steering/99-DOCUMENTATION-UPDATES.md
+docs/PRODUCTION_DEPLOYMENT_CHECKLIST.md
+docs/SENTRY_MONITORING_SETUP.md
+```
+
+**For each file:** If ANY pattern could improve Nova26 (even tangentially), write an adaptation note. If a pattern is irrelevant to an AI agent IDE (e.g., recipe-specific rules), skip it. But patterns like tier enforcement, analytics tracking, deployment checklists, and documentation automation are universally valuable.
+
+**Output to:** Appropriate category folder + `17-nova26-adaptations/misc-patterns.md`
+
+### Output Format for Each Pattern
+
+```markdown
+## Pattern: [Name]
+**Source:** [BistroLens file path]
+**Category:** [Security/Gates/Steering/etc.]
+**BistroLens Implementation:** [Brief description of how BistroLens does it]
+**Nova26 Adaptation:** [Specific changes to make in Nova26]
+**Files to Modify:** [Which Nova26 files this affects]
+**Priority:** [P1-P3]
+**Reusability:** [1-10 score]
+```
+
+### Rules
+- Read from `/Users/jonathannelsen/bistrolens-2` — DO NOT modify BistroLens files
+- Write ALL output to `/Users/jonathannelsen/nova26/.nova/bistrolens-knowledge/`
+- Focus on ADAPTATION not documentation — Kiro handles raw docs
+- Every pattern must have a concrete "Files to Modify" section pointing to Nova26 files
+- If a BistroLens pattern is already implemented in Nova26, note it as "ALREADY COVERED" and move on
+- Aim for 30+ adapted patterns minimum
