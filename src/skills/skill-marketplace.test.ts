@@ -297,20 +297,31 @@ describe('skill-marketplace', () => {
       const mockSkill = {
         id: 'skill-1',
         name: 'Test Skill',
+        description: 'A test skill',
+        version: '1.0.0',
+        author: 'test',
+        domain: 'test',
+        tags: ['test'],
+        agents: ['MARS'],
+        complexity: 'beginner' as const,
+        content: 'content',
+        examples: [],
         downloads: 5,
         rating: 4.5,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
-      
+
       vi.mocked(readFileSync).mockReturnValue(JSON.stringify({
         version: '1.0.0',
         skills: [mockSkill],
         categories: [],
       }));
       vi.mocked(existsSync).mockReturnValue(false);
-      
+
       const { downloadSkill } = await import('./skill-marketplace.js');
       downloadSkill('skill-1');
-      
+
       // Registry should be updated with incremented download count
       expect(writeFileSync).toHaveBeenCalled();
     });
@@ -437,7 +448,23 @@ describe('skill-marketplace', () => {
       vi.mocked(readFileSync).mockReturnValue(JSON.stringify({
         version: '1.0.0',
         skills: [
-          { id: '1', name: 'React', description: 'React patterns', domain: 'frontend', downloads: 100, rating: 4.5 },
+          {
+            id: '1',
+            name: 'React',
+            description: 'React patterns',
+            domain: 'frontend',
+            tags: ['react', 'frontend'],
+            agents: ['VENUS'],
+            complexity: 'intermediate',
+            content: 'React skill content',
+            examples: ['Example 1'],
+            downloads: 100,
+            rating: 4.5,
+            version: '1.0.0',
+            author: 'test-author',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
         ],
         categories: ['frontend'],
       }));

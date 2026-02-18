@@ -2,10 +2,11 @@
 // Additional commands beyond the basic set
 
 import { execSync } from 'child_process';
+import { join } from 'path';
 import { quickSwarm, fullSwarm } from '../swarm/swarm-mode.js';
 import { analyzeDependencies } from '../dependency-analysis/analyzer.js';
 import { handleMarketplaceCommand } from '../skills/skill-marketplace.js';
-import { decomposeTask, formatDecomposition, shouldDecompose, analyzeComplexity } from '../orchestrator/task-decomposer.js';
+import type { } from '../orchestrator/task-decomposer.js';
 
 export const extendedSlashCommands = {
   // Debug & Development

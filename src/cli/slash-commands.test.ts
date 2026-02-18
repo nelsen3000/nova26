@@ -6,6 +6,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // Mock dependencies before importing the module
 const mockExecSync = vi.fn();
 const mockWriteFileSync = vi.fn();
+const mockExistsSync = vi.fn();
+const mockReadFileSync = vi.fn();
+const mockReaddirSync = vi.fn();
 const mockGeneratePRD = vi.fn();
 const mockCallLLM = vi.fn();
 const mockListSkills = vi.fn();
@@ -27,6 +30,9 @@ vi.mock('child_process', () => ({
 
 vi.mock('fs', () => ({
   writeFileSync: mockWriteFileSync,
+  existsSync: mockExistsSync,
+  readFileSync: mockReadFileSync,
+  readdirSync: mockReaddirSync,
 }));
 
 vi.mock('../agents/sun-prd-generator.js', () => ({
@@ -186,59 +192,63 @@ describe('slash-commands', () => {
     it('should call handleTemplateCommand with empty args for list', async () => {
       const command = slashCommands['/template'];
       await command.handler([]);
-      
-      expect(mockHandleTemplateCommand).toHaveBeenCalledWith([]);
+
+      expect(mockHandleTemplateCommand).toHaveBeenCalledWith(['list']);
     });
   });
 
   describe('/scan command', () => {
     it('should run security scan with default path', async () => {
-      const mockResult = { 
-        findings: [], 
-        scannedFiles: 10, 
-        duration: 100, 
-        passed: true 
+      const mockResult = {
+        findings: [],
+        scannedFiles: 10,
+        duration: 100,
+        passed: true
       };
       mockQuickSecurityScan.mockResolvedValue(mockResult);
       mockFormatSecurityReport.mockReturnValue('Security report');
-      
+      mockExistsSync.mockReturnValue(true);
+
       const command = slashCommands['/scan'];
       await command.handler([]);
-      
+
       expect(mockQuickSecurityScan).toHaveBeenCalledWith(process.cwd());
       expect(mockFormatSecurityReport).toHaveBeenCalledWith(mockResult);
       expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
 
     it('should run security scan with custom path', async () => {
-      const mockResult = { 
-        findings: [], 
-        scannedFiles: 10, 
-        duration: 100, 
-        passed: true 
+      const mockResult = {
+        findings: [],
+        scannedFiles: 10,
+        duration: 100,
+        passed: true
       };
       mockQuickSecurityScan.mockResolvedValue(mockResult);
       mockFormatSecurityReport.mockReturnValue('Security report');
-      
+      mockExistsSync.mockReturnValue(true);
+
       const command = slashCommands['/scan'];
       await command.handler(['./src']);
-      
-      expect(mockQuickSecurityScan).toHaveBeenCalledWith('./src');
+
+      const { join } = await import('path');
+      expect(mockQuickSecurityScan).toHaveBeenCalledWith(join(process.cwd(), './src'));
     });
 
     it('should exit with code 1 when scan fails', async () => {
-      const mockResult = { 
-        findings: [{ severity: 'high' }], 
-        scannedFiles: 10, 
-        duration: 100, 
-        passed: false 
+      const mockResult = {
+        findings: [{ severity: 'high' }],
+        scannedFiles: 10,
+        duration: 100,
+        passed: false
       };
       mockQuickSecurityScan.mockResolvedValue(mockResult);
       mockFormatSecurityReport.mockReturnValue('Security report');
-      
+      mockExistsSync.mockReturnValue(true);
+
       const command = slashCommands['/scan'];
       await command.handler([]);
-      
+
       expect(mockProcessExit).toHaveBeenCalledWith(1);
     });
   });

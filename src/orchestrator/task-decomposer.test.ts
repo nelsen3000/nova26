@@ -267,17 +267,25 @@ describe('task-decomposer', () => {
 
     it('should return subtask whose dependencies are completed', () => {
       const decomposition = decomposeTask('task-17', 'Complex', 'API integration', 'MARS');
-      
+
       // Find a subtask with dependencies
       const subtaskWithDeps = decomposition.subtasks.find(s => s.dependencies.length > 0);
-      
+
       if (subtaskWithDeps) {
         // Complete its dependencies
         for (const depId of subtaskWithDeps.dependencies) {
           const dep = decomposition.subtasks.find(s => s.id === depId);
           if (dep) dep.status = 'completed';
         }
-        
+
+        // Also mark all other pending subtasks without dependencies as completed
+        // so they don't get returned first
+        for (const subtask of decomposition.subtasks) {
+          if (subtask.id !== subtaskWithDeps.id && subtask.dependencies.length === 0 && subtask.status === 'pending') {
+            subtask.status = 'completed';
+          }
+        }
+
         const next = getNextSubtask(decomposition);
         expect(next?.id).toBe(subtaskWithDeps.id);
       }
