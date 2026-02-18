@@ -2,20 +2,21 @@
 
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { pickNextTask, updateTaskStatus, savePRD, setTaskOutput } from './task-picker.js';
+import { pickNextTask, updateTaskStatus, savePRD, setTaskOutput, promotePendingTasks } from './task-picker.js';
 import { buildPrompt, buildRetryPrompt } from './prompt-builder.js';
 import { runGates, allGatesPassed, getGatesSummary } from './gate-runner.js';
 import { runCouncilVote, requiresCouncilApproval } from './council-runner.js';
 import { callLLM } from '../llm/ollama-client.js';
 import { KronosAtlas, KronosRetrospective } from '../atlas/index.js';
 import type { LogBuildOptions } from '../atlas/index.js';
-import type { PRD, Task, LLMResponse, BuildLog } from '../types/index.js';
+import type { PRD, Task, LLMResponse, BuildLog, LLMCaller } from '../types/index.js';
 
 // Singleton instances — reused across all loop iterations
 const atlas = new KronosAtlas();
 const retrospective = new KronosRetrospective();
 
-export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
+export async function ralphLoop(prd: PRD, prdPath: string, llmCaller?: LLMCaller): Promise<void> {
+  const llm = llmCaller || callLLM;
   console.log('Starting Ralph Loop...');
   
   let maxIterations = prd.tasks.length * 3; // Prevent infinite loops
@@ -24,6 +25,13 @@ export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
   while (iteration < maxIterations) {
     iteration++;
     
+    // Promote pending tasks whose dependencies are now met
+    const promoted = promotePendingTasks(prd);
+    if (promoted > 0) {
+      console.log(`Promoted ${promoted} pending task(s) to ready`);
+      savePRD(prd, prdPath);
+    }
+
     // Pick next task
     const task = pickNextTask(prd);
     
@@ -89,7 +97,7 @@ export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
       let response: LLMResponse;
       
       try {
-        response = await callLLM(systemPrompt, userPrompt, task.agent);
+        response = await llm(systemPrompt, userPrompt, task.agent);
       } catch (llmError: any) {
         // If first attempt fails, don't retry
         console.log(`LLM call failed: ${llmError.message}`);
@@ -114,7 +122,7 @@ export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
           const retryPrompt = buildRetryPrompt(task, getGatesSummary(gateResults), response.content);
           
           try {
-            response = await callLLM(systemPrompt, retryPrompt, task.agent);
+            response = await llm(systemPrompt, retryPrompt, task.agent);
           } catch {
             // Retry failed too
             const failedMessage = `Gates failed after retry: ${getGatesSummary(gateResults)}`;
