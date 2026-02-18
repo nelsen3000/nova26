@@ -6,6 +6,9 @@ import { KronosClient } from './kronos-client.js';
 import type { KronosEntry, KronosSearchResult } from './types.js';
 import type { BuildLog } from '../types/index.js';
 
+// Re-export retrospective module for Phase 3 ATLAS agent usage
+export { KronosRetrospective } from './retrospective.js';
+
 const ATLAS_DIR = join(process.cwd(), '.nova', 'atlas');
 const BUILDS_FILE = join(ATLAS_DIR, 'builds.json');
 

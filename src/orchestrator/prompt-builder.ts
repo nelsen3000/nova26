@@ -2,6 +2,8 @@
 
 import { readFileSync, existsSync } from 'fs';
 import { loadAgent } from './agent-loader.js';
+import { KronosAtlas } from '../atlas/index.js';
+import type { KronosPointer } from '../atlas/types.js';
 import type { Task, PRD } from '../types/index.js';
 
 export interface PromptContext {
@@ -9,13 +11,22 @@ export interface PromptContext {
   userPrompt: string;
 }
 
+// Shared KronosAtlas instance for semantic context injection
+const atlas = new KronosAtlas();
+
 export async function buildPrompt(task: Task, prd: PRD): Promise<PromptContext> {
   // Load the agent template
   const agentTemplate = await loadAgent(task.agent);
-  
+
   // Build the user prompt with task info and dependency context
-  const userPrompt = buildUserPrompt(task, prd);
-  
+  let userPrompt = buildUserPrompt(task, prd);
+
+  // Phase 2: Inject Kronos semantic context (best-effort)
+  const kronosContext = await buildKronosContext(task, prd);
+  if (kronosContext) {
+    userPrompt += kronosContext;
+  }
+
   return {
     systemPrompt: agentTemplate,
     userPrompt
@@ -112,4 +123,56 @@ Please retry this task. The previous attempt failed with the above error.
 
 Address the issues and provide a corrected output.
 `;
+}
+
+/**
+ * Phase 2: Query Kronos for relevant past builds and patterns.
+ * Returns a context section to append to the prompt, or null if
+ * Kronos is unavailable or returns no results.
+ */
+async function buildKronosContext(task: Task, prd: PRD): Promise<string | null> {
+  try {
+    const isAvailable = await atlas.isKronosAvailable();
+    if (!isAvailable) {
+      return null;
+    }
+
+    const projectName = prd.meta?.name || 'nova26';
+    const query = `${task.agent} ${task.title} ${task.description}`;
+    const result = await atlas.searchPatterns(query, projectName);
+
+    if (result.pointers.length === 0) {
+      return null;
+    }
+
+    console.log(
+      `[Kronos] Found ${result.pointers.length} relevant patterns ` +
+      `(~${result.totalTokensSaved} tokens saved via pointers)`
+    );
+
+    return formatKronosContext(result.pointers);
+  } catch {
+    // Kronos context is optional — never block prompt building
+    return null;
+  }
+}
+
+function formatKronosContext(pointers: KronosPointer[]): string {
+  let context = `## Historical Context (from Kronos memory)
+
+The following patterns from previous builds may be relevant:
+
+`;
+
+  for (const pointer of pointers) {
+    const score = (pointer.relevanceScore * 100).toFixed(0);
+    context += `### ${pointer.summary}\n`;
+    context += `- **Relevance:** ${score}%\n`;
+    context += `- **Source:** ${pointer.id}\n`;
+    context += `- **Tokens:** ~${pointer.tokenCount}\n\n`;
+  }
+
+  context += `Use these patterns as reference. Prioritize higher-relevance matches.\n\n`;
+
+  return context;
 }

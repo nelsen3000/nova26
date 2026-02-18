@@ -7,11 +7,12 @@ import { buildPrompt, buildRetryPrompt } from './prompt-builder.js';
 import { runGates, allGatesPassed, getGatesSummary } from './gate-runner.js';
 import { runCouncilVote, requiresCouncilApproval } from './council-runner.js';
 import { callLLM } from '../llm/ollama-client.js';
-import { KronosAtlas } from '../atlas/index.js';
+import { KronosAtlas, KronosRetrospective } from '../atlas/index.js';
 import type { PRD, Task, LLMResponse, BuildLog } from '../types/index.js';
 
-// Singleton KronosAtlas — reused across all loop iterations
+// Singleton instances — reused across all loop iterations
 const atlas = new KronosAtlas();
+const retrospective = new KronosRetrospective();
 
 export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
   console.log('Starting Ralph Loop...');
@@ -188,6 +189,21 @@ export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
     }
   }
   
+  // Phase 3: ATLAS retrospective after loop completes (best-effort)
+  try {
+    const projectName = prd.meta?.name || 'nova26';
+    const retro = await retrospective.generateRetrospective(projectName);
+    if (retro.totalBuilds > 0) {
+      console.log(`\n[ATLAS] Retrospective: ${retro.totalBuilds} builds analyzed`);
+      console.log(`[ATLAS] Agents: ${retro.agentStats.map(s => `${s.agent}(${(s.successRate * 100).toFixed(0)}%)`).join(', ')}`);
+      for (const rec of retro.recommendations) {
+        console.log(`[ATLAS] Recommendation: ${rec}`);
+      }
+    }
+  } catch {
+    // Retrospective is optional — never block loop completion
+  }
+
   console.log('\n=== Ralph Loop finished ===');
 }
 
