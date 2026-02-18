@@ -1,0 +1,7 @@
+{
+  "models": {
+    "default": "gpt-4o",
+    "tier": "paid",
+    "agentOverrides": {}
+  }
+}

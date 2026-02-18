@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-02-18T05:08:25.429Z",
+  "project": "Integration Test PRD",
+  "totalBuilds": 10,
+  "agentStats": [
+    {
+      "agent": "EARTH",
+      "totalTasks": 4,
+      "passedTasks": 4,
+      "failedTasks": 0,
+      "successRate": 1,
+      "avgDuration": 50
+    },
+    {
+      "agent": "PLUTO",
+      "totalTasks": 3,
+      "passedTasks": 3,
+      "failedTasks": 0,
+      "successRate": 1,
+      "avgDuration": 50
+    },
+    {
+      "agent": "MERCURY",
+      "totalTasks": 3,
+      "passedTasks": 3,
+      "failedTasks": 0,
+      "successRate": 1,
+      "avgDuration": 50
+    }
+  ],
+  "effectivePatterns": [
+    {
+      "name": "EARTH consistent success",
+      "description": "EARTH has passed gates 4 times consistently",
+      "agent": "EARTH",
+      "occurrences": 4,
+      "lastSeen": "2026-02-18T05:08:25.386Z"
+    },
+    {
+      "name": "PLUTO consistent success",
+      "description": "PLUTO has passed gates 3 times consistently",
+      "agent": "PLUTO",
+      "occurrences": 3,
+      "lastSeen": "2026-02-18T05:08:25.405Z"
+    },
+    {
+      "name": "MERCURY consistent success",
+      "description": "MERCURY has passed gates 3 times consistently",
+      "agent": "MERCURY",
+      "occurrences": 3,
+      "lastSeen": "2026-02-18T05:08:25.423Z"
+    }
+  ],
+  "failurePatterns": [],
+  "kronosPointers": [],
+  "recommendations": [
+    "No significant issues detected. System is performing well."
+  ]
+}

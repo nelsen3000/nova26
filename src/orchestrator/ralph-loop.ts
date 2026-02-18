@@ -2,6 +2,7 @@
 
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+<<<<<<< HEAD
 import { execSync } from 'child_process';
 import { pickNextTask, promotePendingTasks, updateTaskStatus, savePRD, setTaskOutput } from './task-picker.js';
 import { buildPrompt, buildRetryPrompt } from './prompt-builder.js';
@@ -198,6 +199,24 @@ export async function ralphLoop(
   // Initialize tracer
   const tracer = getTracer();
   const sessionId = tracer.startSession(prd.meta.name);
+=======
+import { pickNextTask, updateTaskStatus, savePRD, setTaskOutput, promotePendingTasks } from './task-picker.js';
+import { buildPrompt, buildRetryPrompt } from './prompt-builder.js';
+import { runGates, allGatesPassed, getGatesSummary } from './gate-runner.js';
+import { runCouncilVote, requiresCouncilApproval } from './council-runner.js';
+import { callLLM } from '../llm/ollama-client.js';
+import { KronosAtlas, KronosRetrospective } from '../atlas/index.js';
+import type { LogBuildOptions } from '../atlas/index.js';
+import type { PRD, Task, LLMResponse, BuildLog, LLMCaller } from '../types/index.js';
+
+// Singleton instances — reused across all loop iterations
+const atlas = new KronosAtlas();
+const retrospective = new KronosRetrospective();
+
+export async function ralphLoop(prd: PRD, prdPath: string, llmCaller?: LLMCaller): Promise<void> {
+  const llm = llmCaller || callLLM;
+  console.log('Starting Ralph Loop...');
+>>>>>>> origin/claude/setup-claude-code-cli-xRTjx
   
   // Initialize parallel runner
   const parallelRunner = new ParallelRunner({ concurrency: options?.concurrency || 4 });
@@ -237,8 +256,20 @@ export async function ralphLoop(
   while (iteration < maxIterations) {
     iteration++;
     
+<<<<<<< HEAD
     // Get all ready tasks
     const readyTasks = prd.tasks.filter(t => t.status === 'ready');
+=======
+    // Promote pending tasks whose dependencies are now met
+    const promoted = promotePendingTasks(prd);
+    if (promoted > 0) {
+      console.log(`Promoted ${promoted} pending task(s) to ready`);
+      savePRD(prd, prdPath);
+    }
+
+    // Pick next task
+    const task = pickNextTask(prd);
+>>>>>>> origin/claude/setup-claude-code-cli-xRTjx
     
     if (readyTasks.length === 0) {
       console.log('\nNo more ready tasks. Checking status...');
@@ -292,6 +323,7 @@ export async function ralphLoop(
     if (parallelMode && readyTasks.length > 1) {
       const independentTasks = getIndependentTasks(readyTasks);
       
+<<<<<<< HEAD
       if (independentTasks.length > 1) {
         console.log(`\n--- Running ${independentTasks.length} tasks in parallel ---`);
         
@@ -307,9 +339,20 @@ export async function ralphLoop(
             savePRD(prd, prdPath);
           }
         }
+=======
+      // Call LLM
+      let response: LLMResponse;
+      
+      try {
+        response = await llm(systemPrompt, userPrompt, task.agent);
+      } catch (llmError: any) {
+        // If first attempt fails, don't retry
+        console.log(`LLM call failed: ${llmError.message}`);
+>>>>>>> origin/claude/setup-claude-code-cli-xRTjx
         
         continue;
       }
+<<<<<<< HEAD
     }
     
     // Sequential: use helper function
@@ -326,6 +369,94 @@ export async function ralphLoop(
 
       // Promote pending tasks after each task completes
       promotePendingTasks(prd);
+=======
+      
+      console.log(`LLM response: ${response.content.substring(0, 100)}...`);
+      
+      // Run gates
+      const gateResults = await runGates(task, response);
+      console.log(getGatesSummary(gateResults));
+      
+      if (!allGatesPassed(gateResults)) {
+        // Gates failed - retry once
+        if (task.attempts < 2) {
+          console.log(`Gates failed, retrying... (attempt ${task.attempts + 1})`);
+          
+          const retryPrompt = buildRetryPrompt(task, getGatesSummary(gateResults), response.content);
+          
+          try {
+            response = await llm(systemPrompt, retryPrompt, task.agent);
+          } catch {
+            // Retry failed too
+            const failedMessage = `Gates failed after retry: ${getGatesSummary(gateResults)}`;
+            updateTaskStatus(prd, task.id, 'failed', failedMessage);
+            savePRD(prd, prdPath);
+            continue;
+          }
+          
+          const retryGateResults = await runGates(task, response);
+          console.log(getGatesSummary(retryGateResults));
+          
+          if (!allGatesPassed(retryGateResults)) {
+            const failedMessage = `Gates failed after retry: ${getGatesSummary(retryGateResults)}`;
+            updateTaskStatus(prd, task.id, 'failed', failedMessage);
+            savePRD(prd, prdPath);
+            continue;
+          }
+        } else {
+          const failedMessage = `Gates failed: ${getGatesSummary(gateResults)}`;
+          updateTaskStatus(prd, task.id, 'failed', failedMessage);
+          savePRD(prd, prdPath);
+          continue;
+        }
+      }
+      
+      // Gates passed - optionally run council approval for critical tasks
+      if (requiresCouncilApproval(task)) {
+        console.log('\n🏛️ Task requires Council approval...');
+        
+        const councilDecision = await runCouncilVote(task, response.content);
+        
+        if (councilDecision.finalVerdict === 'rejected') {
+          console.log(`Council rejected: ${councilDecision.summary}`);
+          updateTaskStatus(prd, task.id, 'failed', `Council rejected: ${councilDecision.summary}`);
+          savePRD(prd, prdPath);
+          continue;
+        }
+        
+        if (councilDecision.finalVerdict === 'pending') {
+          console.log(`Council split - proceeding anyway: ${councilDecision.summary}`);
+        }
+      }
+      
+      // Triple-write: local builds.json + Kronos + Convex cloud (best-effort)
+      const projectName = prd.meta?.name || 'nova26';
+      const buildLog: BuildLog = {
+        id: `${task.id}-${Date.now()}`,
+        taskId: task.id,
+        agent: task.agent,
+        model: response.model,
+        prompt: '',
+        response: response.content,
+        gatesPassed: true,
+        duration: response.duration,
+        timestamp: new Date().toISOString(),
+      };
+      const convexOptions: LogBuildOptions = {
+        prdId: prdPath,
+        prdName: projectName,
+        taskTitle: task.title,
+        phase: task.phase,
+      };
+      await atlas.logBuild(buildLog, projectName, task.phase, convexOptions);
+
+      // Save output
+      const outputPath = await saveTaskOutput(task, response);
+      setTaskOutput(prd, task.id, outputPath);
+      
+      // Mark as done
+      updateTaskStatus(prd, task.id, 'done');
+>>>>>>> origin/claude/setup-claude-code-cli-xRTjx
       savePRD(prd, prdPath);
     } catch (error: any) {
       // Error already handled in processTask
@@ -333,6 +464,7 @@ export async function ralphLoop(
     }
   }
   
+<<<<<<< HEAD
   // Flush tracer before exiting
   await tracer.flush();
 
@@ -345,6 +477,32 @@ export async function ralphLoop(
     const taskSummary = prd.tasks.map(t => `${t.agent}: ${t.title}`);
     const prUrl = gitWf.finalize(taskSummary);
     if (prUrl) console.log(`\nPR created: ${prUrl}`);
+=======
+  // Mark build completion in Convex cloud (best-effort)
+  try {
+    const allDone = prd.tasks.every(t => t.status === 'done');
+    const finalStatus = allDone ? 'completed' as const : 'failed' as const;
+    const failedTasks = prd.tasks.filter(t => t.status === 'failed').map(t => t.id);
+    const errorMsg = failedTasks.length > 0 ? `Failed tasks: ${failedTasks.join(', ')}` : undefined;
+    await atlas.completeBuild(prdPath, finalStatus, errorMsg);
+  } catch {
+    // Convex completion is optional — never block loop
+  }
+
+  // Phase 3: ATLAS retrospective after loop completes (best-effort)
+  try {
+    const projectName = prd.meta?.name || 'nova26';
+    const retro = await retrospective.generateRetrospective(projectName);
+    if (retro.totalBuilds > 0) {
+      console.log(`\n[ATLAS] Retrospective: ${retro.totalBuilds} builds analyzed`);
+      console.log(`[ATLAS] Agents: ${retro.agentStats.map(s => `${s.agent}(${(s.successRate * 100).toFixed(0)}%)`).join(', ')}`);
+      for (const rec of retro.recommendations) {
+        console.log(`[ATLAS] Recommendation: ${rec}`);
+      }
+    }
+  } catch {
+    // Retrospective is optional — never block loop completion
+>>>>>>> origin/claude/setup-claude-code-cli-xRTjx
   }
 
   console.log('\n=== Ralph Loop finished ===');

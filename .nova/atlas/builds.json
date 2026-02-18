@@ -1,1 +1,112 @@
-[]
+[
+  {
+    "id": "int-001-1771389866414",
+    "taskId": "int-001",
+    "agent": "EARTH",
+    "model": "mock-model",
+    "prompt": "",
+    "response": "# Product Spec: Company Entity\n\n## Fields\n\n- **name**: string, unique identifier for the company, 3-50 characters\n- **status**: enum (active/suspended/bankrupt), defaults to active\n\n## Constraints\n\n- Name must be unique across all companies\n- Status transitions: active → suspended → bankrupt (no reverse)\n\n## Validation Rules\n\n- Name: required, trimmed, no special characters except hyphens\n- Status: must be one of the three valid values\n\n## Edge Cases\n\n- Company with no divisions yet (empty state)\n- Company suspension during active tasks (graceful shutdown)\n",
+    "gatesPassed": true,
+    "duration": 50,
+    "timestamp": "2026-02-18T04:44:26.414Z"
+  },
+  {
+    "id": "int-001-1771389908113",
+    "taskId": "int-001",
+    "agent": "EARTH",
+    "model": "mock-model",
+    "prompt": "",
+    "response": "# Product Spec: Company Entity\n\n## Fields\n\n- **name**: string, unique identifier for the company, 3-50 characters\n- **status**: enum (active/suspended/bankrupt), defaults to active\n\n## Constraints\n\n- Name must be unique across all companies\n- Status transitions: active → suspended → bankrupt (no reverse)\n\n## Validation Rules\n\n- Name: required, trimmed, no special characters except hyphens\n- Status: must be one of the three valid values\n\n## Edge Cases\n\n- Company with no divisions yet (empty state)\n- Company suspension during active tasks (graceful shutdown)\n",
+    "gatesPassed": true,
+    "duration": 50,
+    "timestamp": "2026-02-18T04:45:08.113Z"
+  },
+  {
+    "id": "int-002-1771389908130",
+    "taskId": "int-002",
+    "agent": "PLUTO",
+    "model": "mock-model",
+    "prompt": "",
+    "response": "# Convex Schema: Companies Table\n\n```typescript\ncompanies: defineTable({\n  name: v.string(),\n  status: v.union(v.literal(\"active\"), v.literal(\"suspended\"), v.literal(\"bankrupt\")),\n  createdAt: v.string(),\n}).index(\"by_status\", [\"status\"])\n```\n\n## Schema Notes\n\n- Root entity — no companyId field needed\n- Index on status enables filtered dashboard queries\n",
+    "gatesPassed": true,
+    "duration": 50,
+    "timestamp": "2026-02-18T04:45:08.130Z"
+  },
+  {
+    "id": "int-003-1771389908145",
+    "taskId": "int-003",
+    "agent": "MERCURY",
+    "model": "mock-model",
+    "prompt": "",
+    "response": "# Validation Report\n\n**PASS**: All fields from the spec exist in the schema.\n\n## Checks Performed\n\n1. ✓ name field: spec says string 3-50 chars → schema has v.string() (length validation at mutation level)\n2. ✓ status field: spec says active/suspended/bankrupt → schema uses v.union with correct literals\n3. ✓ createdAt field: present in schema as v.string()\n4. ✓ Indexes: by_status index supports dashboard filtering\n\n\n## Result: PASS — spec and schema are consistent.\n",
+    "gatesPassed": true,
+    "duration": 50,
+    "timestamp": "2026-02-18T04:45:08.145Z"
+  },
+  {
+    "id": "int-001-1771390500080",
+    "taskId": "int-001",
+    "agent": "EARTH",
+    "model": "mock-model",
+    "prompt": "",
+    "response": "# Product Spec: Company Entity\n\n## Fields\n\n- **name**: string, unique identifier for the company, 3-50 characters\n- **status**: enum (active/suspended/bankrupt), defaults to active\n\n## Constraints\n\n- Name must be unique across all companies\n- Status transitions: active → suspended → bankrupt (no reverse)\n\n## Validation Rules\n\n- Name: required, trimmed, no special characters except hyphens\n- Status: must be one of the three valid values\n\n## Edge Cases\n\n- Company with no divisions yet (empty state)\n- Company suspension during active tasks (graceful shutdown)\n",
+    "gatesPassed": true,
+    "duration": 50,
+    "timestamp": "2026-02-18T04:55:00.080Z"
+  },
+  {
+    "id": "int-002-1771390500099",
+    "taskId": "int-002",
+    "agent": "PLUTO",
+    "model": "mock-model",
+    "prompt": "",
+    "response": "# Convex Schema: Companies Table\n\n```typescript\ncompanies: defineTable({\n  name: v.string(),\n  status: v.union(v.literal(\"active\"), v.literal(\"suspended\"), v.literal(\"bankrupt\")),\n  createdAt: v.string(),\n}).index(\"by_status\", [\"status\"])\n```\n\n## Schema Notes\n\n- Root entity — no companyId field needed\n- Index on status enables filtered dashboard queries\n",
+    "gatesPassed": true,
+    "duration": 50,
+    "timestamp": "2026-02-18T04:55:00.099Z"
+  },
+  {
+    "id": "int-003-1771390500116",
+    "taskId": "int-003",
+    "agent": "MERCURY",
+    "model": "mock-model",
+    "prompt": "",
+    "response": "# Validation Report\n\n**PASS**: All fields from the spec exist in the schema.\n\n## Checks Performed\n\n1. ✓ name field: spec says string 3-50 chars → schema has v.string() (length validation at mutation level)\n2. ✓ status field: spec says active/suspended/bankrupt → schema uses v.union with correct literals\n3. ✓ createdAt field: present in schema as v.string()\n4. ✓ Indexes: by_status index supports dashboard filtering\n\n\n## Result: PASS — spec and schema are consistent.\n",
+    "gatesPassed": true,
+    "duration": 50,
+    "timestamp": "2026-02-18T04:55:00.116Z"
+  },
+  {
+    "id": "int-001-1771391305386",
+    "taskId": "int-001",
+    "agent": "EARTH",
+    "model": "mock-model",
+    "prompt": "",
+    "response": "# Product Spec: Company Entity\n\n## Fields\n\n- **name**: string, unique identifier for the company, 3-50 characters\n- **status**: enum (active/suspended/bankrupt), defaults to active\n\n## Constraints\n\n- Name must be unique across all companies\n- Status transitions: active → suspended → bankrupt (no reverse)\n\n## Validation Rules\n\n- Name: required, trimmed, no special characters except hyphens\n- Status: must be one of the three valid values\n\n## Edge Cases\n\n- Company with no divisions yet (empty state)\n- Company suspension during active tasks (graceful shutdown)\n",
+    "gatesPassed": true,
+    "duration": 50,
+    "timestamp": "2026-02-18T05:08:25.386Z"
+  },
+  {
+    "id": "int-002-1771391305405",
+    "taskId": "int-002",
+    "agent": "PLUTO",
+    "model": "mock-model",
+    "prompt": "",
+    "response": "# Convex Schema: Companies Table\n\n```typescript\ncompanies: defineTable({\n  name: v.string(),\n  status: v.union(v.literal(\"active\"), v.literal(\"suspended\"), v.literal(\"bankrupt\")),\n  createdAt: v.string(),\n}).index(\"by_status\", [\"status\"])\n```\n\n## Schema Notes\n\n- Root entity — no companyId field needed\n- Index on status enables filtered dashboard queries\n",
+    "gatesPassed": true,
+    "duration": 50,
+    "timestamp": "2026-02-18T05:08:25.405Z"
+  },
+  {
+    "id": "int-003-1771391305423",
+    "taskId": "int-003",
+    "agent": "MERCURY",
+    "model": "mock-model",
+    "prompt": "",
+    "response": "# Validation Report\n\n**PASS**: All fields from the spec exist in the schema.\n\n## Checks Performed\n\n1. ✓ name field: spec says string 3-50 chars → schema has v.string() (length validation at mutation level)\n2. ✓ status field: spec says active/suspended/bankrupt → schema uses v.union with correct literals\n3. ✓ createdAt field: present in schema as v.string()\n4. ✓ Indexes: by_status index supports dashboard filtering\n\n\n## Result: PASS — spec and schema are consistent.\n",
+    "gatesPassed": true,
+    "duration": 50,
+    "timestamp": "2026-02-18T05:08:25.423Z"
+  }
+]
