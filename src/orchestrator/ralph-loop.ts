@@ -14,6 +14,7 @@ import { ParallelRunner, getIndependentTasks } from './parallel-runner.js';
 import { createEventStore, type EventStore } from './event-store.js';
 import { buildMemoryContext, learnFromTask, learnFromFailure } from '../memory/session-memory.js';
 import { initWorkflow } from '../git/workflow.js';
+import { recordCost, checkBudgetAlerts, getTodaySpending } from '../cost/cost-tracker.js';
 import type { PRD, Task, LLMResponse, TodoItem, PlanningPhase } from '../types/index.js';
 
 export interface RalphLoopOptions {
@@ -25,6 +26,8 @@ export interface RalphLoopOptions {
   eventStore?: boolean;        // Enable event-sourced session logging
   sessionMemory?: boolean;     // Enable cross-session memory (learn from tasks)
   gitWorkflow?: boolean;       // Enable auto branch/commit/PR workflow
+  costTracking?: boolean;      // Enable per-call cost tracking (C-04)
+  budgetLimit?: number;        // Daily budget limit in USD — halt builds when exceeded (C-05)
 }
 
 // --- Planning phases (pre-execution plan approval) ---
@@ -603,6 +606,36 @@ async function processTask(
     }
     tracer.logLLMCall(trace, userPrompt, response.content, response.model, response.duration, response.tokens);
     eventStore?.emit('llm_call_complete', { model: response.model, tokens: response.tokens, duration: response.duration }, task.id, task.agent);
+
+    // C-04: Record cost for every LLM call
+    if (loopOptions?.costTracking) {
+      const costEntry = recordCost(response.model, response.tokens, response.tokens, {
+        taskId: task.id,
+        agentName: task.agent,
+        cached: response.fromCache,
+      });
+      if (costEntry.cost > 0) {
+        console.log(`  Cost: $${costEntry.cost.toFixed(4)} (${response.model})`);
+      }
+      // Check budget alerts
+      const alerts = checkBudgetAlerts();
+      for (const alert of alerts) {
+        console.log(alert);
+      }
+    }
+
+    // C-05: Budget enforcement — halt build if daily budget exceeded
+    if (loopOptions?.budgetLimit) {
+      const today = getTodaySpending();
+      if (today.cost >= loopOptions.budgetLimit) {
+        const msg = `Budget exceeded: $${today.cost.toFixed(4)} >= $${loopOptions.budgetLimit} daily limit`;
+        console.log(`BUDGET HALT: ${msg}`);
+        updateTaskStatus(prd, task.id, 'failed', msg);
+        savePRD(prd, prdPath);
+        tracer.endTrace(trace, 'failed', msg);
+        throw new Error(msg);
+      }
+    }
   } catch (llmError: any) {
     console.log(`LLM call failed: ${llmError.message}`);
     eventStore?.emit('llm_call_fail', { error: llmError.message }, task.id, task.agent);

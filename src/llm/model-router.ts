@@ -1,7 +1,9 @@
 // Model Router - Switches between Free (Ollama) and Paid (OpenAI/Anthropic) models
 // Allows users to choose cost vs quality tradeoffs
+// Includes response caching (C-03) and circuit breaker (C-07)
 
 import { callLLM as callOllamaClient } from './ollama-client.js';
+import { getCachedResponse, cacheResponse } from './response-cache.js';
 
 export type ModelTier = 'free' | 'paid' | 'hybrid';
 export type ModelProvider = 'ollama' | 'openai' | 'anthropic';
@@ -233,26 +235,40 @@ export function selectModelForTask(_taskDescription: string, complexity: 'simple
 }
 
 /**
- * Call a single model (no fallback)
+ * Call a single model (no fallback) — with circuit breaker tracking
  */
 async function callSingleModel(
   model: ModelConfig,
   prompt: string,
   options: { temperature?: number; maxTokens?: number }
 ): Promise<string> {
-  if (model.provider === 'ollama') {
-    const response = await callOllamaClient(prompt, '', model.name);
-    return response.content;
-  } else if (model.provider === 'openai') {
-    return callOpenAI(prompt, model.name, options);
-  } else if (model.provider === 'anthropic') {
-    return callAnthropic(prompt, model.name, options);
+  // Circuit breaker check
+  if (!isModelAvailable(model.name)) {
+    throw new Error(`Circuit breaker OPEN for ${model.name}`);
   }
-  throw new Error(`Unknown provider: ${model.provider}`);
+
+  try {
+    let result: string;
+    if (model.provider === 'ollama') {
+      const response = await callOllamaClient(prompt, '', model.name);
+      result = response.content;
+    } else if (model.provider === 'openai') {
+      result = await callOpenAI(prompt, model.name, options);
+    } else if (model.provider === 'anthropic') {
+      result = await callAnthropic(prompt, model.name, options);
+    } else {
+      throw new Error(`Unknown provider: ${model.provider}`);
+    }
+    recordModelSuccess(model.name);
+    return result;
+  } catch (error) {
+    recordModelFailure(model.name);
+    throw error;
+  }
 }
 
 /**
- * Main LLM call router — with automatic fallback on failure
+ * Main LLM call router — with cache-first check, circuit breaker, and automatic fallback
  */
 export async function callLLM(
   prompt: string,
@@ -262,9 +278,12 @@ export async function callLLM(
     temperature?: number;
     maxTokens?: number;
     disableFallback?: boolean;
+    cache?: boolean; // Enable response caching (default: true)
+    cacheMaxAgeHours?: number;
   } = {}
 ): Promise<string> {
   const complexity = options.complexity || 'medium';
+  const useCache = options.cache !== false;
 
   // Select appropriate model
   let model: ModelConfig;
@@ -274,12 +293,26 @@ export async function callLLM(
     model = selectModelForTask(prompt, complexity);
   }
 
+  // C-03: Cache-first check
+  if (useCache) {
+    const temperature = options.temperature ?? 0.7;
+    const cached = getCachedResponse(prompt, model.name, temperature, options.cacheMaxAgeHours);
+    if (cached) {
+      console.log(`Router cache hit for ${model.name} — saved ${cached.tokensUsed} tokens`);
+      return cached.response;
+    }
+  }
+
   // Try the primary model first
   try {
     const result = await callSingleModel(model, prompt, options);
     // Guard against empty/malformed responses
     if (!result || result.trim().length < 10) {
       throw new Error(`Empty or malformed response from ${model.name}`);
+    }
+    // Cache the result
+    if (useCache) {
+      cacheResponse(prompt, model.name, options.temperature ?? 0.7, result, result.length);
     }
     return result;
   } catch (primaryError: any) {
@@ -288,8 +321,10 @@ export async function callLLM(
     console.log(`Primary model ${model.name} failed: ${primaryError.message}`);
     console.log('Attempting fallback...');
 
-    // Get fallback chain, skipping the model that just failed
-    const chain = FALLBACK_CHAINS[currentTier].filter(name => name !== model.name);
+    // Get fallback chain, skipping the model that just failed + circuit-broken models
+    const chain = FALLBACK_CHAINS[currentTier]
+      .filter(name => name !== model.name)
+      .filter(name => isModelAvailable(name));
 
     for (const fallbackName of chain) {
       const fallbackModel = AVAILABLE_MODELS.find(m => m.name === fallbackName);
@@ -300,6 +335,10 @@ export async function callLLM(
         const result = await callSingleModel(fallbackModel, prompt, options);
         if (!result || result.trim().length < 10) continue;
         console.log(`Fallback ${fallbackName} succeeded`);
+        // Cache the fallback result
+        if (useCache) {
+          cacheResponse(prompt, fallbackModel.name, options.temperature ?? 0.7, result, result.length);
+        }
         return result;
       } catch (fallbackError: any) {
         console.log(`Fallback ${fallbackName} failed: ${fallbackError.message}`);
@@ -434,6 +473,74 @@ export function estimateCost(tokenCount: number, modelName?: string): string {
   
   const cost = (tokenCount / 1000) * model.costPer1KTokens;
   return `~$${cost.toFixed(4)}`;
+}
+
+// --- C-07: Circuit Breaker ---
+
+interface CircuitState {
+  failures: number;
+  lastFailure: number;
+  open: boolean; // true = model disabled
+}
+
+const CIRCUIT_BREAKER_THRESHOLD = 3;  // consecutive failures to open
+const CIRCUIT_BREAKER_COOLDOWN = 60_000; // 60s before retry
+
+const circuitStates = new Map<string, CircuitState>();
+
+function getCircuitState(modelName: string): CircuitState {
+  if (!circuitStates.has(modelName)) {
+    circuitStates.set(modelName, { failures: 0, lastFailure: 0, open: false });
+  }
+  return circuitStates.get(modelName)!;
+}
+
+function recordModelFailure(modelName: string): void {
+  const state = getCircuitState(modelName);
+  state.failures++;
+  state.lastFailure = Date.now();
+  if (state.failures >= CIRCUIT_BREAKER_THRESHOLD) {
+    state.open = true;
+    console.log(`Circuit breaker OPEN for ${modelName} (${state.failures} consecutive failures)`);
+  }
+}
+
+function recordModelSuccess(modelName: string): void {
+  const state = getCircuitState(modelName);
+  state.failures = 0;
+  state.open = false;
+}
+
+function isModelAvailable(modelName: string): boolean {
+  const state = getCircuitState(modelName);
+  if (!state.open) return true;
+  // Check if cooldown has elapsed — allow a retry
+  if (Date.now() - state.lastFailure > CIRCUIT_BREAKER_COOLDOWN) {
+    state.open = false;
+    state.failures = 0;
+    console.log(`Circuit breaker CLOSED for ${modelName} (cooldown elapsed)`);
+    return true;
+  }
+  return false;
+}
+
+/** Get circuit breaker status for all models */
+export function getCircuitBreakerStatus(): Record<string, { available: boolean; failures: number }> {
+  const status: Record<string, { available: boolean; failures: number }> = {};
+  for (const model of AVAILABLE_MODELS) {
+    const state = getCircuitState(model.name);
+    status[model.name] = { available: isModelAvailable(model.name), failures: state.failures };
+  }
+  return status;
+}
+
+/** Reset circuit breaker for a specific model */
+export function resetCircuitBreaker(modelName?: string): void {
+  if (modelName) {
+    circuitStates.delete(modelName);
+  } else {
+    circuitStates.clear();
+  }
 }
 
 // Initialize from environment if set

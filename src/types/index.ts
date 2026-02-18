@@ -89,6 +89,7 @@ export interface LLMResponse {
   model: string;
   duration: number;
   tokens: number;
+  fromCache?: boolean;
 }
 
 /** Function signature for LLM callers (real or mock) */

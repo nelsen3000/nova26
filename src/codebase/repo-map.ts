@@ -5,7 +5,7 @@
 // Uses regex-based parsing as a lightweight alternative to tree-sitter
 // (can be upgraded to tree-sitter for 40+ language support)
 
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join, relative, extname } from 'path';
 
 export interface Symbol {
@@ -104,12 +104,53 @@ export function buildRepoMap(rootDir: string, maxFiles: number = 500): RepoMap {
   };
 }
 
+// --- C-08: .novaignore support ---
+
 /**
- * Find indexable files recursively
+ * Load .novaignore patterns from project root.
+ * Supports glob-like patterns: *.env, secrets/, src/generated/*
+ */
+export function loadNovaIgnore(rootDir: string): string[] {
+  const ignorePath = join(rootDir, '.novaignore');
+  if (!existsSync(ignorePath)) return [];
+
+  const content = readFileSync(ignorePath, 'utf-8');
+  return content
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0 && !line.startsWith('#'));
+}
+
+/**
+ * Check if a relative path matches any .novaignore pattern
+ */
+export function isIgnored(relPath: string, patterns: string[]): boolean {
+  for (const pattern of patterns) {
+    // Exact directory match: "secrets/" matches "secrets/foo.ts"
+    if (pattern.endsWith('/') && relPath.startsWith(pattern)) return true;
+    // Exact file match
+    if (relPath === pattern) return true;
+    // Glob with *: "*.env" matches "foo.env", "src/*.gen.ts" matches "src/foo.gen.ts"
+    if (pattern.includes('*')) {
+      const regex = new RegExp(
+        '^' + pattern.replace(/\./g, '\\.').replace(/\*/g, '[^/]*') + '$'
+      );
+      if (regex.test(relPath)) return true;
+      // Also test just the filename for patterns like "*.env"
+      const fileName = relPath.split('/').pop() || '';
+      if (regex.test(fileName)) return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Find indexable files recursively — respects .novaignore
  */
 function findFiles(dir: string, maxFiles: number): string[] {
   const { readdirSync, statSync } = require('fs');
   const results: string[] = [];
+  const ignorePatterns = loadNovaIgnore(dir);
 
   function walk(currentDir: string) {
     if (results.length >= maxFiles) return;
@@ -127,6 +168,11 @@ function findFiles(dir: string, maxFiles: number): string[] {
       if (entry.startsWith('.')) continue;
 
       const fullPath = join(currentDir, entry);
+
+      // Check .novaignore
+      const relPath = relative(dir, fullPath);
+      if (ignorePatterns.length > 0 && isIgnored(relPath, ignorePatterns)) continue;
+
       try {
         const stat = statSync(fullPath);
         if (stat.isDirectory()) {
