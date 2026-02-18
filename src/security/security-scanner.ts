@@ -73,7 +73,7 @@ const SECRET_PATTERNS = [
   },
   {
     name: 'Database URL',
-    pattern: /(mongodb|postgres|mysql)://[^:]+:[^@]+@/i,
+    pattern: /(mongodb|postgres|mysql):\/\/[^:]+:[^@]+@/i,
     severity: 'high' as const,
   },
 ];
