@@ -15,22 +15,31 @@
    - Consensus types: unanimous, majority, split, deadlock
    - Integrated into Ralph Loop for Phase 1-2 tasks
 
-### Claude - Kronos Integration Phase 1 Complete (2026-02-18)
-1. Added Kronos semantic memory integration (Phase 1 — sidecar, zero risk)
-   - `src/atlas/types.ts` — KronosEntry, KronosPointer, KronosSearchResult interfaces
-   - `src/atlas/kronos-client.ts` — HTTP client wrapping Kronos REST API (port 8765)
-   - `src/atlas/index.ts` — KronosAtlas dual-write layer (file-based + Kronos)
-   - `scripts/start-with-kronos.sh` — Startup script with server detection
-2. Modified `gate-runner.ts` — added `postGateKronosIngest()` after gates pass
-3. Modified `ralph-loop.ts` — wired Kronos ingest into the main loop
-4. Updated README.md with Kronos documentation section
-5. All Kronos calls gracefully degrade (try/catch, healthCheck before ingest)
-6. No new npm dependencies — uses Node.js native `fetch`
-7. Mock tests pass (3/3), tsc --noEmit clean on all new/modified files
+### Claude - Kronos Integration All 3 Phases Complete (2026-02-18)
+
+**Phase 1 — Sidecar (zero risk):**
+1. `src/atlas/types.ts` — KronosEntry, KronosPointer, KronosSearchResult
+2. `src/atlas/kronos-client.ts` — HTTP client wrapping Kronos REST API (port 8765)
+3. `src/atlas/index.ts` — KronosAtlas dual-write layer (builds.json + Kronos)
+4. `scripts/start-with-kronos.sh` — Startup script with server detection
+5. Wired into `ralph-loop.ts` via `KronosAtlas.logBuild()` after gate pass
+
+**Phase 2 — Semantic prompt context:**
+6. `prompt-builder.ts` queries Kronos before building prompts
+7. Injects "Historical Context" section with relevant past build patterns
+8. Agents now see what worked/failed in previous runs
+
+**Phase 3 — ATLAS retrospectives:**
+9. `src/atlas/retrospective.ts` — KronosRetrospective engine
+10. Auto-generates retrospective after Ralph Loop completes
+11. Computes agent stats, effective/failure patterns, recommendations
+12. `generateBriefing()` — pre-task briefings with agent track record + Kronos patterns
+
+**All Kronos calls gracefully degrade.** No new npm dependencies (native `fetch`).
 
 **Kronos dependency:** https://github.com/Ja1Denis/Kronos (Python, port 8765)
 - Provides: pointer-based RAG, hybrid search (SQLite FTS5 + ChromaDB), knowledge graph
-- Nova26 works fine without it — completely optional sidecar
+- Nova26 works fine without it — completely optional
 
 ## Recent Changes
 
@@ -42,6 +51,8 @@
 | 2026-02-18 | Claude | Created src/atlas/ module (types, client, KronosAtlas) |
 | 2026-02-18 | Claude | Wired postGateKronosIngest into gate-runner + ralph-loop |
 | 2026-02-18 | Both | Merged council + Kronos into unified branch |
+| 2026-02-18 | Claude | Phase 2: Kronos semantic context in prompt-builder.ts |
+| 2026-02-18 | Claude | Phase 3: ATLAS retrospective engine + auto-run after loop |
 
 ## Files Structure
 
@@ -51,13 +62,14 @@ src/
 │   ├── ralph-loop.ts      # Core execution loop (council + Kronos ingest)
 │   ├── council-runner.ts  # LLM Council (MiniMax)
 │   ├── task-picker.ts     # Task scheduling
-│   ├── prompt-builder.ts  # Prompt generation
+│   ├── prompt-builder.ts  # Prompt generation + Kronos context (Phase 2)
 │   ├── agent-loader.ts    # Agent loading
-│   └── gate-runner.ts     # Quality gates + postGateKronosIngest (Claude)
+│   └── gate-runner.ts     # Quality gates
 ├── atlas/                 # Kronos integration (Claude)
 │   ├── types.ts           # KronosEntry, KronosPointer, KronosSearchResult
 │   ├── kronos-client.ts   # HTTP client for Kronos REST API
-│   └── index.ts           # KronosAtlas dual-write layer
+│   ├── index.ts           # KronosAtlas dual-write layer
+│   └── retrospective.ts  # ATLAS retrospective engine (Phase 3)
 ├── llm/
 │   └── ollama-client.ts   # Ollama LLM client
 ├── types/
@@ -80,7 +92,7 @@ scripts/
 
 - **Shared files:** Both agents modified `ralph-loop.ts` and `gate-runner.ts`. Claude's changes add Kronos ingest calls after gates pass. MiniMax's council integration also hooks into ralph-loop. Both should merge cleanly since they touch different sections.
 - **Claude's Kronos client** never throws — all methods return safe defaults on failure, so MiniMax's council flow is unaffected.
-- **MiniMax's council** runs before Kronos ingest in the Ralph Loop flow: gates -> council -> Kronos ingest -> save output.
+- **Full Ralph Loop flow:** Kronos prompt context -> LLM call -> gates -> council -> dual-write (builds.json + Kronos) -> save output -> (after loop) ATLAS retrospective.
 - **Testing:** Run `npx tsx src/test/mock-run.ts` to verify the loop still works after merging both agents' changes.
 
 ## Next Steps Ideas
@@ -89,5 +101,5 @@ scripts/
 - [ ] Expand council members
 - [ ] Add more quality gates
 - [ ] Convex database integration
-- [ ] Kronos Phase 2 — Replace prompt-builder.ts context injection with Kronos semantic search
-- [ ] Kronos Phase 3 — ATLAS agent uses Kronos for pattern retrospectives
+- [x] Kronos Phase 2 — Kronos semantic context injected into prompt-builder.ts
+- [x] Kronos Phase 3 — ATLAS retrospective engine with pattern analysis
