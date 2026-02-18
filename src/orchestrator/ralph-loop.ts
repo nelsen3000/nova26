@@ -4,7 +4,7 @@ import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { pickNextTask, updateTaskStatus, savePRD, setTaskOutput } from './task-picker.js';
 import { buildPrompt, buildRetryPrompt } from './prompt-builder.js';
-import { runGates, allGatesPassed, getGatesSummary } from './gate-runner.js';
+import { runGates, allGatesPassed, getGatesSummary, postGateKronosIngest } from './gate-runner.js';
 import { runCouncilVote, requiresCouncilApproval } from './council-runner.js';
 import { callLLM } from '../llm/ollama-client.js';
 import type { PRD, Task, LLMResponse } from '../types/index.js';
@@ -152,6 +152,10 @@ export async function ralphLoop(prd: PRD, prdPath: string): Promise<void> {
         }
       }
       
+      // Kronos memory ingest (best-effort, never blocks the loop)
+      const projectName = prd.meta?.name || 'nova26';
+      await postGateKronosIngest(task, response.content, projectName);
+
       // Save output
       const outputPath = await saveTaskOutput(task, response);
       setTaskOutput(prd, task.id, outputPath);

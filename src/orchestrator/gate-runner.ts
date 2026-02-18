@@ -1,6 +1,8 @@
 // Gate Runner - Runs quality gates on LLM responses
 
 import type { GateResult, LLMResponse, Task } from '../types/index.js';
+import { KronosClient } from '../atlas/kronos-client.js';
+import type { KronosEntry } from '../atlas/types.js';
 
 export interface GateRunnerConfig {
   enabled: boolean;
@@ -141,13 +143,44 @@ export function allGatesPassed(results: GateResult[]): boolean {
 export function getGatesSummary(results: GateResult[]): string {
   const passed = results.filter(r => r.passed).length;
   const failed = results.filter(r => !r.passed).length;
-  
+
   let summary = `Gates: ${passed} passed, ${failed} failed`;
-  
+
   if (failed > 0) {
     const failedGates = results.filter(r => !r.passed).map(r => r.gate);
     summary += ` (${failedGates.join(', ')})`;
   }
-  
+
   return summary;
+}
+
+/**
+ * Ingest task output into Kronos after all gates pass.
+ * Gracefully degrades — never throws or crashes the Ralph Loop.
+ */
+export async function postGateKronosIngest(
+  task: Task,
+  responseContent: string,
+  projectName: string
+): Promise<void> {
+  const kronos = new KronosClient();
+
+  const healthy = await kronos.healthCheck();
+  if (!healthy) {
+    console.warn('[Kronos] Kronos unavailable — skipping memory ingest');
+    return;
+  }
+
+  const entry: KronosEntry = {
+    project: projectName,
+    taskId: task.id,
+    agent: task.agent,
+    phase: task.phase,
+    content: responseContent,
+    tags: [task.agent, `phase-${task.phase}`, task.id],
+  };
+
+  await kronos.ingest(entry);
+  const tokenEstimate = Math.ceil(responseContent.length / 4);
+  console.log(`[Kronos] Memory ingest complete for ${task.id} (~${tokenEstimate} tokens)`);
 }

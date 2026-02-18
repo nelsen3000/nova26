@@ -81,6 +81,29 @@ convex/
 - Ollama (Qwen 7B default, local)
 - Convex (schema defined, not yet deployed)
 
+## Kronos Memory Integration
+
+Nova26 optionally integrates with [Kronos](https://github.com/Ja1Denis/Kronos), a local semantic memory system that provides pointer-based RAG, hybrid search (SQLite FTS5 + ChromaDB vector), and a knowledge graph.
+
+**What Kronos does for Nova26:** After each task passes quality gates, its output is ingested into Kronos for semantic search. This lets agents query past build outputs, patterns, and decisions across PRD runs — replacing the flat-file `.nova/atlas/builds.json` with intelligent, searchable memory.
+
+**Kronos is optional.** Nova26 works fine without it. All Kronos calls gracefully degrade — if the server is unreachable, the Ralph Loop logs a warning and continues normally. The existing file-based ATLAS system always runs as a fallback.
+
+### Running with Kronos
+
+```bash
+# 1. Start Kronos on port 8765 (in a separate terminal)
+cd ../Kronos && python src/mcp_server.py
+
+# 2. Run Nova26 with the helper script
+./scripts/start-with-kronos.sh .nova/prd-test.json
+
+# Or run directly (Kronos ingest happens automatically if server is detected)
+npx tsx src/index.ts run .nova/prd-test.json
+```
+
+Kronos runs on **port 8765** by default. No additional npm dependencies are required — the integration uses Node.js native `fetch`.
+
 ## Status
 
 Phase 0 — Orchestrator built, 21 agents defined, Convex schema defined. Ready for first live LLM test.
