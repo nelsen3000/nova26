@@ -1,25 +1,25 @@
 // VS Code Integration - Extension API and commands
 // Provides IDE-native experience
 
-// VS Code Extension types
-type VSCodeCommand = {
+// VS Code Extension types (used by extension manifest)
+export interface VSCodeCommand {
   command: string;
   title: string;
   handler: (...args: unknown[]) => Promise<void>;
-};
+}
 
-type InlineSuggestion = {
+export interface InlineSuggestion {
   text: string;
   range: { start: number; end: number };
   confidence: number;
-};
+}
 
-type CodeDiff = {
+export interface CodeDiff {
   original: string;
   modified: string;
   filename: string;
   description: string;
-};
+}
 
 // VS Code Extension Manifest
 export const extensionManifest = {

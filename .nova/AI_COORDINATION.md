@@ -932,3 +932,81 @@ docs/SENTRY_MONITORING_SETUP.md
 - Every pattern must have a concrete "Files to Modify" section pointing to Nova26 files
 - If a BistroLens pattern is already implemented in Nova26, note it as "ALREADY COVERED" and move on
 - Aim for 30+ adapted patterns minimum
+
+---
+
+## Phase 5: BistroLens Knowledge Extraction → Nova26 Adaptation COMPLETE
+
+**Date:** 2026-02-18  
+**Status:** ✅ COMPLETED  
+**Agent:** Kimi  
+**Output:** `/Users/jonathannelsen/nova26/.nova/bistrolens-knowledge/`
+
+### Summary
+
+Successfully extracted patterns from BistroLens and adapted them for Nova26's 21-agent system. Created 30+ adapted patterns with concrete implementation specifications.
+
+### Files Created
+
+| Category | File | Size | Patterns |
+|----------|------|------|----------|
+| Steering | `02-steering-system/nova26-steering-architecture.md` | 7.3 KB | Agent inclusion, context budget, manual invocation |
+| Security | `01-security/nova26-security-enforcement.md` | 8.5 KB | Output scanner, rate limiting, suspicion scoring |
+| Quality Gates | `03-quality-gates/nova26-expanded-gates.md` | 15 KB | 6 new gates (a11y, performance, i18n, docs, cost) |
+| Code Governance | `04-code-governance/nova26-code-governance.md` | 11 KB | Red lines, quality scoring, kill switch, deduplication |
+| Convex | `05-database-patterns/nova26-convex-improvements.md` | 10 KB | Auth guards, soft delete, pagination, rate limiting |
+| Cost Protection | `06-cost-protection/nova26-cost-protection.md` | 9.1 KB | Build budgets, circuit breaker, cache-first, degradation |
+| Testing | `07-testing-strategies/nova26-test-plan.md` | 8.7 KB | Unit/integration/E2E tests, performance thresholds |
+| Accessibility | `08-design-system/nova26-accessibility-rules.md` | 10 KB | 12 new visual validator checks, keyboard nav |
+| Error Handling | `09-error-handling/nova26-error-patterns.md` | 12.5 KB | Error messages, retry logic, graceful degradation |
+| Prompts | `15-ai-prompts/nova26-prompt-improvements.md` | 13 KB | System prompts, safety filters, hallucination prevention |
+| PRD Format | `17-nova26-adaptations/enhanced-prd-format.md` | 8 KB | v2 format with design phase, ADRs, Gherkin AC |
+
+**Total:** 14 files, ~5,300 lines, 127 KB
+
+### Key Adaptations
+
+1. **Steering System** → Agent context management with inclusion patterns
+2. **Image Governance** → Code generation governance with red lines
+3. **API Cost Protection** → LLM cost protection with per-agent budgets
+4. **Security Steering** → Agent output security scanning
+5. **Spec Structure** → Enhanced PRD format v2
+
+### Implementation Roadmap
+
+| Phase | Files | Timeline |
+|-------|-------|----------|
+| 1. Infrastructure | `src/steering/`, `src/security/`, `src/cost/` | Week 1 |
+| 2. Quality | `src/gates/`, `src/governance/`, `src/prompts/` | Week 2 |
+| 3. Patterns | `convex/lib/`, `src/errors/`, `src/accessibility/` | Week 3 |
+| 4. Testing | `tests/`, `.nova/templates/` | Week 4 |
+
+### New Files to Create (25+)
+
+```
+src/steering/agent-loader.ts
+src/steering/manual-invocation.ts
+src/security/agent-output-scanner.ts
+src/security/llm-rate-limiter.ts
+src/gates/accessibility-gate.ts
+src/gates/performance-gate.ts
+src/governance/red-lines.ts
+governance/quality-scorer.ts
+src/cost/build-budget.ts
+convex/lib/auth.ts
+convex/lib/softDelete.ts
+... (and 15 more)
+```
+
+### Files to Modify (15+)
+
+- `src/orchestrator/ralph-loop.ts` - Integrate steering
+- `src/orchestrator/gate-runner.ts` - Add new gates
+- `src/llm/model-router.ts` - Add budget checks
+- `src/browser/visual-validator.ts` - 12 new checks
+- `.nova/agents/*.md` - Add YAML front matter
+
+---
+
+*Phase 5 completed: 2026-02-18*  
+*30+ patterns adapted from BistroLens to Nova26*

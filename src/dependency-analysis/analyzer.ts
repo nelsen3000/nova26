@@ -453,7 +453,10 @@ export async function analyzeDependencies(dir: string = process.cwd()): Promise<
   console.log('🔍 Analyzing dependencies...');
   
   const graph = await buildDependencyGraph(dir);
-  const metrics = calculateMetrics(graph);
+  
+  // Log metrics summary
+  const m = calculateMetrics(graph);
+  console.log(`📊 Analyzed ${m.totalFiles} files, ~${m.totalLines} lines`);
   
   console.log(generateArchitectureReport(graph));
   console.log('');

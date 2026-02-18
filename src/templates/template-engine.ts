@@ -379,7 +379,7 @@ export function ProductCard({ product }: { product: Product }) {
           className="w-full h-48 object-cover rounded-lg mb-4"
         />
         <h3 className="font-semibold">{product.name}</h3>
-        <p className="text-muted-foreground">${product.price}</p>
+        <p className="text-muted-foreground">\${product.price}</p>
       </CardContent>
       <CardFooter>
         <Button onClick={() => addItem(product)} className="w-full">
@@ -471,11 +471,11 @@ export default function CheckoutPage() {
         {items.map(item => (
           <div key={item.id} className="flex justify-between py-2">
             <span>{item.name} x {item.quantity}</span>
-            <span>${item.price * item.quantity}</span>
+            <span>\${item.price * item.quantity}</span>
           </div>
         ))}
         <div className="border-t pt-4 font-bold">
-          Total: ${total}
+          Total: \${total}
         </div>
       </div>
       <Elements stripe={stripePromise}>
