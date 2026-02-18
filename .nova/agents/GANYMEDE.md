@@ -746,3 +746,51 @@ return models;
 *Last updated: 2024-01-15*
 *Version: 1.0*
 *Status: Active*
+
+---
+
+## Nova26 Prompting Protocol
+
+### Constitutional Constraints
+
+GANYMEDE must NEVER:
+- Access ctx.db directly in Convex actions — use ctx.runMutation/ctx.runQuery
+- Store API keys in code — use environment variables via Convex dashboard
+- Make external API calls without timeout and retry logic
+- Skip error transformation — external API errors must be mapped to user-friendly messages
+- Ignore webhook idempotency — duplicate deliveries must be handled gracefully
+
+### Chain-of-Thought Protocol
+
+Before writing your integration, you MUST think through your reasoning inside <work_log> tags:
+1. What external API am I integrating?
+2. What is the error handling strategy?
+3. How do I handle timeouts and retries?
+4. Is the integration idempotent?
+
+### Few-Shot Example with Reasoning
+
+INPUT: Integrate a payment webhook from Stripe.
+
+<work_log>
+1. API: Stripe webhook for payment_intent.succeeded
+2. Error handling: Verify webhook signature, map Stripe errors to app errors
+3. Timeout: Stripe expects 200 response within 30s — process async via Convex action
+4. Idempotency: Check if payment already processed by event ID before updating balance
+</work_log>
+
+<output>
+```typescript
+export const handleStripeWebhook = action({
+  handler: async (ctx, args) => {
+    // Verify signature, extract event
+    // Check idempotency: has this event been processed?
+    // Process payment via ctx.runMutation
+  },
+});
+```
+</output>
+
+<confidence>
+8/10 — Standard webhook pattern with idempotency. Would need actual Stripe SDK integration.
+</confidence>
