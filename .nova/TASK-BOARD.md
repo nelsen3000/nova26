@@ -10,7 +10,7 @@
 
 | Agent | Branch | Domain | Status |
 |-------|--------|--------|--------|
-| **Claude Code** | `main` | Coordinator + Core Engine | Active — starting C-01 |
+| **Claude Code** | `main` | Coordinator + Core Engine | Active — C-01→C-10 done, working C-11 |
 | **Kiro** | `kiro/dashboard` | Dashboard UI + Frontend | Active — finishing BistroLens, then dashboard |
 | **OpenAI/ChatGPT** | `openai/semantic-engine` | Semantic Engine + Testing + Security | DONE — 15/15 tasks complete, awaiting push |
 | **Perplexity** | `perplexity/docs-research` | Research + Documentation + Cutting-Edge | Active — P-01 done, continuing P-02+ |
@@ -21,16 +21,16 @@
 ## CATEGORY 1: Core Engine Enhancements
 **Owner: Claude Code**
 
-- [ ] `C-01` Integrate response-cache.ts into ollama-client.ts LLM call path
-- [ ] `C-02` Add streaming response support to ollama-client.ts (SSE/async iterators)
-- [ ] `C-03` Wire response cache into model-router.ts callLLM() with cache-first check
-- [ ] `C-04` Integrate cost-tracker.ts into ralph-loop processTask() — log every LLM call
-- [ ] `C-05` Add budget enforcement to cost-tracker — halt builds when budget exceeded
-- [ ] `C-06` Test event-store crash recovery end-to-end (simulate crash mid-build, resume)
-- [ ] `C-07` Add circuit breaker pattern to model-router (auto-disable failing models)
-- [ ] `C-08` Create .novaignore file support — exclude sensitive files from repo-map indexing
-- [ ] `C-09` Upgrade package.json: vitest 1.2→4.0, typescript 5.3→5.9, convex 1.16→1.31
-- [ ] `C-10` Add ts-morph, fast-check, recharts as dependencies
+- [x] `C-01` Integrate response-cache.ts into ollama-client.ts LLM call path
+- [x] `C-02` Add streaming response support to ollama-client.ts (SSE/async iterators)
+- [x] `C-03` Wire response cache into model-router.ts callLLM() with cache-first check
+- [x] `C-04` Integrate cost-tracker.ts into ralph-loop processTask() — log every LLM call
+- [x] `C-05` Add budget enforcement to cost-tracker — halt builds when budget exceeded
+- [x] `C-06` Test event-store crash recovery end-to-end (simulate crash mid-build, resume)
+- [x] `C-07` Add circuit breaker pattern to model-router (auto-disable failing models)
+- [x] `C-08` Create .novaignore file support — exclude sensitive files from repo-map indexing
+- [x] `C-09` Upgrade package.json: vitest 1.2→4.0, typescript 5.3→5.9, convex 1.16→1.31
+- [x] `C-10` Add ts-morph, fast-check, recharts as dependencies
 - [ ] `C-11` Create one-command setup: `npx nova26 init` (install deps, set env, index repo)
 - [ ] `C-12` Final merge all agent branches + resolve conflicts
 - [ ] `C-13` Final tsc --noEmit verification (0 errors)
@@ -116,12 +116,12 @@
 
 | Agent | Assigned | Completed | % |
 |-------|----------|-----------|---|
-| Claude Code | 15 | 0 | 0% |
+| Claude Code | 15 | 10 | 67% |
 | Kiro | 15 | 0 | 0% |
 | OpenAI | 15 | 15 | 100% |
 | Perplexity | 12 | 1 | 8% |
 | Kimi | 15 | 15 | 100% |
-| **TOTAL** | **72** | **31** | **43%** |
+| **TOTAL** | **72** | **41** | **57%** |
 
 ---
 
