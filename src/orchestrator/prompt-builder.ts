@@ -4,6 +4,7 @@ import { readFileSync, existsSync } from 'fs';
 import { loadAgent } from './agent-loader.js';
 import { buildRepoMap, formatRepoContext, type RepoMap } from '../codebase/repo-map.js';
 import { buildMemoryContext } from '../memory/session-memory.js';
+import { buildCommunicationContext, type MessageBus } from '../agents/protocol.js';
 import type { Task, PRD } from '../types/index.js';
 
 // Cache the repo map so we don't rebuild it for every task
@@ -31,12 +32,16 @@ export interface PromptContext {
   userPrompt: string;
 }
 
-export async function buildPrompt(task: Task, prd: PRD): Promise<PromptContext> {
+export async function buildPrompt(
+  task: Task,
+  prd: PRD,
+  messageBus?: MessageBus
+): Promise<PromptContext> {
   // Load the agent template
   const agentTemplate = await loadAgent(task.agent);
   
   // Build the user prompt with task info and dependency context
-  const userPrompt = buildUserPrompt(task, prd);
+  const userPrompt = buildUserPrompt(task, prd, messageBus);
   
   return {
     systemPrompt: agentTemplate,
@@ -44,7 +49,7 @@ export async function buildPrompt(task: Task, prd: PRD): Promise<PromptContext> 
   };
 }
 
-function buildUserPrompt(task: Task, prd: PRD): string {
+function buildUserPrompt(task: Task, prd: PRD, messageBus?: MessageBus): string {
   let prompt = `# Task: ${task.title}
 
 ## Task ID
@@ -85,6 +90,18 @@ ${task.phase}
     }
   } catch {
     // Memory unavailable — skip silently
+  }
+
+  // Add agent communication context if message bus is available
+  if (messageBus) {
+    try {
+      const commCtx = buildCommunicationContext(messageBus, task.agent);
+      if (commCtx) {
+        prompt += commCtx;
+      }
+    } catch {
+      // Communication context unavailable — skip silently
+    }
   }
 
   // Add instructions
