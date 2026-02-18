@@ -32,8 +32,6 @@
 - Provides: pointer-based RAG, hybrid search (SQLite FTS5 + ChromaDB), knowledge graph
 - Nova26 works fine without it — completely optional sidecar
 
-**Branch:** `claude/setup-claude-code-cli-xRTjx`
-
 ## Recent Changes
 
 | Date | Agent | Change |
@@ -43,19 +41,20 @@
 | 2026-02-18 | Claude | Added Kronos sidecar integration (Phase 1) |
 | 2026-02-18 | Claude | Created src/atlas/ module (types, client, KronosAtlas) |
 | 2026-02-18 | Claude | Wired postGateKronosIngest into gate-runner + ralph-loop |
+| 2026-02-18 | Both | Merged council + Kronos into unified branch |
 
 ## Files Structure
 
 ```
 src/
 ├── orchestrator/
-│   ├── ralph-loop.ts      # Core execution loop (modified: Kronos ingest)
+│   ├── ralph-loop.ts      # Core execution loop (council + Kronos ingest)
 │   ├── council-runner.ts  # LLM Council (MiniMax)
 │   ├── task-picker.ts     # Task scheduling
 │   ├── prompt-builder.ts  # Prompt generation
 │   ├── agent-loader.ts    # Agent loading
-│   └── gate-runner.ts     # Quality gates (modified: postGateKronosIngest)
-├── atlas/                 # NEW — Kronos integration (Claude)
+│   └── gate-runner.ts     # Quality gates + postGateKronosIngest (Claude)
+├── atlas/                 # Kronos integration (Claude)
 │   ├── types.ts           # KronosEntry, KronosPointer, KronosSearchResult
 │   ├── kronos-client.ts   # HTTP client for Kronos REST API
 │   └── index.ts           # KronosAtlas dual-write layer
@@ -67,7 +66,7 @@ src/
     ├── mock-run.ts        # Mock tests
     └── integration-test.ts # Integration tests (MiniMax)
 scripts/
-└── start-with-kronos.sh   # NEW — Kronos startup helper (Claude)
+└── start-with-kronos.sh   # Kronos startup helper (Claude)
 ```
 
 ## Notes for Coordination
