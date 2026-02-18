@@ -7,6 +7,11 @@ import { join } from 'path';
 import { generatePRD } from '../agents/sun-prd-generator.js';
 import { callLLM } from '../llm/ollama-client.js';
 import { listSkills } from '../skills/skill-loader.js';
+import { handleTemplateCommand } from '../template/template-engine.js';
+import { quickSecurityScan, formatSecurityReport } from '../security/security-scanner.js';
+import { getSpendingReport, formatReport, getTodaySpending } from '../cost/cost-tracker.js';
+import { getCacheStats, formatCacheStats } from '../llm/response-cache.js';
+import { startPreviewServer, previewComponent } from '../preview/server.js';
 
 export interface SlashCommand {
   name: string;
@@ -68,8 +73,70 @@ export const slashCommands: Record<string, SlashCommand> = {
     name: '/preview',
     description: 'Start visual preview server',
     usage: '/preview [--component Name]',
-    handler: async () => {
-      console.log('🎨 Preview server coming soon...');
+    handler: async (args) => {
+      const componentIndex = args.indexOf('--component');
+      if (componentIndex >= 0 && args[componentIndex + 1]) {
+        await previewComponent(args[componentIndex + 1]);
+      } else {
+        await startPreviewServer();
+      }
+    }
+  },
+
+  '/template': {
+    name: '/template',
+    description: 'List, show, or apply agent templates',
+    usage: '/template [list|show <agent>|apply <agent>]',
+    handler: async (args) => {
+      handleTemplateCommand(args);
+    }
+  },
+
+  '/scan': {
+    name: '/scan',
+    description: 'Run security scan on codebase',
+    usage: '/scan [path]',
+    handler: async (args) => {
+      const path = args[0] || process.cwd();
+      console.log(`🔒 Running security scan on ${path}...\n`);
+      const result = await quickSecurityScan(path);
+      console.log(formatSecurityReport(result));
+      process.exit(result.passed ? 0 : 1);
+    }
+  },
+
+  '/cost': {
+    name: '/cost',
+    description: 'Show cost tracking and cache statistics',
+    usage: '/cost [today|report|cache]',
+    handler: async (args) => {
+      const subcommand = args[0] || 'today';
+      
+      switch (subcommand) {
+        case 'today':
+          const today = getTodaySpending();
+          console.log(`\n💰 Today's Spending`);
+          console.log('═══════════════════════════════════════');
+          console.log(`Cost:     $${today.cost.toFixed(4)}`);
+          console.log(`Tokens:   ${today.tokens.toLocaleString()}`);
+          console.log(`Requests: ${today.requests}`);
+          console.log('═══════════════════════════════════════\n');
+          break;
+          
+        case 'report':
+          const days = parseInt(args[1]) || 30;
+          const report = getSpendingReport(days);
+          console.log(formatReport(report));
+          break;
+          
+        case 'cache':
+          const stats = getCacheStats();
+          console.log(formatCacheStats(stats));
+          break;
+          
+        default:
+          console.log('Usage: /cost [today|report <days>|cache]');
+      }
     }
   },
 

@@ -25,5 +25,14 @@
     "isolatedModules": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/integrations/dashboard",
+    "src/integrations/fal-ai",
+    "src/integrations/instructor",
+    "src/integrations/magic-ui",
+    "promptfoo",
+    "app"
+  ]
 }

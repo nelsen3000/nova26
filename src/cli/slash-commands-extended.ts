@@ -2,6 +2,10 @@
 // Additional commands beyond the basic set
 
 import { execSync } from 'child_process';
+import { quickSwarm, fullSwarm } from '../swarm/swarm-mode.js';
+import { analyzeDependencies } from '../dependency-analysis/analyzer.js';
+import { handleMarketplaceCommand } from '../skills/skill-marketplace.js';
+import { decomposeTask, formatDecomposition, shouldDecompose, analyzeComplexity } from '../orchestrator/task-decomposer.js';
 
 export const extendedSlashCommands = {
   // Debug & Development
@@ -95,17 +99,33 @@ export const extendedSlashCommands = {
   '/swarm': {
     name: '/swarm',
     description: 'Enter swarm mode for task completion',
-    usage: '/swarm "task description"',
+    usage: '/swarm [--full] "task description"',
     handler: async (args: string[]) => {
-      const task = args.join(' ');
-      console.log('🐝 Entering SWARM MODE\n');
-      console.log(`Task: ${task}\n`);
-      console.log('Activating agents:');
-      console.log('  ☀️  SUN - Coordinating');
-      console.log('  🌍 EARTH - Planning');
-      console.log('  🔴 MARS - Executing');
-      console.log('  ☿️ MERCURY - Validating\n');
-      console.log('Swarm agents will collaborate to complete this task.');
+      const isFull = args.includes('--full');
+      const taskArgs = args.filter(a => a !== '--full');
+      const task = taskArgs.join(' ');
+      
+      if (!task) {
+        console.log('Usage: /swarm [--full] "task description"');
+        console.log('  --full: Activate all 21 agents');
+        return;
+      }
+      
+      if (isFull) {
+        await fullSwarm(task);
+      } else {
+        await quickSwarm(task);
+      }
+    }
+  },
+
+  '/dependencies': {
+    name: '/dependencies',
+    description: 'Analyze project dependencies and architecture',
+    usage: '/dependencies [path]',
+    handler: async (args: string[]) => {
+      const path = args[0] || process.cwd();
+      await analyzeDependencies(path);
     }
   },
 
@@ -380,6 +400,48 @@ export const extendedSlashCommands = {
         console.log('  - Smaller models');
         console.log('  - Good for prototyping');
       }
+    }
+  },
+
+  '/marketplace': {
+    name: '/marketplace',
+    description: 'Browse and install skills from marketplace',
+    usage: '/marketplace [search|install|list|featured]',
+    handler: async (args: string[]) => {
+      handleMarketplaceCommand(args);
+    }
+  },
+
+  '/decompose': {
+    name: '/decompose',
+    description: 'Decompose a complex task into subtasks',
+    usage: '/decompose "task title" "task description" [agent]',
+    handler: async (args: string[]) => {
+      if (args.length < 2) {
+        console.log('Usage: /decompose "task title" "task description" [agent]');
+        console.log('Example: /decompose "Build payment system" "Integrate Stripe" MARS');
+        return;
+      }
+      
+      const title = args[0];
+      const description = args[1];
+      const agent = args[2] || 'MARS';
+      
+      // Check if decomposition is needed
+      const complexity = analyzeComplexity(title, description);
+      console.log(`\n📊 Complexity Analysis:`);
+      console.log(`  Risk Level: ${complexity.riskLevel}`);
+      console.log(`  Estimated Files: ${complexity.fileCount}`);
+      console.log(`  Integration Points: ${complexity.integrationPoints}`);
+      
+      if (!shouldDecompose(title, description)) {
+        console.log('\n✅ Task is simple enough - no decomposition needed');
+        return;
+      }
+      
+      // Decompose the task
+      const decomposition = decomposeTask('task-' + Date.now(), title, description, agent);
+      console.log(formatDecomposition(decomposition));
     }
   },
 

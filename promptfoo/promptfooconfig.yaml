@@ -1,0 +1,251 @@
+# promptfoo Configuration for Nova26
+# Tests all 21 agents for quality, consistency, and correctness
+
+description: Nova26 Agent Quality Gates
+
+providers:
+  - id: ollama:qwen2.5:7b
+    config:
+      temperature: 0.7
+      max_tokens: 4000
+
+# Default prompts loaded from agent templates
+tests:
+  # ============================================================================
+  # VENUS - UI/UX Agent Tests
+  # ============================================================================
+  - name: "VENUS outputs valid React component"
+    prompt: |
+      You are VENUS, the UI/UX specialist. Create a LoginForm component with:
+      - Email and password inputs
+      - Submit button
+      - Error state display
+      
+      Requirements:
+      - Use TypeScript
+      - Use Tailwind CSS
+      - Export the component as default
+    assert:
+      - type: contains
+        value: "export default function LoginForm"
+      - type: contains
+        value: "className="
+      - type: not-contains
+        value: "style={{"
+      - type: not-contains
+        value: ": any"
+      - type: contains
+        value: "interface"
+
+  - name: "VENUS includes all 5 UI states"
+    prompt: |
+      Create a UserCard component that displays user information.
+      Include loading, empty, error, success, and default states.
+    assert:
+      - type: contains
+        value: "loading"
+      - type: contains
+        value: "error"
+      - type: contains
+        value: "aria-"
+      - type: llm-rubric
+        value: "The component handles all 5 UI states (loading, empty, error, success, default) appropriately"
+
+  # ============================================================================
+  # MARS - TypeScript Agent Tests
+  # ============================================================================
+  - name: "MARS outputs strict TypeScript"
+    prompt: |
+      You are MARS, the TypeScript specialist. Create a function to validate user input:
+      - Function should accept an unknown value
+      - Return a typed result or error
+      - Use proper type guards
+    assert:
+      - type: not-contains
+        value: ": any"
+      - type: not-contains
+        value: "@ts-ignore"
+      - type: contains
+        value: "unknown"
+      - type: contains
+        value: "is"
+      - type: llm-rubric
+        value: "The code uses strict TypeScript with no 'any' types and proper type guards"
+
+  - name: "MARS includes proper error handling"
+    prompt: |
+      Create a data fetching utility with proper error handling and types.
+    assert:
+      - type: contains
+        value: "try {"
+      - type: contains
+        value: "catch"
+      - type: contains
+        value: "Error"
+
+  # ============================================================================
+  # PLUTO - Schema Agent Tests
+  # ============================================================================
+  - name: "PLUTO outputs valid Convex schema"
+    prompt: |
+      You are PLUTO, the database architect. Create a schema for a Task table:
+      - userId reference
+      - title, description
+      - status enum
+      - timestamps
+    assert:
+      - type: contains
+        value: "defineTable"
+      - type: contains
+        value: "createdAt"
+      - type: contains
+        value: "updatedAt"
+      - type: contains
+        value: ".index"
+      - type: contains
+        value: "v.id(\"users\")"
+
+  - name: "PLUTO uses proper naming conventions"
+    prompt: |
+      Create a schema for user profiles.
+    assert:
+      - type: not-contains
+        value: "user_id"  # Should be camelCase
+      - type: contains
+        value: "userId"   # Correct camelCase
+
+  # ============================================================================
+  # GANYMEDE - API Agent Tests
+  # ============================================================================
+  - name: "GANYMEDE creates proper Convex functions"
+    prompt: |
+      You are GANYMEDE, the API integration specialist. Create a mutation to create a project.
+      Include proper validation and error handling.
+    assert:
+      - type: contains
+        value: "mutation({"
+      - type: contains
+        value: "v.string()"
+      - type: contains
+        value: "async (ctx, args)"
+      - type: contains
+        value: "ctx.auth.getUserIdentity()"
+
+  # ============================================================================
+  # TITAN - Realtime Agent Tests
+  # ============================================================================
+  - name: "TITAN uses correct Convex patterns"
+    prompt: |
+      You are TITAN, the realtime specialist. Create a subscription query for live updates.
+    assert:
+      - type: contains
+        value: "query({"
+      - type: contains
+        value: ".order("
+      - type: not-contains
+        value: "queryClient"  # Should not use TanStack Query
+
+  # ============================================================================
+  # SUN - Orchestrator Tests
+  # ============================================================================
+  - name: "SUN creates proper agent chain"
+    prompt: |
+      You are SUN, the orchestrator. Create a PRD for a feature that requires:
+      - Schema design
+      - API implementation
+      - UI components
+      
+      Specify the correct agent execution order.
+    assert:
+      - type: contains
+        value: "SUN"
+      - type: contains
+        value: "PLUTO"
+      - type: contains
+        value: "MARS"
+      - type: contains
+        value: "VENUS"
+      - type: llm-rubric
+        value: "The PRD includes a logical agent execution chain"
+
+  # ============================================================================
+  # EARTH - Requirements Agent Tests
+  # ============================================================================
+  - name: "EARTH uses Gherkin format"
+    prompt: |
+      You are EARTH, the requirements specialist. Write acceptance criteria for a login feature.
+    assert:
+      - type: contains
+        value: "Given"
+      - type: contains
+        value: "When"
+      - type: contains
+        value: "Then"
+
+  # ============================================================================
+  # MERCURY - Validation Agent Tests
+  # ============================================================================
+  - name: "MERCURY identifies code issues"
+    prompt: |
+      You are MERCURY, the quality validator. Review this code:
+      
+      function process(data: any) {
+        return data.map(x => x.value);
+      }
+      
+      Identify all issues and suggest fixes.
+    assert:
+      - type: contains
+        value: "any"
+      - type: llm-rubric
+        value: "The review correctly identifies the 'any' type as an issue and suggests proper typing"
+
+  # ============================================================================
+  # ENCELADUS - Security Agent Tests
+  # ============================================================================
+  - name: "ENCELADUS identifies security issues"
+    prompt: |
+      You are ENCELADUS, the security specialist. Review this code:
+      
+      app.post('/login', (req, res) => {
+        const query = `SELECT * FROM users WHERE email = '${req.body.email}'`;
+        db.query(query);
+      });
+      
+      Identify security vulnerabilities.
+    assert:
+      - type: contains
+        value: "SQL injection"
+      - type: contains
+        value: "parameterized"
+      - type: llm-rubric
+        value: "The review correctly identifies SQL injection vulnerability and suggests parameterized queries"
+
+  # ============================================================================
+  # Integration Tests - Multi-Agent Workflows
+  # ============================================================================
+  - name: "Agent chain produces compatible outputs"
+    prompt: |
+      PLUTO created this schema:
+      ```typescript
+      defineTable({
+        name: v.string(),
+        userId: v.id("users"),
+      })
+      ```
+      
+      MARS, create TypeScript types that match this schema exactly.
+    assert:
+      - type: contains
+        value: "userId"
+      - type: not-contains
+        value: "user_id"
+      - type: llm-rubric
+        value: "The TypeScript types correctly match the Convex schema field names and types"
+
+defaultTest:
+  options:
+    temperature: 0.7
+  assert:
+    - type: llm-rubric
+      value: "The output is helpful, accurate, and follows the agent's specialty"
