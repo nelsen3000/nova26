@@ -389,15 +389,10 @@ describe('nova26 init', () => {
       // First run
       await init({ yes: true, tier: 'free' });
 
-      // Capture state after first run
-      const _configAfterFirst = readFileSync('.nova/config.json', 'utf-8');
-      const _prdAfterFirst = readFileSync('.nova/sample-prd.json', 'utf-8');
-
       // Second run
       await init({ yes: true, tier: 'paid' });
 
       // Config should be merged, not replaced
-      const configAfterSecond = readFileSync('.nova/config.json', 'utf-8');
       expect(existsSync('.nova/config.json')).toBe(true);
 
       // Sample PRD should still exist

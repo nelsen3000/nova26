@@ -1,7 +1,5 @@
 // Gate Runner - Runs quality gates on LLM responses
-// Now includes XML tag validation (technique 3) alongside existing gates
 
-<<<<<<< HEAD
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import type { GateResult, LLMResponse, LLMCaller, Task, HardLimit, HardLimitsConfig } from '../types/index.js';
@@ -35,10 +33,6 @@ function loadHardLimits(): HardLimitsConfig | null {
 export function clearHardLimitsCache(): void {
   hardLimitsCache = null;
 }
-=======
-import { parseOutputTags } from './prompt-builder.js';
-import type { GateResult, LLMResponse, Task } from '../types/index.js';
->>>>>>> origin/claude/setup-claude-code-cli-xRTjx
 
 export interface GateRunnerConfig {
   enabled: boolean;
@@ -46,10 +40,10 @@ export interface GateRunnerConfig {
   llmCaller?: LLMCaller;  // Injectable LLM caller for testing
 }
 
-// Default gate configurations — xml-structure runs first to extract tags
+// Default gate configurations
 const defaultGates: GateRunnerConfig = {
   enabled: true,
-  gates: ['xml-structure', 'response-validation', 'mercury-validator']
+  gates: ['response-validation', 'mercury-validator']
 };
 
 export async function runGates(
@@ -58,7 +52,6 @@ export async function runGates(
   config: GateRunnerConfig = defaultGates
 ): Promise<GateResult[]> {
   const results: GateResult[] = [];
-<<<<<<< HEAD
   
   // 1. Check hard limits first (non-negotiable)
   const hardLimitsResult = checkHardLimits(task, response);
@@ -73,9 +66,6 @@ export async function runGates(
     }
   }
   
-=======
-
->>>>>>> origin/claude/setup-claude-code-cli-xRTjx
   if (!config.enabled) {
     results.push({
       gate: 'all',
@@ -84,22 +74,17 @@ export async function runGates(
     });
     return results;
   }
-
+  
   for (const gate of config.gates) {
     const result = await runGate(gate, task, response, config.llmCaller);
     results.push(result);
-<<<<<<< HEAD
     
     // Stop on first failure
-=======
-
-    // Stop on first failure (for now)
->>>>>>> origin/claude/setup-claude-code-cli-xRTjx
     if (!result.passed) {
       break;
     }
   }
-
+  
   return results;
 }
 
@@ -295,8 +280,6 @@ async function runGate(
   llmCaller?: LLMCaller
 ): Promise<GateResult> {
   switch (gateName) {
-    case 'xml-structure':
-      return validateXmlStructure(response);
     case 'response-validation':
       return validateResponse(response);
     case 'mercury-validator':
@@ -320,76 +303,31 @@ async function runGate(
   }
 }
 
-/**
- * XML Structure Gate — validates that the response contains
- * the required <work_log>, <output>, and <confidence> tags.
- * Soft gate: warns but passes if tags are missing (graceful degradation
- * for models that don't follow XML instructions perfectly).
- */
-function validateXmlStructure(response: LLMResponse): GateResult {
-  const tags = parseOutputTags(response.content);
-  const missing: string[] = [];
-
-  if (!tags.workLog) missing.push('work_log');
-  if (!tags.output) missing.push('output');
-  if (!tags.confidence) missing.push('confidence');
-
-  if (missing.length === 0) {
-    return {
-      gate: 'xml-structure',
-      passed: true,
-      message: 'All XML tags present (work_log, output, confidence)'
-    };
-  }
-
-  // If <output> is present but others missing, still pass (soft gate)
-  if (tags.output) {
-    return {
-      gate: 'xml-structure',
-      passed: true,
-      message: `XML structure partial: missing ${missing.join(', ')} (output present, passing)`
-    };
-  }
-
-  // No XML tags at all — still pass but warn. The response may be useful
-  // and other gates will catch actual quality issues. This allows mock
-  // tests and non-XML-aware models to still work.
-  return {
-    gate: 'xml-structure',
-    passed: true,
-    message: `No XML tags found — response is unstructured (passing, will validate content)`
-  };
-}
-
 function validateResponse(response: LLMResponse): GateResult {
-  // Use <output> tag content if available, otherwise full response
-  const tags = parseOutputTags(response.content);
-  const contentToValidate = tags.output || response.content;
-
   // Basic validation - response should not be empty
-  if (!contentToValidate || contentToValidate.trim().length === 0) {
+  if (!response.content || response.content.trim().length === 0) {
     return {
       gate: 'response-validation',
       passed: false,
       message: 'Response is empty'
     };
   }
-
+  
   // Check for minimum content length
-  if (contentToValidate.length < 10) {
+  if (response.content.length < 10) {
     return {
       gate: 'response-validation',
       passed: false,
       message: 'Response too short (< 10 characters)'
     };
   }
-
+  
   // Check for error indicators in response
   const errorIndicators = ['error', 'failed', 'cannot', 'unable to'];
-  const lowerContent = contentToValidate.toLowerCase();
-
+  const lowerContent = response.content.toLowerCase();
+  
   for (const indicator of errorIndicators) {
-    if (lowerContent.includes(indicator) && contentToValidate.length < 100) {
+    if (lowerContent.includes(indicator) && response.content.length < 100) {
       return {
         gate: 'response-validation',
         passed: false,
@@ -397,7 +335,7 @@ function validateResponse(response: LLMResponse): GateResult {
       };
     }
   }
-
+  
   return {
     gate: 'response-validation',
     passed: true,
@@ -405,7 +343,6 @@ function validateResponse(response: LLMResponse): GateResult {
   };
 }
 
-<<<<<<< HEAD
 /**
  * Validate response using MERCURY agent via real LLM call
  * This replaces keyword matching with actual semantic validation
@@ -532,13 +469,6 @@ function parseMercuryResponse(content: string): { passed: boolean; reason?: stri
  * Uses keyword matching as a secondary validation method
  */
 function validateWithMercuryFallback(task: Task, response: LLMResponse): GateResult {
-=======
-async function validateWithMercury(task: Task, response: LLMResponse): Promise<GateResult> {
-  // Use <output> tag content if available, otherwise full response
-  const tags = parseOutputTags(response.content);
-  const contentToValidate = tags.output || response.content;
-
->>>>>>> origin/claude/setup-claude-code-cli-xRTjx
   // Check if response contains required keywords based on task type
   const agentKeywords: Record<string, string[]> = {
     EARTH: ['spec', 'field', 'constraint', 'validation'],
@@ -546,12 +476,12 @@ async function validateWithMercury(task: Task, response: LLMResponse): Promise<G
     MERCURY: ['PASS', 'FAIL', 'validate'],
     JUPITER: ['ADR', 'Context', 'Decision', 'Consequences']
   };
-
+  
   const requiredKeywords = agentKeywords[task.agent];
   if (requiredKeywords) {
-    const lowerContent = contentToValidate.toLowerCase();
+    const lowerContent = response.content.toLowerCase();
     const hasKeyword = requiredKeywords.some(kw => lowerContent.includes(kw.toLowerCase()));
-
+    
     if (!hasKeyword) {
       return {
         gate: 'mercury-validator',
@@ -560,7 +490,7 @@ async function validateWithMercury(task: Task, response: LLMResponse): Promise<G
       };
     }
   }
-
+  
   return {
     gate: 'mercury-validator',
     passed: true,
@@ -642,13 +572,13 @@ export function allGatesPassed(results: GateResult[]): boolean {
 export function getGatesSummary(results: GateResult[]): string {
   const passed = results.filter(r => r.passed).length;
   const failed = results.filter(r => !r.passed).length;
-
+  
   let summary = `Gates: ${passed} passed, ${failed} failed`;
-
+  
   if (failed > 0) {
     const failedGates = results.filter(r => !r.passed).map(r => r.gate);
     summary += ` (${failedGates.join(', ')})`;
   }
-
+  
   return summary;
 }

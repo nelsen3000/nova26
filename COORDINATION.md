@@ -1,23 +1,20 @@
-# NOVA26 Multi-Agent Coordination
+# NOVA26 Project Coordination
 
 > Last updated: 2026-02-18
-<<<<<<< HEAD
-> Rule: ONE agent per domain. Read your own file before touching anything.
-=======
 > Active agents: MiniMax Agent, Claude
->>>>>>> origin/claude/setup-claude-code-cli-xRTjx
 
-## Active Agents & Their Files
+## Current Status
 
-| Agent | Status File | File Ownership |
-|-------|-------------|----------------|
-| **Claude** | `CLAUDE.md` | `src/llm/`, `convex/`, Zod schemas, MCP config, agent XML restructure |
-| **MiniMax** | `MINIMAX.md` | `src/orchestrator/`, `src/gates/`, `src/atlas/`, model router |
-| **Kimi** | `KIMI.md` | `.nova/agents/*.md`, `.nova/style-guides/`, `.nova/config/` |
+### MiniMax Agent - Completed (2026-02-18)
+1. Fixed TypeScript compilation (43 errors)
+2. Added LLMCaller type for testing
+3. Created promotePendingTasks()
+4. Created integration-test.ts (25/25 tests passed)
+5. Added LLM Council module for multi-agent consensus
+   - 3 council members: ARCHITECT, REVIEWER, IMPLEMENTER
+   - Consensus types: unanimous, majority, split, deadlock
+   - Integrated into Ralph Loop for Phase 1-2 tasks
 
-<<<<<<< HEAD
-## Hard Ownership Rules — No Cross-Writes
-=======
 ### Claude - Kronos + Convex Integration Complete (2026-02-18)
 
 **Phase 1 — Sidecar (zero risk):**
@@ -53,24 +50,9 @@
 **Convex dependency:** Set `CONVEX_URL` env var to enable cloud sync
 - Provides: cloud-hosted builds/tasks/executions/learnings database
 - Nova26 works fine without it — completely optional
->>>>>>> origin/claude/setup-claude-code-cli-xRTjx
 
-| Path | Owner |
-|------|-------|
-| `src/llm/` | Claude |
-| `src/orchestrator/` | MiniMax |
-| `src/gates/` | MiniMax |
-| `src/atlas/` | MiniMax |
-| `src/agents/` | MiniMax |
-| `convex/` | Claude |
-| `.nova/agents/` | Kimi |
-| `.nova/style-guides/` | Kimi |
-| `.nova/config/` | Kimi |
-| `src/types/index.ts` | **Shared** — coordinate before changing |
+## Recent Changes
 
-<<<<<<< HEAD
-## Cross-Agent Requests
-=======
 | Date | Agent | Change |
 |------|-------|--------|
 | 2026-02-18 | MiniMax | Added council-runner.ts |
@@ -82,19 +64,9 @@
 | 2026-02-18 | Claude | Phase 2: Kronos semantic context in prompt-builder.ts |
 | 2026-02-18 | Claude | Phase 3: ATLAS retrospective engine + auto-run after loop |
 | 2026-02-18 | Claude | Phase 4: Convex cloud triple-write (local + Kronos + Convex) |
->>>>>>> origin/claude/setup-claude-code-cli-xRTjx
 
-If you need something from another agent's domain, add it to their file as a REQUEST.
-Do not implement it yourself.
+## Files Structure
 
-<<<<<<< HEAD
-## Current Phase Status
-
-See individual files for details:
-- **Claude** → `CLAUDE.md`
-- **MiniMax** → `MINIMAX.md`
-- **Kimi** → `KIMI.md`
-=======
 ```
 src/
 ├── orchestrator/
@@ -143,4 +115,3 @@ scripts/
 - [x] Convex database integration (triple-write: local + Kronos + Convex)
 - [x] Kronos Phase 2 — Kronos semantic context injected into prompt-builder.ts
 - [x] Kronos Phase 3 — ATLAS retrospective engine with pattern analysis
->>>>>>> origin/claude/setup-claude-code-cli-xRTjx
