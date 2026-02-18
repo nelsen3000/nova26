@@ -1,0 +1,169 @@
+{
+  "_description": "Hard limits are non-negotiable constraints that cause immediate gate failure",
+  "_severity_levels": {
+    "SEVERE": "Immediate failure, no retry allowed",
+    "WARNING": "Flagged but allows continuation"
+  },
+  "agents": {
+    "MARS": {
+      "limits": [
+        {
+          "name": "no_implicit_any",
+          "pattern": ":\\\\s*any\\b",
+          "severity": "SEVERE",
+          "message": "TypeScript 'any' type is prohibited - use specific types or unknown with type guards"
+        },
+        {
+          "name": "convex_auth_first",
+          "pattern": "mutation\\s*\\(\\s*\\{\\s*args",
+          "severity": "SEVERE",
+          "message": "Mutations must call requireAuth(ctx) before accessing args for row-level security"
+        },
+        {
+          "name": "no_console_log",
+          "pattern": "console\\.log\\(",
+          "severity": "SEVERE",
+          "message": "console.log statements must be removed before completion - use proper error handling"
+        },
+        {
+          "name": "require_validator",
+          "pattern": "defineTable\\([^)]+\\)(?!.*validator)",
+          "severity": "SEVERE",
+          "message": "All Convex tables must use .validator() for type safety"
+        },
+        {
+          "name": "chip_calculation_safety",
+          "pattern": "balance\\s*[/+-]\\s*",
+          "check": "must_use_math_floor",
+          "severity": "SEVERE",
+          "message": "Chip calculations must use Math.floor() to prevent floating point errors"
+        }
+      ]
+    },
+    "VENUS": {
+      "limits": [
+        {
+          "name": "no_inline_styles",
+          "pattern": "style=\\{[^}]+\\}",
+          "severity": "SEVERE",
+          "message": "Inline styles are prohibited - use Tailwind CSS classes only"
+        },
+        {
+          "name": "no_console_log",
+          "pattern": "console\\.log\\(",
+          "severity": "SEVERE",
+          "message": "console.log statements must be removed before completion"
+        },
+        {
+          "name": "require_five_ui_states",
+          "check": "count_ui_states",
+          "min_count": 5,
+          "severity": "SEVERE",
+          "message": "Component must handle all 5 UI states: Loading, Empty, Error, Partial, Populated"
+        },
+        {
+          "name": "no_raw_div_onclick",
+          "pattern": "<div[^>]*onClick",
+          "severity": "SEVERE",
+          "message": "NEVER use raw div with onClick - use proper <Button> component for accessibility"
+        },
+        {
+          "name": "no_magic_numbers",
+          "pattern": "\\[\\d+px\\]",
+          "severity": "SEVERE",
+          "message": "No arbitrary pixel values - use Tailwind spacing scale (4, 8, 12, 16, 24, 32, etc.)"
+        },
+        {
+          "name": "require_loading_skeleton",
+          "check": "has_skeleton_or_spinner",
+          "severity": "SEVERE",
+          "message": "Components with data fetching MUST show Skeleton or Spinner during loading state"
+        },
+        {
+          "name": "require_error_boundary",
+          "check": "has_error_handling",
+          "severity": "SEVERE",
+          "message": "Page-level components MUST have error boundary or error state UI"
+        },
+        {
+          "name": "require_empty_state",
+          "check": "has_empty_state",
+          "severity": "SEVERE",
+          "message": "List components MUST handle empty data with helpful empty state (not blank screen)"
+        },
+        {
+          "name": "require_aria_labels",
+          "pattern": "<button[^>]*>(?![^<]*\\b[A-Za-z]{3,})|<button[^>]*>\\s*<[^>]*icon|size=\"icon\"[^>]*>(?![^<]*aria-label)",
+          "severity": "SEVERE",
+          "message": "Icon-only buttons and buttons without text MUST have aria-label"
+        },
+        {
+          "name": "require_responsive",
+          "pattern": "(md:|lg:|xl:)",
+          "severity": "WARNING",
+          "message": "Components should include responsive variants (at minimum mobile + desktop)"
+        },
+        {
+          "name": "no_hardcoded_colors",
+          "pattern": "bg-(white|black|gray-[0-9]+)|text-(white|black|gray-[0-9]+)",
+          "severity": "WARNING",
+          "message": "Use semantic color tokens (bg-background, text-foreground) not hardcoded colors"
+        },
+        {
+          "name": "accessibility_minimum",
+          "pattern": "<(button|a|input|select|textarea)(?![^>]*aria-)(?![^>]*id=)",
+          "severity": "WARNING",
+          "message": "Interactive elements should have aria-label or associated label for accessibility"
+        }
+      ]
+    },
+    "PLUTO": {
+      "limits": [
+        {
+          "name": "require_defineTable",
+          "pattern": "^(?!.*defineTable)",
+          "severity": "SEVERE",
+          "message": "PLUTO output must contain Convex defineTable() definitions"
+        },
+        {
+          "name": "require_indexing",
+          "pattern": "defineTable\\([^)]+\\)(?!.*index)",
+          "severity": "WARNING",
+          "message": "Tables should have indexes for query performance"
+        }
+      ]
+    },
+    "EARTH": {
+      "limits": [
+        {
+          "name": "require_fields_section",
+          "pattern": "^(?!.*## Fields)",
+          "severity": "SEVERE",
+          "message": "EARTH spec must contain '## Fields' section"
+        },
+        {
+          "name": "require_constraints_section",
+          "pattern": "^(?!.*## Constraints)",
+          "severity": "SEVERE",
+          "message": "EARTH spec must contain '## Constraints' section"
+        },
+        {
+          "name": "require_validation_section",
+          "pattern": "^(?!.*## Validation)",
+          "severity": "SEVERE",
+          "message": "EARTH spec must contain '## Validation' section"
+        }
+      ]
+    },
+    "MERCURY": {
+      "limits": [
+        {
+          "name": "require_pass_or_fail",
+          "pattern": "^(?!.*\\b(PASS|FAIL)\\b)",
+          "severity": "SEVERE",
+          "message": "MERCURY validation must start with PASS or FAIL"
+        }
+      ]
+    }
+  }
+}

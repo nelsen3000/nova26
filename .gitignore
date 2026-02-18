@@ -4,13 +4,15 @@ node_modules/
 # Build output
 dist/
 
-# Nova runtime data
-.nova/agents/
+# Nova runtime data (agents/ tracked — they're core project files)
 .nova/atlas/builds.json
 .nova/atlas/patterns.json
 .nova/output/*
 !.nova/output/.gitkeep
 .nova/test-run/
+.nova/sandbox/
+.nova/events/
+.nova/screenshots/
 
 # OS files
 .DS_Store

@@ -117,19 +117,52 @@ async function cmdRun(prdPath: string): Promise<void> {
   }
 }
 
+/**
+ * Generate a PRD using the SUN agent
+ * Takes a natural language description and creates a structured PRD
+ */
+async function cmdGenerate(description: string, outputPath?: string): Promise<void> {
+  console.log(`\n=== Generating PRD with SUN Agent ===\n`);
+  console.log(`Description: ${description}\n`);
+  
+  // Default output path
+  const prdPath = outputPath || join(novaDir, `prd-${Date.now()}.json`);
+  
+  try {
+    // Import the SUN agent PRD generator
+    const { generatePRD } = await import('./agents/sun-prd-generator.js');
+    
+    const prd = await generatePRD(description);
+    
+    // Save the generated PRD
+    savePRD(prdPath, prd);
+    
+    console.log(`\n✅ PRD generated successfully!`);
+    console.log(`   Saved to: ${prdPath}`);
+    console.log(`   Tasks: ${prd.tasks.length}`);
+    console.log(`\nRun with: nova26 run ${prdPath}`);
+  } catch (error) {
+    console.error('Error generating PRD:', error);
+    process.exit(1);
+  }
+}
+
 function cmdHelp(): void {
   console.log(`
 NOVA26 CLI
 
 Usage:
-  nova26 status <prd-file>   Show PRD status
-  nova26 reset <prd-file>    Reset PRD tasks
+  nova26 status <prd-file>    Show PRD status
+  nova26 reset <prd-file>     Reset PRD tasks
   nova26 run <prd-file>      Run PRD tasks
+  nova26 generate <desc>     Generate PRD using SUN agent
+  nova26 -h, --help          Show this help
 
 Examples:
   nova26 status .nova/prd-test.json
   nova26 reset .nova/prd-test.json
   nova26 run .nova/prd-test.json
+  nova26 generate "Build a task management app"
 `);
 }
 
@@ -168,6 +201,22 @@ async function main(): Promise<void> {
         process.exit(1);
       }
       await cmdRun(args[1]);
+      break;
+      
+    case 'generate':
+      if (!args[1]) {
+        console.error('Missing project description');
+        console.error('Usage: nova26 generate "Build a task management app"');
+        process.exit(1);
+      }
+      // Join remaining args as description
+      const description = args.slice(1).join(' ');
+      await cmdGenerate(description);
+      break;
+      
+    case '-h':
+    case '--help':
+      cmdHelp();
       break;
       
     default:

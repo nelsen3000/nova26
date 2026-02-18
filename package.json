@@ -11,14 +11,27 @@
     "test:mock": "tsx src/test/mock-run.ts",
     "test:integration": "tsx src/test/integration-test.ts"
   },
-  "keywords": ["ai", "agents", "orchestration", "llm", "code-generation"],
+  "keywords": [
+    "ai",
+    "agents",
+    "orchestration",
+    "llm",
+    "code-generation"
+  ],
   "author": "Matrix Agent",
   "license": "MIT",
   "dependencies": {
+    "@instructor-ai/instructor": "^1.7.0",
+    "bullmq": "^5.69.3",
     "convex": "^1.16.0",
-    "ollama": "^0.5.0"
+    "ioredis": "^5.9.3",
+    "langfuse": "^3.38.6",
+    "ollama": "^0.5.0",
+    "openai": "^6.22.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20.11.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.0",

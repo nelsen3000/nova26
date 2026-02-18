@@ -12,6 +12,22 @@ export interface Task {
   createdAt: string;
   output?: string;
   error?: string;
+  // TodoWrite pattern support
+  todos?: TodoItem[];
+  currentTodoId?: string;
+  // Context for agent reasoning
+  context?: Record<string, unknown>;
+}
+
+export interface TodoItem {
+  id: string;
+  content: string;        // Imperative form: "Fix authentication bug"
+  activeForm: string;     // Continuous form: "Fixing authentication bug"
+  status: 'pending' | 'in_progress' | 'completed';
+  agent: string;
+  createdAt: string;
+  completedAt?: string;
+  verificationCriteria?: string[];
 }
 
 export interface PRD {
@@ -87,4 +103,32 @@ export interface GateConfig {
   type: 'response-validation' | 'mercury-validator' | 'typescript-check' | 'test-runner';
   enabled: boolean;
   config: Record<string, unknown>;
+}
+
+// Hard limits configuration (from leaked prompt analysis)
+export interface HardLimit {
+  name: string;
+  pattern?: string;
+  check?: string;
+  severity: 'SEVERE' | 'WARNING';
+  message: string;
+}
+
+export interface HardLimitsConfig {
+  agents: Record<string, {
+    limits: HardLimit[];
+  }>;
+}
+
+// Planning Mode types
+export interface PlanningPhase {
+  name: 'UNDERSTAND' | 'CLARIFY' | 'PLAN' | 'APPROVE' | 'EXECUTE' | 'VERIFY' | 'DELIVER';
+  actions: string[];
+  exitCriteria: string;
+}
+
+export interface Checkpoint {
+  milestone: string;
+  confirmationRequired: boolean;
+  validationCriteria: string[];
 }

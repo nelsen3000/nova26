@@ -378,3 +378,35 @@ TRITON coordinates with:
 *Last updated: 2024-01-15*
 *Version: 1.0*
 *Status: Active*
+
+<handoff>
+  <on_deploy_success>
+    <action>Log build to ATLAS builds table</action>
+    <method>POST to $CONVEX_URL with:</method>
+    <payload>
+      {
+        buildId: string,
+        status: "success",
+        deployedAt: ISO timestamp,
+        commit: git commit hash,
+        branch: git branch,
+        logs: deployment logs
+      }
+    </payload>
+    <notify>SUN and ATLAS</notify>
+  </on_deploy_success>
+  
+  <on_deploy_failure>
+    <action>Log failed build to ATLAS</action>
+    <method>POST to $CONVEX_URL with:</method>
+    <payload>
+      {
+        buildId: string,
+        status: "failed",
+        error: error message,
+        logs: deployment logs
+      }
+    </payload>
+    <notify>SUN and MIMAS (for retry analysis)</notify>
+  </on_deploy_failure>
+</handoff>

@@ -1,60 +1,39 @@
-# NOVA26 Project Coordination
+# NOVA26 Multi-Agent Coordination
 
-> Last updated: 2026-02-18 11:59
-> Active agents: MiniMax Agent, Claude
+> Last updated: 2026-02-18
+> Rule: ONE agent per domain. Read your own file before touching anything.
 
-## Current Status
+## Active Agents & Their Files
 
-### MiniMax Agent - Completed (2026-02-18)
-1. Fixed TypeScript compilation (43 errors)
-2. Added LLMCaller type for testing
-3. Created promotePendingTasks()
-4. Created integration-test.ts (25/25 tests passed)
-5. Added LLM Council module for multi-agent consensus
-   - 3 council members: ARCHITECT, REVIEWER, IMPLEMENTER
-   - Consensus types: unanimous, majority, split, deadlock
-   - Integrated into Ralph Loop for Phase 1-2 tasks
+| Agent | Status File | File Ownership |
+|-------|-------------|----------------|
+| **Claude** | `CLAUDE.md` | `src/llm/`, `convex/`, Zod schemas, MCP config, agent XML restructure |
+| **MiniMax** | `MINIMAX.md` | `src/orchestrator/`, `src/gates/`, `src/atlas/`, model router |
+| **Kimi** | `KIMI.md` | `.nova/agents/*.md`, `.nova/style-guides/`, `.nova/config/` |
 
-### Claude - Status Unknown
-> Please add your status here
+## Hard Ownership Rules — No Cross-Writes
 
-## Recent Changes
+| Path | Owner |
+|------|-------|
+| `src/llm/` | Claude |
+| `src/orchestrator/` | MiniMax |
+| `src/gates/` | MiniMax |
+| `src/atlas/` | MiniMax |
+| `src/agents/` | MiniMax |
+| `convex/` | Claude |
+| `.nova/agents/` | Kimi |
+| `.nova/style-guides/` | Kimi |
+| `.nova/config/` | Kimi |
+| `src/types/index.ts` | **Shared** — coordinate before changing |
 
-| Date | Agent | Change |
-|------|-------|--------|
-| 2026-02-18 | MiniMax | Added council-runner.ts |
-| 2026-02-18 | MiniMax | Integrated council into ralph-loop.ts |
-| Earlier | Claude | [Add your changes] |
+## Cross-Agent Requests
 
-## Files Structure
+If you need something from another agent's domain, add it to their file as a REQUEST.
+Do not implement it yourself.
 
-```
-src/
-├── orchestrator/
-│   ├── ralph-loop.ts      # Core execution loop
-│   ├── council-runner.ts  # LLM Council (NEW)
-│   ├── task-picker.ts     # Task scheduling
-│   ├── prompt-builder.ts  # Prompt generation
-│   ├── agent-loader.ts    # Agent loading
-│   └── gate-runner.ts     # Quality gates
-├── llm/
-│   └── ollama-client.ts   # Ollama LLM client
-├── types/
-│   └── index.ts           # TypeScript types
-└── test/
-    └── mock-run.ts        # Mock tests
-```
+## Current Phase Status
 
-## Notes for Coordination
-
-- MiniMax is working in: `/Users/jonathannelsen/.minimax-agent/projects/22`
-- Git repo is in: `/Users/jonathannelsen/.minimax-agent/projects/19`
-- Copy files from project 22 to 19 before pushing to GitHub
-- Tests: `npx tsx src/test/mock-run.ts`
-
-## Next Steps Ideas
-
-- [ ] Live LLM test with Ollama
-- [ ] Expand council members
-- [ ] Add more quality gates
-- [ ] Convex database integration
+See individual files for details:
+- **Claude** → `CLAUDE.md`
+- **MiniMax** → `MINIMAX.md`
+- **Kimi** → `KIMI.md`

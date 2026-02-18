@@ -1,0 +1,311 @@
+{
+  "_description": "UX/UI Quality Gates - Mandatory checks VENUS must pass before UI output is accepted",
+  "_version": "1.0.0",
+  "_severity_levels": {
+    "BLOCKING": "Cannot ship - must fix before merge",
+    "WARNING": "Should fix - track for improvement",
+    "SUGGESTION": "Nice to have - consider for polish"
+  },
+  
+  "gates": {
+    "visual_consistency": {
+      "description": "Visual design must follow system standards",
+      "severity": "BLOCKING",
+      "checks": {
+        "spacing_system": {
+          "description": "Must use 4px grid spacing system",
+          "allowed_values": ["0", "1", "2", "3", "4", "5", "6", "8", "10", "12", "16", "20", "24", "32", "40", "48", "64", "80", "96"],
+          "forbidden_patterns": ["w-[\\d+px]", "h-[\\d+px]", "p-[\\d+px]", "m-[\\d+px]", "gap-[\\d+px]"],
+          "message": "Use Tailwind spacing scale (4px grid). Never arbitrary pixel values."
+        },
+        "color_tokens": {
+          "description": "Must use design tokens, never raw hex/rgb",
+          "allowed_prefixes": ["bg-", "text-", "border-", "ring-", "divide-", "outline-", "shadow-"],
+          "allowed_tokens": [
+            "background", "foreground", "card", "card-foreground",
+            "popover", "popover-foreground", "primary", "primary-foreground",
+            "secondary", "secondary-foreground", "muted", "muted-foreground",
+            "accent", "accent-foreground", "destructive", "destructive-foreground",
+            "border", "input", "ring", "success", "success-foreground",
+            "warning", "warning-foreground", "info", "info-foreground"
+          ],
+          "forbidden_patterns": ["#[0-9a-fA-F]{3,6}", "rgb\\(", "rgba\\(", "hsl\\("],
+          "message": "Use semantic color tokens. Never hardcode hex/rgb/hsl values."
+        },
+        "typography_scale": {
+          "description": "Must use defined type scale",
+          "allowed_sizes": ["xs", "sm", "base", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl"],
+          "forbidden_patterns": ["text-\\[", "font-size:"],
+          "line_height_scale": ["3", "4", "5", "6", "7", "8", "9", "10"],
+          "message": "Use Tailwind font size scale (text-sm, text-base, etc.)"
+        },
+        "border_radius": {
+          "description": "Must use defined radii tokens",
+          "allowed_values": ["none", "sm", "DEFAULT", "md", "lg", "xl", "2xl", "3xl", "full"],
+          "forbidden_patterns": ["rounded-\\[", "border-radius:"],
+          "message": "Use rounded-sm, rounded-md, rounded-lg, rounded-full. Never arbitrary values."
+        },
+        "shadow_system": {
+          "description": "Must use defined shadow tokens",
+          "allowed_values": ["sm", "DEFAULT", "md", "lg", "xl", "2xl", "inner", "none"],
+          "forbidden_patterns": ["shadow-\\[", "box-shadow:"],
+          "message": "Use shadow-sm, shadow, shadow-md, shadow-lg. Never arbitrary shadows."
+        }
+      }
+    },
+    
+    "interaction_quality": {
+      "description": "All interactive elements must have complete state coverage",
+      "severity": "BLOCKING",
+      "checks": {
+        "hover_states": {
+          "description": "All interactive elements must have hover state",
+          "required_on": ["button", "a", "[role='button']", "[role='link']", "label[for]"],
+          "implementation": "Use Tailwind hover: prefix",
+          "example": "hover:bg-primary/90 hover:shadow-md",
+          "message": "Every clickable element needs a hover state"
+        },
+        "focus_visible": {
+          "description": "All focusable elements must show focus ring",
+          "required_on": ["button", "a", "input", "textarea", "select", "[tabindex]:not([tabindex='-1'])"],
+          "implementation": "Use focus-visible:ring-2 focus-visible:ring-ring",
+          "message": "Focus states required for keyboard accessibility"
+        },
+        "active_states": {
+          "description": "Buttons must have pressed/active state",
+          "required_on": ["button", "[role='button']"],
+          "implementation": "Use active:scale-[0.98] or active:bg-primary/80",
+          "message": "Buttons need visual feedback when pressed"
+        },
+        "disabled_states": {
+          "description": "Disabled elements must be visually distinct",
+          "required_on": ["button", "input", "textarea", "select"],
+          "implementation": "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
+          "message": "Disabled state must be obvious"
+        },
+        "loading_states": {
+          "description": "Async actions must show loading indicator",
+          "required_when": "onClick triggers async operation",
+          "implementation": "Show Spinner or Loading text, disable button",
+          "message": "Users need feedback during async operations"
+        },
+        "transition_timing": {
+          "description": "All state changes must animate smoothly",
+          "duration_range": "150-300ms",
+          "easing": "ease-in-out or cubic-bezier(0.4, 0, 0.2, 1)",
+          "implementation": "transition-all duration-200 ease-in-out",
+          "respects_prefers_reduced_motion": true,
+          "message": "State changes should animate smoothly (150-300ms)"
+        }
+      }
+    },
+    
+    "responsive_design": {
+      "description": "Must work across all device sizes",
+      "severity": "BLOCKING",
+      "breakpoints": {
+        "mobile": {
+          "range": "320px-767px",
+          "prefix": "default (no prefix)",
+          "approach": "Design mobile-first"
+        },
+        "tablet": {
+          "range": "768px-1023px",
+          "prefix": "md:",
+          "requirements": ["Touch-friendly targets", "Readable font sizes", "Appropriate spacing"]
+        },
+        "desktop": {
+          "range": "1024px-1439px",
+          "prefix": "lg:",
+          "requirements": ["Full layout", "Hover interactions", "Dense information display"]
+        },
+        "wide": {
+          "range": "1440px+",
+          "prefix": "xl:",
+          "requirements": ["Max-width containers", "Optimized line lengths", "Premium layouts"]
+        }
+      },
+      "checks": {
+        "mobile_first": {
+          "description": "Base styles target mobile, use md:/lg:/xl: for larger",
+          "pattern_required": "Classes without prefix must work on mobile",
+          "message": "Write mobile-first: base classes for mobile, responsive prefixes for larger"
+        },
+        "no_fixed_widths": {
+          "description": "Avoid fixed widths that break on small screens",
+          "forbidden_on_mobile": ["w-96", "w-[500px]", "w-[600px]"],
+          "message": "Use max-w-* or responsive widths instead of fixed large widths"
+        },
+        "readable_text": {
+          "description": "Text must be readable on all devices",
+          "min_size_mobile": "text-sm (14px)",
+          "line_length": "45-75 characters optimal",
+          "message": "Minimum text-sm on mobile, control line length with max-w-prose"
+        }
+      }
+    },
+    
+    "accessibility_wcag_aa": {
+      "description": "Must meet WCAG 2.1 AA standards",
+      "severity": "BLOCKING",
+      "checks": {
+        "color_contrast": {
+          "description": "Text must have sufficient contrast against background",
+          "normal_text": "4.5:1 minimum",
+          "large_text": "3:1 minimum (18px+ or 14px bold)",
+          "ui_components": "3:1 minimum for interactive elements",
+          "message": "Use contrast checker. Never place text on low-contrast backgrounds."
+        },
+        "touch_targets": {
+          "description": "Interactive elements must be large enough to tap",
+          "minimum_size": "44×44px",
+          "spacing": "8px minimum between adjacent targets",
+          "implementation": "min-h-[44px] min-w-[44px]",
+          "message": "Touch targets must be at least 44×44px"
+        },
+        "keyboard_navigation": {
+          "description": "All features must be accessible via keyboard",
+          "requirements": [
+            "Tab order is logical",
+            "Focus is visible",
+            "Enter/Space activates buttons",
+            "Escape closes modals/dropdowns",
+            "Arrow keys navigate within components"
+          ],
+          "message": "Test with keyboard only - no mouse"
+        },
+        "screen_reader": {
+          "description": "Content must be announced correctly by screen readers",
+          "requirements": {
+            "images": "All <img> must have alt text",
+            "icons": "Decorative icons need aria-hidden='true'",
+            "forms": "All inputs need associated <label>",
+            "buttons": "Icon-only buttons need aria-label",
+            "live_regions": "Dynamic updates need aria-live"
+          },
+          "message": "Test with screen reader (VoiceOver, NVDA, JAWS)"
+        },
+        "motion_reduce": {
+          "description": "Must respect prefers-reduced-motion",
+          "implementation": "motion-reduce:transform-none motion-reduce:transition-none",
+          "message": "Wrap animations in @media (prefers-reduced-motion: no-preference)"
+        },
+        "semantic_html": {
+          "description": "Use correct HTML elements for their purpose",
+          "requirements": {
+            "headings": "Proper h1-h6 hierarchy",
+            "lists": "Use ul/ol/li for lists",
+            "buttons": "Use <button> for actions, <a> for navigation",
+            "forms": "Use proper form elements and fieldset/legend"
+          },
+          "message": "Use semantic HTML, not div soup"
+        }
+      }
+    },
+    
+    "component_quality": {
+      "description": "Components must meet quality standards",
+      "severity": "BLOCKING",
+      "scoring_rubric": {
+        "visual_polish": {
+          "weight": 2,
+          "10": "Pixel-perfect spacing, perfect alignment, beautiful typography",
+          "7": "Good spacing and alignment, minor inconsistencies",
+          "5": "Acceptable but rough edges visible",
+          "3": "Poor spacing, misaligned elements",
+          "0": "Unusable visual quality"
+        },
+        "interaction_quality": {
+          "weight": 2,
+          "10": "All 6 states implemented beautifully (hover, focus, active, disabled, loading, default)",
+          "7": "Most states implemented, minor issues",
+          "5": "Basic states only, missing some",
+          "3": "Missing multiple critical states",
+          "0": "No interactive states"
+        },
+        "responsiveness": {
+          "weight": 2,
+          "10": "Flawless at all 4 breakpoints, touch-optimized",
+          "7": "Works on all sizes, minor issues on one breakpoint",
+          "5": "Works on desktop and mobile, tablet issues",
+          "3": "Desktop only or broken on mobile",
+          "0": "Fixed width, not responsive"
+        },
+        "accessibility": {
+          "weight": 2,
+          "10": "WCAG AA compliant, screen reader tested, keyboard navigable",
+          "7": "Mostly accessible, minor issues",
+          "5": "Basic accessibility, some barriers",
+          "3": "Significant accessibility barriers",
+          "0": "Inaccessible to screen readers/keyboard"
+        },
+        "animation_quality": {
+          "weight": 1,
+          "10": "Beautiful, purposeful animations that enhance UX",
+          "7": "Good animations, minor timing issues",
+          "5": "Basic animations present",
+          "3": "Jarring or excessive animations",
+          "0": "No animations or broken animations"
+        },
+        "error_handling": {
+          "weight": 1,
+          "10": "All 5 UI states handled perfectly with helpful UX",
+          "7": "5 states handled, minor UX issues",
+          "5": "Missing one state or poor empty/error UX",
+          "3": "Missing multiple states",
+          "0": "No error/empty state handling"
+        }
+      },
+      "minimum_score": 35,
+      "minimum_score_out_of": 50
+    },
+    
+    "code_quality": {
+      "description": "Code must be maintainable and follow standards",
+      "severity": "WARNING",
+      "checks": {
+        "no_magic_numbers": {
+          "description": "No raw pixel or timing values",
+          "forbidden": ["w-[123px]", "h-[45px]", "delay-[500]", "duration-[400]"],
+          "message": "Use spacing scale and standard durations"
+        },
+        "component_size": {
+          "description": "Components should be focused and readable",
+          "max_lines": 200,
+          "max_props": 15,
+          "message": "Split large components into smaller sub-components"
+        },
+        "naming_conventions": {
+          "description": "Clear, descriptive names",
+          "component": "PascalCase",
+          "props_interface": "{ComponentName}Props",
+          "hooks": "camelCase with 'use' prefix",
+          "handlers": "handle{Event} or 'on' prefix in props",
+          "message": "Names should clearly describe purpose"
+        },
+        "imports_organization": {
+          "description": "Imports organized logically",
+          "order": ["React/Next", "Third-party libs", "UI components", "Hooks", "Utils", "Types"],
+          "message": "Group imports by category with blank lines between"
+        }
+      }
+    }
+  },
+  
+  "automation": {
+    "mercury_validation": {
+      "description": "MERCURY runs these checks automatically",
+      "process": [
+        "Parse VENUS output for component code",
+        "Check for forbidden patterns (regex)",
+        "Verify required patterns exist",
+        "Calculate quality score",
+        "Generate PASS/FAIL with specific issues"
+      ],
+      "output_format": {
+        "pass": "PASS: Component meets all UX quality gates (Score: 42/50)",
+        "fail": "FAIL: [gate_name] - [specific_issue] - [how_to_fix]"
+      }
+    }
+  }
+}

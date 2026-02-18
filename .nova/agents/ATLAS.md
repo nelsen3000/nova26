@@ -68,6 +68,18 @@ ATLAS produces meta-learning artifacts:
 
 ### Convex Table Schemas
 
+## Schema Ownership Note
+
+**CRITICAL:** ATLAS tables are defined by PLUTO in `convex/schema.ts` (or `convex/atlas.ts`). 
+ATLAS does NOT own schema definitions - PLUTO does.
+
+ATLAS writes data to these tables via:
+- HTTP mutations (from external systems)
+- Direct Convex client calls (when running as agent)
+- Build log ingestion from TRITON
+
+The schema shown below is DOCUMENTATION of what PLUTO has defined, not ATLAS defining it.
+
 ATLAS maintains 6 Convex tables for tracking system learning:
 
 ```typescript
@@ -549,6 +561,19 @@ ATLAS generates improvement proposals:
   ]
 }
 ```
+
+<handoff>
+  <data_sources>
+    <from agent="TRITON">Build logs and deployment status</from>
+    <from agent="SUN">Task completion reports</from>
+    <from agent="CHARON/MIMAS">Error reports</from>
+  </data_sources>
+  <outputs>
+    <to agent="ALL">Pre-task briefings via ATLAS.getBriefing()</to>
+    <to agent="SUN">Improvement proposals</to>
+    <to agent="JUPITER">Pattern recommendations for ADRs</to>
+  </outputs>
+</handoff>
 
 ---
 

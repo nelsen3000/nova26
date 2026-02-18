@@ -185,9 +185,12 @@ export function ErrorDisplay({
 ```typescript
 // components/error/NetworkErrorState.tsx
 import React from "react";
-import { useQuery } from "../../_generated/server";
+import { useQuery } from "convex/react";
+import { api } from "../convex/_generated/api";
 import { ErrorDisplay } from "./ErrorDisplay";
 import { WifiOff, RefreshCw } from "lucide-react";
+
+// WARNING: NEVER use TanStack Query error handling - Convex has different error patterns
 
 /**
  * Network Error State Component
@@ -250,31 +253,50 @@ export function LoadingState({
   );
 }
 
+// Convex error handling (not TanStack)
+import { useQuery } from "convex/react";
+import { api } from "../convex/_generated/api";
+
+// Error states from Convex useQuery
+const data = useQuery(api.items.list, {});
+// data === undefined = loading
+// data === null = error (check error boundary)
+// data = populated
+
+// Error boundaries for Convex
+<ErrorBoundary fallback={<ErrorDisplay />}>
+  <Component />
+</ErrorBoundary>
+
 /**
- * Hook for handling query error states
+ * Hook for handling Convex query error states
+ * 
+ * WARNING: NEVER use TanStack Query error handling - Convex has different error patterns
  */
 
-export function useQueryWithErrorState<T>(
-  query: () => T | undefined,
-  queryKey: string[]
+export function useConvexQueryWithErrorState<T>(
+  queryFn: () => T | undefined | null
 ) {
-  const data = query();
-  const queryClient = useQueryClient();
+  const data = queryFn();
   
-  // Check if there's an error in the query cache
-  const queryCache = queryClient.getQueryCache();
-  const error = queryCache
-    .getAll()
-    .find(q => q.queryKey === queryKey && q.state.error);
+  // Convex error handling patterns:
+  // - undefined = still loading
+  // - null = error occurred (check error boundary)
+  // - data = successfully loaded
+  
+  const isLoading = data === undefined;
+  const isError = data === null;
   
   const retry = () => {
-    queryClient.invalidateQueries({ queryKey });
+    // Convex handles retry automatically via reactive queries
+    // For mutations, use the mutation's retry capability
+    window.location.reload();
   };
   
   return {
-    data,
-    isLoading: data === undefined && !error,
-    error: error?.state.error,
+    data: isError ? undefined : data,
+    isLoading,
+    isError,
     retry,
   };
 }

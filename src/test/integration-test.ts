@@ -217,29 +217,43 @@ async function runTest(): Promise<void> {
   }
 
 
+  // MERCURY validation gate makes additional LLM calls (one per task),
+  // plus council votes may add more. Filter to find task-level calls.
+  const taskCalls = promptsReceived.filter(
+    p => !p.system.startsWith('You are MERCURY, the quality validation agent')
+      && !p.system.includes('Council')
+  );
+  const validationCalls = promptsReceived.filter(
+    p => p.system.startsWith('You are MERCURY, the quality validation agent')
+  );
+
   console.log('\nLLM calls:');
-  assert(callCount === 3, `LLM called 3 times`, `called ${callCount} times`);
+  assert(taskCalls.length === 3, `3 task-level LLM calls`, `got ${taskCalls.length}`);
+  assert(validationCalls.length >= 3, `3+ MERCURY validation calls`, `got ${validationCalls.length}`);
 
   console.log('\nExecution order:');
-  assert(promptsReceived.length >= 3, '3+ prompts recorded');
-  if (promptsReceived.length >= 3) {
-    assert(promptsReceived[0].agent === 'EARTH', 'First call was EARTH', promptsReceived[0].agent);
-    assert(promptsReceived[1].agent === 'PLUTO', 'Second call was PLUTO', promptsReceived[1].agent);
-    assert(promptsReceived[2].agent === 'MERCURY', 'Third call was MERCURY', promptsReceived[2].agent);
+  assert(taskCalls.length >= 3, '3+ task prompts recorded');
+  if (taskCalls.length >= 3) {
+    assert(taskCalls[0].agent === 'EARTH', 'First task call was EARTH', taskCalls[0].agent);
+    assert(taskCalls[1].agent === 'PLUTO', 'Second task call was PLUTO', taskCalls[1].agent);
+    assert(taskCalls[2].agent === 'MERCURY', 'Third task call was MERCURY', taskCalls[2].agent);
   }
 
   console.log('\nDependency context injection:');
-  if (promptsReceived.length >= 2) {
-    const plutoPrompt = promptsReceived[1].user;
-    assert(plutoPrompt.includes('int-001'), 'PLUTO prompt includes dependency task ID "int-001"');
+  if (taskCalls.length >= 2) {
+    const plutoPrompt = taskCalls[1].user;
+    assert(
+      plutoPrompt.includes('int-001') || plutoPrompt.includes('Define company data model'),
+      'PLUTO prompt references dependency task'
+    );
     assert(
       plutoPrompt.includes('Product Spec') || plutoPrompt.includes('Company Entity') || plutoPrompt.includes('spec'),
       'PLUTO prompt includes content from EARTH\'s output'
     );
   }
 
-  if (promptsReceived.length >= 3) {
-    const mercuryPrompt = promptsReceived[2].user;
+  if (taskCalls.length >= 3) {
+    const mercuryPrompt = taskCalls[2].user;
     assert(
       mercuryPrompt.includes('int-001') && mercuryPrompt.includes('int-002'),
       'MERCURY prompt includes both dependency task IDs'

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "convex": {
+      "command": "npx",
+      "args": ["convex", "mcp", "start"],
+      "description": "Convex MCP server — exposes Nova26 Convex tables (ATLAS builds, tasks, executions, learnings, patterns, agents) to Claude and other MCP-compatible tools. Requires CONVEX_URL and CONVEX_DEPLOY_KEY env vars to be set."
+    }
+  }
+}

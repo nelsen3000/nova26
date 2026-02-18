@@ -3,7 +3,15 @@
 import type { LLMResponse, ModelConfig } from '../types/index.js';
 
 const DEFAULT_MODEL = 'qwen2.5:7b';
+export { DEFAULT_MODEL };
 const OLLAMA_HOST = 'http://localhost:11434';
+
+// Function type for LLM calls (allows mocking in tests)
+export type LLMCaller = (
+  systemPrompt: string,
+  userPrompt: string,
+  agentName?: string
+) => Promise<LLMResponse>;
 
 const modelConfigs: Record<string, ModelConfig> = {
   'qwen2.5:7b': {

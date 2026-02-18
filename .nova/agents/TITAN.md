@@ -70,7 +70,8 @@ All TITAN outputs follow these conventions:
 
 ```typescript
 // .nova/realtime/hooks/useLiveCompany.ts
-import { useQuery, useMutation } from "../../_generated/server";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 /**
  * Real-time Hook: useLiveCompany
@@ -81,13 +82,13 @@ import { useQuery, useMutation } from "../../_generated/server";
 
 export function useLiveCompany(companyId: string) {
   // Subscribe to company data - updates automatically
-  const company = useQuery("companies:getById", { companyId });
+  const company = useQuery(api.companies.getById, { companyId });
   
   // Subscribe to company members
-  const members = useQuery("companies:getMembers", { companyId });
+  const members = useQuery(api.companies.getMembers, { companyId });
   
   // Subscribe to recent activity
-  const recentActivity = useQuery("activity:getRecent", { 
+  const recentActivity = useQuery(api.activity.getRecent, { 
     companyId,
     limit: 10 
   });
@@ -96,8 +97,8 @@ export function useLiveCompany(companyId: string) {
     company,
     members,
     recentActivity,
-    isLoading: !company,
-    error: company === undefined ? undefined : "Company not found",
+    isLoading: company === undefined,
+    error: company === null ? "Company not found" : undefined,
   };
 }
 
@@ -107,13 +108,13 @@ export function useLiveCompany(companyId: string) {
  * Provides real-time updates for company list.
  */
 export function useCompanyList() {
-  const companies = useQuery("companies:list");
-  const count = useQuery("companies:count");
+  const companies = useQuery(api.companies.list);
+  const count = useQuery(api.companies.count);
   
   return {
     companies,
     count,
-    isLoading: !companies,
+    isLoading: companies === undefined,
   };
 }
 
@@ -124,8 +125,8 @@ export function useCompanyList() {
  * Updates every time metrics change on server.
  */
 export function useLiveMetrics(companyId: string) {
-  const metrics = useQuery("metrics:getRealtime", { companyId });
-  const historical = useQuery("metrics:getHistorical", { 
+  const metrics = useQuery(api.metrics.getRealtime, { companyId });
+  const historical = useQuery(api.metrics.getHistorical, { 
     companyId,
     days: 30 
   });
@@ -133,101 +134,90 @@ export function useLiveMetrics(companyId: string) {
   return {
     current: metrics,
     historical,
-    isLoading: !metrics,
+    isLoading: metrics === undefined,
   };
 }
 ```
 
 ### Example Output: Optimistic Updates
 
+> **⚠️ WARNING: NEVER use TanStack Query APIs - Convex has native optimistic updates**
+> 
+> Convex provides `withOptimisticUpdate()` for optimistic updates. Do NOT use:
+> - `localStorageOptimisticUpdate` (doesn't exist in Convex)
+> - `ctx.cache.updateQuery` (doesn't exist in Convex)
+> - `ctx.cache.invalidateQueries` (doesn't exist in Convex)
+> - `queryClient` (TanStack Query, not Convex)
+
 ```typescript
 // .nova/realtime/optimistic/optimisticCompany.ts
-import { useMutation } from "../../_generated/server";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { Doc } from "../../convex/_generated/dataModel";
 
 /**
  * Optimistic Update: Create Company
  * 
  * Updates UI immediately before server confirms.
- * Rolls back if server fails.
+ * Rolls back automatically if server fails.
  */
 
 export function useCreateCompany() {
-  const createCompanyMutation = useMutation("companies:create");
-  
-  return useMutation(
-    "companies:create",
-    async (input, { localStorageOptimisticUpdate }) => {
-      // Create optimistic ID
-      const optimisticId = `temp-${Date.now()}`;
+  // WARNING: NEVER use TanStack Query APIs - Convex has native optimistic updates
+  return useMutation(api.companies.create).withOptimisticUpdate(
+    (localStore, args: { name: string; description?: string }) => {
+      // Get existing list or default to empty array
+      const existing = localStore.getQuery(api.companies.list) ?? [];
+      
+      // Create optimistic company entry
+      const optimisticCompany: Doc<"companies"> = {
+        _id: `temp-${Date.now()}` as any,
+        _creationTime: Date.now(),
+        name: args.name,
+        description: args.description,
+        status: "creating",
+        createdAt: Date.now(),
+      };
       
       // Optimistically add to list
-      localStorageOptimisticUpdate({
-        queryKey: ["companies:list"],
-        update: (existing: any[]) => [
-          ...existing,
-          {
-            _id: optimisticId,
-            name: input.name,
-            status: "creating",
-            createdAt: Date.now(),
-          },
-        ],
-      });
-      
-      try {
-        // Call actual mutation
-        const result = await createCompanyMutation(input);
-        
-        // Replace optimistic entry with real data
-        localStorageOptimisticUpdate({
-          queryKey: ["companies:list"],
-          update: (existing: any[]) =>
-            existing.map((c) =>
-              c._id === optimisticId
-                ? { ...result, _id: result._id }
-                : c
-            ),
-        });
-        
-        return result;
-      } catch (error) {
-        // Rollback on error
-        localStorageOptimisticUpdate({
-          queryKey: ["companies:list"],
-          update: (existing: any[]) =>
-            existing.filter((c) => c._id !== optimisticId),
-        });
-        
-        throw error;
-      }
+      localStore.setQuery(api.companies.list, [...existing, optimisticCompany]);
     }
   );
 }
 
 /**
  * Optimistic Update: Update Company
+ * 
+ * Updates UI immediately, rolls back on error.
  */
 export function useUpdateCompany() {
-  const updateMutation = useMutation("companies:update");
-  
-  return useMutation(
-    "companies:update",
-    async (args: { companyId: string; updates: any }, ctx) => {
-      const { companyId, updates } = args;
-      const queryKey = ["companies:getById", companyId];
+  // WARNING: NEVER use TanStack Query APIs - Convex has native optimistic updates
+  return useMutation(api.companies.update).withOptimisticUpdate(
+    (localStore, args: { companyId: string; updates: Partial<Doc<"companies">> }) => {
+      // Get current company data
+      const existing = localStore.getQuery(api.companies.getById, { 
+        companyId: args.companyId 
+      });
       
-      // Optimistically update
-      ctx.cache.updateQuery(queryKey, (existing: any) => ({
-        ...existing,
-        ...updates,
-      }));
+      if (existing) {
+        // Optimistically update the company
+        localStore.setQuery(api.companies.getById, 
+          { companyId: args.companyId },
+          { ...existing, ...args.updates }
+        );
+      }
       
-      try {
-        return await updateMutation(args);
-      } catch (error) {
-        // Rollback - invalidate forces refetch
-        ctx.cache.invalidateQueries([queryKey]);
-        throw error;
+      // Also update in the list query if present
+      const list = localStore.getQuery(api.companies.list);
+      if (list) {
+        localStore.setQuery(
+          api.companies.list,
+          list.map(company =>
+            company._id === args.companyId
+              ? { ...company, ...args.updates }
+              : company
+          )
+        );
       }
     }
   );
@@ -235,26 +225,85 @@ export function useUpdateCompany() {
 
 /**
  * Optimistic Update: Delete Company
+ * 
+ * Removes from UI immediately, restores on error.
  */
 export function useDeleteCompany() {
-  const deleteMutation = useMutation("companies:delete");
-  
-  return useMutation(
-    "companies:delete",
-    async (companyId: string, { localStorageOptimisticUpdate }) => {
-      // Optimistically remove
-      localStorageOptimisticUpdate({
-        queryKey: ["companies:list"],
-        update: (existing: any[]) =>
-          existing.filter((c) => c._id !== companyId),
-      });
+  // WARNING: NEVER use TanStack Query APIs - Convex has native optimistic updates
+  return useMutation(api.companies.remove).withOptimisticUpdate(
+    (localStore, args: { companyId: string }) => {
+      // Get existing list
+      const existing = localStore.getQuery(api.companies.list);
       
-      try {
-        return await deleteMutation(companyId);
-      } catch (error) {
-        // Would need to refetch original state
-        // For delete, this is tricky - may need confirmation dialog
-        throw error;
+      if (existing) {
+        // Optimistically remove from list
+        localStore.setQuery(
+          api.companies.list,
+          existing.filter(company => company._id !== args.companyId)
+        );
+      }
+    }
+  );
+}
+
+/**
+ * Optimistic Update: Batch Operations
+ * 
+ * Handle multiple optimistic updates in sequence.
+ */
+export function useBatchUpdateCompanies() {
+  // WARNING: NEVER use TanStack Query APIs - Convex has native optimistic updates
+  return useMutation(api.companies.batchUpdate).withOptimisticUpdate(
+    (localStore, args: { companyIds: string[]; updates: Partial<Doc<"companies">> }) => {
+      // Update list query
+      const list = localStore.getQuery(api.companies.list);
+      if (list) {
+        localStore.setQuery(
+          api.companies.list,
+          list.map(company =>
+            args.companyIds.includes(company._id)
+              ? { ...company, ...args.updates }
+              : company
+          )
+        );
+      }
+      
+      // Update individual company queries
+      for (const companyId of args.companyIds) {
+        const company = localStore.getQuery(api.companies.getById, { companyId });
+        if (company) {
+          localStore.setQuery(
+            api.companies.getById,
+            { companyId },
+            { ...company, ...args.updates }
+          );
+        }
+      }
+    }
+  );
+}
+
+/**
+ * Optimistic Update: Reorder Items
+ * 
+ * Optimistically update order without waiting for server.
+ */
+export function useReorderCompanies() {
+  // WARNING: NEVER use TanStack Query APIs - Convex has native optimistic updates
+  return useMutation(api.companies.reorder).withOptimisticUpdate(
+    (localStore, args: { orderedIds: string[] }) => {
+      const existing = localStore.getQuery(api.companies.list);
+      
+      if (existing) {
+        // Create a map for quick lookup
+        const companyMap = new Map(existing.map(c => [c._id, c]));
+        
+        // Reorder based on new order
+        const reordered = args.orderedIds
+          .map(id => companyMap.get(id))
+          .filter((c): c is Doc<"companies"> => c !== undefined);
+        
+        localStore.setQuery(api.companies.list, reordered);
       }
     }
   );
@@ -265,7 +314,9 @@ export function useDeleteCompany() {
 
 ```typescript
 // .nova/realtime/presence/userPresence.ts
-import { useQuery, useMutation } from "../../_generated/server";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { useEffect } from "react";
 
 /**
  * Real-time Presence: User Presence System
@@ -281,7 +332,7 @@ import { useQuery, useMutation } from "../../_generated/server";
  */
 export function useCompanyPresence(companyId: string) {
   // Subscribe to presence data
-  const presences = useQuery("presence:getCompanyPresence", { companyId });
+  const presences = useQuery(api.presence.getCompanyPresence, { companyId });
   
   // Get online users
   const onlineUsers = presences?.filter(p => p.status === "online") || [];
@@ -309,17 +360,17 @@ export function useCompanyPresence(companyId: string) {
  * Automatically updates on leave/join.
  */
 export function useUserStatus(companyId: string, userId: string) {
-  const status = useQuery("presence:getUserStatus", { 
+  const status = useQuery(api.presence.getUserStatus, { 
     companyId, 
     userId 
   });
   
-  const updateStatus = useMutation("presence:updateStatus");
+  const updateStatus = useMutation(api.presence.updateStatus);
   
   const setOnline = () => updateStatus({ 
     companyId, 
     status: "online",
-    currentPage: window.location.pathname 
+    currentPage: typeof window !== "undefined" ? window.location.pathname : ""
   });
   
   const setAway = () => updateStatus({ 
@@ -331,6 +382,22 @@ export function useUserStatus(companyId: string, userId: string) {
     companyId, 
     status: "offline" 
   });
+  
+  // Update presence on mount/unmount
+  useEffect(() => {
+    setOnline();
+    
+    const handleBeforeUnload = () => {
+      setOffline();
+    };
+    
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      setOffline();
+    };
+  }, [companyId, userId]);
   
   return {
     status,
@@ -346,12 +413,12 @@ export function useUserStatus(companyId: string, userId: string) {
  * Shows when another user is typing.
  */
 export function useTypingIndicator(channelId: string, currentUserId: string) {
-  const typing = useQuery("presence:getTyping", { channelId });
+  const typing = useQuery(api.presence.getTyping, { channelId });
   
   // Filter out current user
   const othersTyping = typing?.filter(t => t.userId !== currentUserId) || [];
   
-  const setTyping = useMutation("presence:setTyping");
+  const setTyping = useMutation(api.presence.setTyping);
   
   const startTyping = () => setTyping({ 
     channelId, 
@@ -364,6 +431,16 @@ export function useTypingIndicator(channelId: string, currentUserId: string) {
     userId: currentUserId,
     isTyping: false 
   });
+  
+  // Auto-stop typing after inactivity
+  useEffect(() => {
+    if (othersTyping.length > 0) {
+      const timer = setTimeout(() => {
+        // Typing indicators auto-expire on server
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [othersTyping]);
   
   return {
     typingUsers: othersTyping,
@@ -390,9 +467,12 @@ When the system needs live notifications:
 
 ```typescript
 // .nova/realtime/hooks/useNotifications.ts
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+
 export function useNotifications(userId: string) {
   // Subscribe to user's notifications
-  const notifications = useQuery("notifications:getUserNotifications", { 
+  const notifications = useQuery(api.notifications.getUserNotifications, { 
     userId 
   });
   
@@ -402,7 +482,7 @@ export function useNotifications(userId: string) {
     notifications: notifications || [],
     unread,
     unreadCount: unread.length,
-    isLoading: !notifications,
+    isLoading: notifications === undefined,
   };
 }
 ```
@@ -420,12 +500,15 @@ When users collaborate:
 
 ```typescript
 // .nova/realtime/presence/documentPresence.ts
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+
 export function useDocumentPresence(documentId: string) {
   // Get all users viewing this document
-  const viewers = useQuery("presence:getDocumentViewers", { documentId });
+  const viewers = useQuery(api.presence.getDocumentViewers, { documentId });
   
   // Get user currently editing
-  const editor = useQuery("presence:getDocumentEditor", { documentId });
+  const editor = useQuery(api.presence.getDocumentEditor, { documentId });
   
   return {
     viewers: viewers || [],
@@ -439,29 +522,61 @@ export function useDocumentPresence(documentId: string) {
 
 Before TITAN considers a real-time deliverable complete:
 
-### Subscription Quality
+### Subscriptions (5 items)
 
-- [ ] Subscriptions use proper query keys for cache integration
-- [ ] Loading and error states handled
-- [ ] Unsubscribe on unmount handled by Convex
+- [ ] **Proper Query Keys** - Subscriptions use proper Convex API references (`api.module.function`)
+- [ ] **Loading States** - All subscription hooks handle `undefined` as loading state
+- [ ] **Error States** - Null responses from useQuery are handled as "not found" errors
+- [ ] **Unsubscribe on Unmount** - Convex automatically handles cleanup, no manual unsubscribe needed
+- [ ] **Multiple Subscriptions** - Components subscribing to multiple queries handle partial loading states
 
-### Optimistic Update Quality
+### Optimistic Updates (5 items)
 
-- [ ] Rollback on error
-- [ ] Loading state shown
-- [ ] No race conditions
+- [ ] **Correct API Usage** - Uses `withOptimisticUpdate()` method, NOT TanStack Query APIs
+- [ ] **Local Store Access** - Properly uses `localStore.getQuery()` and `localStore.setQuery()`
+- [ ] **Automatic Rollback** - Leverages Convex's automatic rollback on mutation failure
+- [ ] **Type Safety** - Optimistic updates use proper TypeScript types from generated API
+- [ ] **Multiple Query Updates** - Updates all affected queries (list + detail views)
 
-### Presence Quality
+### Presence (5 items)
 
-- [ ] Handles user disconnect
-- [ ] Updates within acceptable latency
-- [ ] Scales to expected concurrent users
+- [ ] **Heartbeat Pattern** - Presence updates use appropriate heartbeat intervals
+- [ ] **Disconnect Handling** - User disconnects are detected and handled gracefully
+- [ ] **Status Transitions** - Proper handling of online/away/offline status changes
+- [ ] **Activity Tracking** - Current page/activity is tracked and updated
+- [ ] **Scalability** - Presence system scales to expected concurrent users
 
-### Performance Quality
+### Performance (5 items)
 
-- [ ] No over-fetching
-- [ ] Subscription throttling if needed
-- [ ] Efficient query structure
+- [ ] **No Over-fetching** - Queries only request needed fields
+- [ ] **Pagination** - Large lists use pagination to limit subscription load
+- [ ] **Debounced Updates** - High-frequency updates (typing, dragging) are debounced
+- [ ] **Selective Subscriptions** - Components only subscribe to data they display
+- [ ] **Efficient Query Structure** - Convex indexes support subscription queries
+
+### Error Handling (6 items)
+
+- [ ] **Network Error Recovery** - Convex automatically reconnects on network issues
+- [ ] **Optimistic Rollback** - Failed mutations automatically roll back optimistic updates
+- [ ] **User Feedback** - Users see appropriate feedback during optimistic updates
+- [ ] **Retry Patterns** - Convex handles retry, but UI indicates connection status
+- [ ] **Graceful Degradation** - App functions in read-only mode if mutations fail
+- [ ] **Error Boundaries** - Subscription errors don't crash the entire component tree
+
+## Self-Check Verification
+
+Before submitting real-time code, verify:
+
+<self_check>
+- [ ] **Using correct Convex useMutation API** - Mutations use `useMutation(api.module.function)`
+- [ ] **No TanStack Query references** - No `queryClient`, `invalidateQueries`, or TanStack-specific APIs
+- [ ] **Subscriptions use useQuery** - Real-time data uses `useQuery(api.module.function, args)`
+- [ ] **Optimistic updates use withOptimisticUpdate** - Pattern: `useMutation(api.fn).withOptimisticUpdate(...)`
+- [ ] **Presence tracking implemented correctly** - Uses Convex queries/mutations, not WebSocket directly
+- [ ] **Cleanup on unmount handled** - useEffect cleanup functions or Convex automatic cleanup
+- [ ] **No memory leaks from subscriptions** - No accumulating listeners or uncleared intervals
+- [ ] **Real-time updates work without polling** - Uses Convex subscriptions, not `setInterval` polling
+</self_check>
 
 ## Integration Points
 
@@ -476,6 +591,6 @@ TITAN coordinates with:
 
 ---
 
-*Last updated: 2024-01-15*
-*Version: 1.0*
-*Status: Active*
+*Last updated: 2026-02-18*
+*Version: 2.0*
+*Status: Active - Fixed TanStack Query API errors*

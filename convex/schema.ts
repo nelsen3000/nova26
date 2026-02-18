@@ -107,7 +107,8 @@ export default defineSchema({
   }).index("by_company", ["companyId"])
     .index("by_company_revenue", ["companyId", "revenue"]),
 
-  agents: defineTable({
+  // UA Dashboard agents (game entities, distinct from ATLAS orchestrator agents above)
+  companyAgents: defineTable({
     companyId: v.id("companies"),
     divisionId: v.id("divisions"),
     name: v.string(),

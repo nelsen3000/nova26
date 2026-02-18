@@ -338,3 +338,25 @@ URANUS coordinates with:
 *Last updated: 2024-01-15*
 *Version: 1.0*
 *Status: Active*
+
+<handoff>
+  <on_research_complete>
+    <deliverable>Create .nova/research/[topic]-report.md</deliverable>
+    <notify>JUPITER to review</notify>
+    <action_if_decision_needed>
+      JUPITER creates ADR referencing research report
+      ADR includes: research findings, trade-offs, recommendation, decision
+    </action_if_decision_needed>
+    <action_if_implementation_needed>
+      JUPITER creates tasks for MARS/VENUS
+      Tasks reference research report for implementation details
+    </action_if_implementation_needed>
+  </on_research_complete>
+  
+  <research_outputs>
+    <output path=".nova/research/*.md">Research reports</output>
+    <output path=".nova/research/comparisons/*.md">Comparison analyses</output>
+    <output path=".nova/research/tools/*.md">Tool evaluations</output>
+    <output path=".nova/research/recommendations/*.md">Recommendations</output>
+  </research_outputs>
+</handoff>
