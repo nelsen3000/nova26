@@ -13,7 +13,7 @@
 | **Claude Code** | `main` | Coordinator + Core Engine | Active — C-01→C-10 done, working C-11 |
 | **Kiro** | `kiro/dashboard` | Dashboard UI + Frontend | Active — finishing BistroLens, then dashboard |
 | **OpenAI/ChatGPT** | `openai/semantic-engine` | Semantic Engine + Testing + Security | DONE — 15/15 tasks complete, awaiting push |
-| **Perplexity** | `perplexity/docs-research` | Research + Documentation + Cutting-Edge | Active — P-01 done, continuing P-02+ |
+| **Perplexity** | `perplexity/docs-research` | Research + Documentation + Cutting-Edge | DONE — P-01→P-06 complete, merged to main |
 | **Kimi** | `kimi/cli-agents` | CLI Commands + Agent Templates | DONE — 15/15 tasks complete, merged to main |
 
 ---
@@ -79,11 +79,11 @@
 **Owner: Perplexity**
 
 - [x] `P-01` Competitive analysis: Nova26 vs Cursor vs Windsurf vs Devin vs Copilot Workspace vs Bolt.new vs v0.dev
-- [ ] `P-02` Research latest multi-agent orchestration patterns (CrewAI, LangGraph, AutoGen Feb 2026)
-- [ ] `P-03` Research latest Convex 1.31 features — agents, vector search, preview deployments
-- [ ] `P-04` Research SOC 2 + ISO 42001 compliance requirements for AI coding tools
-- [ ] `P-05` Research open-source video generation state (Open-Sora, CogVideo, Mochi Feb 2026)
-- [ ] `P-06` Research streaming LLM patterns for TypeScript (best practices Feb 2026)
+- [x] `P-02` Research latest multi-agent orchestration patterns (CrewAI, LangGraph, AutoGen Feb 2026)
+- [x] `P-03` Research latest Convex 1.31 features — agents, vector search, preview deployments
+- [x] `P-04` Research SOC 2 + ISO 42001 compliance requirements for AI coding tools
+- [x] `P-05` Research open-source video generation state (Open-Sora, CogVideo, Mochi Feb 2026)
+- [x] `P-06` Research streaming LLM patterns for TypeScript (best practices Feb 2026)
 - [ ] `P-07` Create unified documentation portal — restructure docs/ with search + nav
 - [ ] `P-08` Write DEPLOYMENT.md — full deployment guide (Convex, Vercel, Ollama setup)
 - [ ] `P-09` Write CONTRIBUTING.md — how to add agents, modules, skills
@@ -119,9 +119,9 @@
 | Claude Code | 15 | 10 | 67% |
 | Kiro | 15 | 0 | 0% |
 | OpenAI | 15 | 15 | 100% |
-| Perplexity | 12 | 1 | 8% |
+| Perplexity | 12 | 6 | 50% |
 | Kimi | 15 | 15 | 100% |
-| **TOTAL** | **72** | **41** | **57%** |
+| **TOTAL** | **72** | **46** | **64%** |
 
 ---
 
