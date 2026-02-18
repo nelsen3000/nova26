@@ -16,6 +16,7 @@ import { buildMemoryContext, learnFromTask, learnFromFailure } from '../memory/s
 import { initWorkflow } from '../git/workflow.js';
 import { recordCost, checkBudgetAlerts, getTodaySpending } from '../cost/cost-tracker.js';
 import { recordTaskResult } from '../analytics/agent-analytics.js';
+import { createConvexSyncClient, type ConvexSyncClient } from '../convex/sync.js';
 import type { PRD, Task, LLMResponse, TodoItem, PlanningPhase } from '../types/index.js';
 
 export interface RalphLoopOptions {
@@ -29,6 +30,7 @@ export interface RalphLoopOptions {
   gitWorkflow?: boolean;       // Enable auto branch/commit/PR workflow
   costTracking?: boolean;      // Enable per-call cost tracking (C-04)
   budgetLimit?: number;        // Daily budget limit in USD — halt builds when exceeded (C-05)
+  convexSync?: boolean;        // Enable real-time Convex cloud dashboard sync (MEGA-04)
 }
 
 // --- Planning phases (pre-execution plan approval) ---
@@ -231,6 +233,16 @@ export async function ralphLoop(
     console.log(`Git workflow: branch ${gitWf.branch}`);
   }
 
+  // --- Initialize Convex sync client (MEGA-04) ---
+  let convexClient: ConvexSyncClient | undefined;
+  if (options?.convexSync) {
+    convexClient = createConvexSyncClient({ enabled: true });
+    if (convexClient.enabled) {
+      await convexClient.startBuild(prd.meta.name);
+      console.log(`Convex sync: build ${convexClient.buildId}`);
+    }
+  }
+
   let maxIterations = prd.tasks.length * 3; // Prevent infinite loops
   let iteration = 0;
   
@@ -297,7 +309,7 @@ export async function ralphLoop(
         
         // Process tasks in parallel
         const taskResults = await parallelRunner.runPhase(independentTasks, async (task) => {
-          await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf);
+          await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient);
         });
         
         // Check results and promote tasks
@@ -322,7 +334,7 @@ export async function ralphLoop(
     console.log(`\n--- Processing: ${task.id} (${task.title}) [Phase ${task.phase}] ---`);
     
     try {
-      await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf);
+      await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient);
 
       // Promote pending tasks after each task completes
       promotePendingTasks(prd);
@@ -339,6 +351,9 @@ export async function ralphLoop(
   // Event store: session end
   const allDone = prd.tasks.every(t => t.status === 'done');
   eventStore?.emit('session_end', { success: allDone, tasksCompleted: prd.tasks.filter(t => t.status === 'done').length });
+
+  // Convex sync: complete build at session end (MEGA-04)
+  await convexClient?.completeBuild(allDone);
 
   // Git workflow: finalize (create PR if all tasks done)
   if (gitWf && allDone) {
@@ -540,12 +555,16 @@ async function processTask(
   sessionId: string | null,
   loopOptions?: RalphLoopOptions,
   eventStore?: EventStore,
-  gitWf?: ReturnType<typeof initWorkflow>
+  gitWf?: ReturnType<typeof initWorkflow>,
+  convexClient?: ConvexSyncClient
 ): Promise<void> {
   const trace = tracer.startTrace(sessionId, task.id, task.agent);
 
   // Event store: task_start
   eventStore?.emit('task_start', { title: task.title, agent: task.agent, phase: task.phase }, task.id, task.agent);
+  
+  // Convex sync: log task as running (MEGA-04)
+  await convexClient?.logTask(task, 'running');
   
   // Initialize todos for complex tasks
   if (shouldCreateTodos(task) && !task.todos) {
@@ -607,6 +626,9 @@ async function processTask(
     }
     tracer.logLLMCall(trace, userPrompt, response.content, response.model, response.duration, response.tokens);
     eventStore?.emit('llm_call_complete', { model: response.model, tokens: response.tokens, duration: response.duration }, task.id, task.agent);
+    
+    // Convex sync: log execution (MEGA-04)
+    await convexClient?.logExecution(task.id, response.model, response.tokens, response.duration);
 
     // C-04: Record cost for every LLM call
     if (loopOptions?.costTracking) {
@@ -765,12 +787,24 @@ async function processTask(
   // MEGA-05: Record successful task result for analytics
   recordTaskResult(task.agent, task.id, true, response.tokens, response.duration, task.attempts, undefined, sessionId || undefined);
 
+  // Convex sync: log task as done (MEGA-04)
+  await convexClient?.logTask(task, 'done');
+
   // Event store: task_complete
   eventStore?.emit('task_complete', { outputPath }, task.id, task.agent);
 
   // Session memory: learn from success
   if (loopOptions?.sessionMemory) {
     learnFromTask(task.agent, task.title, task.description, response.content);
+    
+    // Convex sync: log learning when session memory learns (MEGA-04)
+    // Extract key patterns that were learned
+    if (task.agent === 'MARS' && response.content.includes('requireAuth')) {
+      await convexClient?.logLearning(task.agent, 'auth_pattern:requireAuth_first');
+    }
+    if (task.agent === 'PLUTO' && response.content.includes('companyId')) {
+      await convexClient?.logLearning(task.agent, 'pattern:multi_tenant_companyId');
+    }
   }
 
   // Git workflow: commit phase
