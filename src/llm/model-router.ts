@@ -4,6 +4,7 @@
 
 import { callLLM as callOllamaClient } from './ollama-client.js';
 import { getCachedResponse, cacheResponse } from './response-cache.js';
+import { getConfig } from '../config/config.js';
 
 export type ModelTier = 'free' | 'paid' | 'hybrid';
 export type ModelProvider = 'ollama' | 'openai' | 'anthropic';
@@ -149,7 +150,7 @@ const FALLBACK_CHAINS: Record<ModelTier, string[]> = {
 
 // Current model configuration
 let currentModel: ModelConfig = AVAILABLE_MODELS[0]; // Default to qwen2.5:7b
-let currentTier: ModelTier = 'free';
+let currentTier: ModelTier = getConfig().models.tier; // Initialize from config
 
 /**
  * Select model by name
@@ -543,10 +544,5 @@ export function resetCircuitBreaker(modelName?: string): void {
   }
 }
 
-// Initialize from environment if set
-if (process.env.NOVA26_TIER) {
-  selectTier(process.env.NOVA26_TIER as ModelTier);
-}
-if (process.env.NOVA26_MODEL) {
-  selectModel(process.env.NOVA26_MODEL);
-}
+// Note: Environment initialization is handled by the config system
+// The currentTier is initialized from getConfig().models.tier on module load

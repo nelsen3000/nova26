@@ -37,6 +37,7 @@ import { quickSecurityScan, formatSecurityReport } from '../security/security-sc
 import { getSpendingReport, formatReport, getTodaySpending } from '../cost/cost-tracker.js';
 import { getCacheStats, formatCacheStats } from '../llm/response-cache.js';
 import { startPreviewServer, previewComponent } from '../preview/server.js';
+import { getLeaderboard, getAgentStats, getRecommendation, formatAgentStats } from '../analytics/agent-analytics.js';
 
 export interface SlashCommand {
   name: string;
@@ -445,6 +446,62 @@ export const slashCommands: Record<string, SlashCommand> = {
       
       console.log('\n═══════════════════════════════════════════════════');
       console.log('\n💡 Tip: Use /agents <name> for detailed info\n');
+    }
+  },
+
+  '/analytics': {
+    name: '/analytics',
+    description: 'Show agent performance analytics and leaderboard',
+    usage: '/analytics [leaderboard|agent <name>|recommend <task>]',
+    handler: async (args) => {
+      const subcommand = args[0] || 'leaderboard';
+      
+      switch (subcommand) {
+        case 'leaderboard': {
+          console.log('\n' + getLeaderboard() + '\n');
+          break;
+        }
+        
+        case 'agent': {
+          const agentName = args[1]?.toUpperCase();
+          if (!agentName) {
+            console.log('❌ Error: Agent name required');
+            console.log('Usage: /analytics agent <AGENT-NAME>');
+            console.log('Example: /analytics agent MARS');
+            return;
+          }
+          
+          const stats = getAgentStats(agentName);
+          if (stats.totalTasks === 0) {
+            console.log(`\n🤖 ${agentName}\n`);
+            console.log('No performance data recorded yet.\n');
+            return;
+          }
+          
+          console.log('\n' + formatAgentStats(stats) + '\n');
+          break;
+        }
+        
+        case 'recommend': {
+          const taskDesc = args.slice(1).join(' ');
+          if (!taskDesc) {
+            console.log('❌ Error: Task description required');
+            console.log('Usage: /analytics recommend <task description>');
+            console.log('Example: /analytics recommend Create a user authentication API');
+            return;
+          }
+          
+          console.log('\n' + getRecommendation(taskDesc) + '\n');
+          break;
+        }
+        
+        default:
+          console.log(`❌ Unknown subcommand: ${subcommand}`);
+          console.log('Usage: /analytics [leaderboard|agent <name>|recommend <task>]');
+          console.log('  /analytics              - Show leaderboard (default)');
+          console.log('  /analytics agent MARS   - Show stats for specific agent');
+          console.log('  /analytics recommend "Create API" - Get agent recommendation');
+      }
     }
   },
 

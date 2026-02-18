@@ -2,6 +2,7 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { cmdWatch } from './cli/watch.js';
 
 // Ensure .nova directory exists
 const novaDir = join(process.cwd(), '.nova');
@@ -154,14 +155,16 @@ NOVA26 CLI
 Usage:
   nova26 status <prd-file>    Show PRD status
   nova26 reset <prd-file>     Reset PRD tasks
-  nova26 run <prd-file>      Run PRD tasks
-  nova26 generate <desc>     Generate PRD using SUN agent
-  nova26 -h, --help          Show this help
+  nova26 run <prd-file>       Run PRD tasks
+  nova26 watch <prd-file>     Watch src/ for changes and auto-rebuild
+  nova26 generate <desc>      Generate PRD using SUN agent
+  nova26 -h, --help           Show this help
 
 Examples:
   nova26 status .nova/prd-test.json
   nova26 reset .nova/prd-test.json
   nova26 run .nova/prd-test.json
+  nova26 watch .nova/prd-test.json
   nova26 generate "Build a task management app"
 `);
 }
@@ -212,6 +215,15 @@ async function main(): Promise<void> {
       // Join remaining args as description
       const description = args.slice(1).join(' ');
       await cmdGenerate(description);
+      break;
+      
+    case 'watch':
+      if (!args[1]) {
+        console.error('Missing PRD file path');
+        console.error('Usage: nova26 watch <prd-file>');
+        process.exit(1);
+      }
+      await cmdWatch(args[1]);
       break;
       
     case '-h':

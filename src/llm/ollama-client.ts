@@ -2,10 +2,10 @@
 
 import type { LLMResponse, ModelConfig } from '../types/index.js';
 import { getCachedResponse, cacheResponse } from './response-cache.js';
+import { getConfig } from '../config/config.js';
 
 const DEFAULT_MODEL = 'qwen2.5:7b';
 export { DEFAULT_MODEL };
-const OLLAMA_HOST = 'http://localhost:11434';
 
 // Function type for LLM calls (allows mocking in tests)
 export type LLMCaller = (
@@ -87,7 +87,8 @@ export async function callLLM(
   };
 
   try {
-    const response = await fetch(`${OLLAMA_HOST}/api/chat`, {
+    const configHost = getConfig().ollama.host;
+    const response = await fetch(`${configHost}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -277,7 +278,8 @@ export async function checkOllamaConnection(): Promise<boolean> {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
-    const response = await fetch(`${OLLAMA_HOST}/api/tags`, {
+    const configHost = getConfig().ollama.host;
+  const response = await fetch(`${configHost}/api/tags`, {
       method: 'GET',
       signal: controller.signal
     });

@@ -15,6 +15,7 @@ import { createEventStore, type EventStore } from './event-store.js';
 import { buildMemoryContext, learnFromTask, learnFromFailure } from '../memory/session-memory.js';
 import { initWorkflow } from '../git/workflow.js';
 import { recordCost, checkBudgetAlerts, getTodaySpending } from '../cost/cost-tracker.js';
+import { recordTaskResult } from '../analytics/agent-analytics.js';
 import type { PRD, Task, LLMResponse, TodoItem, PlanningPhase } from '../types/index.js';
 
 export interface RalphLoopOptions {
@@ -642,6 +643,8 @@ async function processTask(
     if (loopOptions?.sessionMemory) learnFromFailure(task.agent, task.title, llmError.message);
     updateTaskStatus(prd, task.id, 'failed', llmError.message);
     savePRD(prd, prdPath);
+    // MEGA-05: Record failed task result for analytics
+    recordTaskResult(task.agent, task.id, false, 0, 0, task.attempts, `LLM Error: ${llmError.message}`, sessionId || undefined);
     tracer.endTrace(trace, 'failed', llmError.message);
     throw llmError;
   }
@@ -683,6 +686,8 @@ async function processTask(
         const failedMessage = `Gates failed after retry: ${getGatesSummary(gateResults)}`;
         updateTaskStatus(prd, task.id, 'failed', failedMessage);
         savePRD(prd, prdPath);
+        // MEGA-05: Record failed task result for analytics
+        recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
         tracer.endTrace(trace, 'failed', failedMessage);
         throw new Error(failedMessage);
       }
@@ -698,6 +703,8 @@ async function processTask(
         const failedMessage = `Gates failed after retry: ${getGatesSummary(retryGateResults)}`;
         updateTaskStatus(prd, task.id, 'failed', failedMessage);
         savePRD(prd, prdPath);
+        // MEGA-05: Record failed task result for analytics
+        recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
         tracer.endTrace(trace, 'failed', failedMessage);
         throw new Error(failedMessage);
       }
@@ -705,6 +712,8 @@ async function processTask(
       const failedMessage = `Gates failed: ${getGatesSummary(gateResults)}`;
       updateTaskStatus(prd, task.id, 'failed', failedMessage);
       savePRD(prd, prdPath);
+      // MEGA-05: Record failed task result for analytics
+      recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
       tracer.endTrace(trace, 'failed', failedMessage);
       throw new Error(failedMessage);
     }
@@ -729,6 +738,8 @@ async function processTask(
       console.log(`Council rejected: ${councilDecision.summary}`);
       updateTaskStatus(prd, task.id, 'failed', `Council rejected: ${councilDecision.summary}`);
       savePRD(prd, prdPath);
+      // MEGA-05: Record failed task result for analytics
+      recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, `Council rejected: ${councilDecision.summary}`, sessionId || undefined);
       tracer.endTrace(trace, 'failed', councilDecision.summary);
       throw new Error(`Council rejected: ${councilDecision.summary}`);
     }
@@ -750,6 +761,9 @@ async function processTask(
   // Mark as done
   updateTaskStatus(prd, task.id, 'done');
   savePRD(prd, prdPath);
+
+  // MEGA-05: Record successful task result for analytics
+  recordTaskResult(task.agent, task.id, true, response.tokens, response.duration, task.attempts, undefined, sessionId || undefined);
 
   // Event store: task_complete
   eventStore?.emit('task_complete', { outputPath }, task.id, task.agent);
