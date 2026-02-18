@@ -10,11 +10,11 @@
 
 | Agent | Branch | Domain | Status |
 |-------|--------|--------|--------|
-| **Claude Code** | `main` | Coordinator + Core Engine | Active |
-| **Kiro** | `kiro/dashboard` | Dashboard UI + Frontend | Active |
-| **OpenAI/ChatGPT** | `openai/semantic-engine` | Semantic Engine + Testing + Security | Active |
-| **Perplexity** | `perplexity/docs-research` | Research + Documentation + Cutting-Edge | Active |
-| **Kimi** | `kimi/cli-agents` | CLI Commands + Agent Templates | Active |
+| **Claude Code** | `main` | Coordinator + Core Engine | Active — starting C-01 |
+| **Kiro** | `kiro/dashboard` | Dashboard UI + Frontend | Active — finishing BistroLens, then dashboard |
+| **OpenAI/ChatGPT** | `openai/semantic-engine` | Semantic Engine + Testing + Security | DONE — 15/15 tasks complete, awaiting push |
+| **Perplexity** | `perplexity/docs-research` | Research + Documentation + Cutting-Edge | Active — P-01 done, continuing P-02+ |
+| **Kimi** | `kimi/cli-agents` | CLI Commands + Agent Templates | DONE — 15/15 tasks complete, merged to main |
 
 ---
 
@@ -57,28 +57,28 @@
 - [ ] `K-15` Landing page polish — fix any remaining Higgsfield refs, add open-source video models
 
 ## CATEGORY 3: Semantic Engine + Testing + Security
-**Owner: OpenAI/ChatGPT**
+**Owner: OpenAI/ChatGPT** — ALL COMPLETE
 
-- [ ] `O-01` Upgrade repo-map.ts from regex parsing to AST-based (ts-morph 27.0)
-- [ ] `O-02` Add incremental indexing — only re-parse changed files (watch mode)
-- [ ] `O-03` Build semantic search layer — query codebase by natural language
-- [ ] `O-04` Add cross-file dependency graph with cycle detection
-- [ ] `O-05` Implement hallucination detector gate — compare output vs known code patterns
-- [ ] `O-06` Add property-based testing with fast-check 4.5 for orchestrator
-- [ ] `O-07` Write unit tests for src/llm/ollama-client.ts (mock HTTP)
-- [ ] `O-08` Write unit tests for src/memory/session-memory.ts
-- [ ] `O-09` Write unit tests for src/codebase/repo-map.ts
-- [ ] `O-10` Write unit tests for src/git/workflow.ts
-- [ ] `O-11` Write unit tests for src/cost/cost-tracker.ts
-- [ ] `O-12` Write unit tests for src/security/security-scanner.ts
-- [ ] `O-13` Implement .novaignore parser in security-scanner (skip sensitive files)
-- [ ] `O-14` Add encryption-at-rest for .nova/cache/ and .nova/memory/ (AES-256)
-- [ ] `O-15` Create GitHub Actions CI pipeline (.github/workflows/ci.yml) — lint, tsc, vitest
+- [x] `O-01` Upgrade repo-map.ts from regex parsing to AST-based (ts-morph 27.0)
+- [x] `O-02` Add incremental indexing — only re-parse changed files (watch mode)
+- [x] `O-03` Build semantic search layer — query codebase by natural language
+- [x] `O-04` Add cross-file dependency graph with cycle detection
+- [x] `O-05` Implement hallucination detector gate — compare output vs known code patterns
+- [x] `O-06` Add property-based testing with fast-check 4.5 for orchestrator
+- [x] `O-07` Write unit tests for src/llm/ollama-client.ts (mock HTTP)
+- [x] `O-08` Write unit tests for src/memory/session-memory.ts
+- [x] `O-09` Write unit tests for src/codebase/repo-map.ts
+- [x] `O-10` Write unit tests for src/git/workflow.ts
+- [x] `O-11` Write unit tests for src/cost/cost-tracker.ts
+- [x] `O-12` Write unit tests for src/security/security-scanner.ts
+- [x] `O-13` Implement .novaignore parser in security-scanner (skip sensitive files)
+- [x] `O-14` Add encryption-at-rest for .nova/cache/ and .nova/memory/ (AES-256)
+- [x] `O-15` Create GitHub Actions CI pipeline (.github/workflows/ci.yml) — lint, tsc, vitest
 
 ## CATEGORY 4: Research + Documentation + Cutting-Edge
 **Owner: Perplexity**
 
-- [ ] `P-01` Competitive analysis: Nova26 vs Cursor vs Windsurf vs Devin vs Copilot Workspace vs Bolt.new vs v0.dev
+- [x] `P-01` Competitive analysis: Nova26 vs Cursor vs Windsurf vs Devin vs Copilot Workspace vs Bolt.new vs v0.dev
 - [ ] `P-02` Research latest multi-agent orchestration patterns (CrewAI, LangGraph, AutoGen Feb 2026)
 - [ ] `P-03` Research latest Convex 1.31 features — agents, vector search, preview deployments
 - [ ] `P-04` Research SOC 2 + ISO 42001 compliance requirements for AI coding tools
@@ -92,23 +92,23 @@
 - [ ] `P-12` Create onboarding script documentation (one-command setup guide)
 
 ## CATEGORY 5: CLI Commands + Agent Templates
-**Owner: Kimi**
+**Owner: Kimi** — ALL COMPLETE
 
-- [ ] `M-01` Modernize ANDROMEDA agent template → XML format with examples
-- [ ] `M-02` Modernize CALLISTO agent template → XML format with examples
-- [ ] `M-03` Modernize ENCELADUS agent template → XML format with examples
-- [ ] `M-04` Modernize GANYMEDE agent template → XML format with examples
-- [ ] `M-05` Modernize IO agent template → XML format with examples
-- [ ] `M-06` Modernize MIMAS agent template → XML format with examples
-- [ ] `M-07` Modernize NEPTUNE agent template → XML format with examples
-- [ ] `M-08` Wire /template CLI command → call template-engine.ts
-- [ ] `M-09` Wire /swarm CLI command → call swarm-mode.ts
-- [ ] `M-10` Wire /dependencies CLI command → call analyzer.ts
-- [ ] `M-11` Wire /scan CLI command → call security-scanner.ts
-- [ ] `M-12` Wire /cost CLI command → call cost-tracker.ts + formatCacheStats
-- [ ] `M-13` Wire /preview CLI command → call preview server.ts
-- [ ] `M-14` Add hierarchical task decomposition to ralph-loop planner
-- [ ] `M-15` Create skill marketplace scaffold (src/skills/marketplace.ts)
+- [x] `M-01` Modernize ANDROMEDA agent template → XML format with examples
+- [x] `M-02` Modernize CALLISTO agent template → XML format with examples
+- [x] `M-03` Modernize ENCELADUS agent template → XML format with examples
+- [x] `M-04` Modernize GANYMEDE agent template → XML format with examples
+- [x] `M-05` Modernize IO agent template → XML format with examples
+- [x] `M-06` Modernize MIMAS agent template → XML format with examples
+- [x] `M-07` Modernize NEPTUNE agent template → XML format with examples
+- [x] `M-08` Wire /template CLI command → call template-engine.ts
+- [x] `M-09` Wire /swarm CLI command → call swarm-mode.ts
+- [x] `M-10` Wire /dependencies CLI command → call analyzer.ts
+- [x] `M-11` Wire /scan CLI command → call security-scanner.ts
+- [x] `M-12` Wire /cost CLI command → call cost-tracker.ts + formatCacheStats
+- [x] `M-13` Wire /preview CLI command → call preview server.ts
+- [x] `M-14` Add hierarchical task decomposition to ralph-loop planner
+- [x] `M-15` Create skill marketplace scaffold (src/skills/marketplace.ts)
 
 ---
 
@@ -118,10 +118,10 @@
 |-------|----------|-----------|---|
 | Claude Code | 15 | 0 | 0% |
 | Kiro | 15 | 0 | 0% |
-| OpenAI | 15 | 0 | 0% |
-| Perplexity | 12 | 0 | 0% |
-| Kimi | 15 | 0 | 0% |
-| **TOTAL** | **72** | **0** | **0%** |
+| OpenAI | 15 | 15 | 100% |
+| Perplexity | 12 | 1 | 8% |
+| Kimi | 15 | 15 | 100% |
+| **TOTAL** | **72** | **31** | **43%** |
 
 ---
 
