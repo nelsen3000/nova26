@@ -82,19 +82,21 @@
 > Constraint: NO TypeScript modifications. Outputs only: .md, .json under .nova/
 > Commit format: `docs(knowledge): KIRO-XX-YY <description>`
 
-### Current: Fix Audit Scripts + Run Reports
+### Current Sprint: Audit Remediation + Agent Template Extraction
 
-- [ ] `KIRO-05-01` Fix ESM `require` bug in `kiro/nova26/scripts/audit/scan-utils.ts` line 208 (change `require('fs')` to `import { mkdirSync } from 'fs'`)
-- [ ] `KIRO-05-02` Run all 4 audit scripts successfully, output reports to `.nova/audit-reports/`
-- [ ] `KIRO-05-03` Extract patterns from all 17 R16/R17 modules (17 pattern files in `.nova/nova26-knowledge/r16-r17/`)
-- [ ] `KIRO-05-04` Documentation accuracy validation (20 markdown files scored for accuracy)
-- [ ] `KIRO-05-05` Cross-module dependency map (JSON graph + ASCII visualization)
+- [ ] `KIRO-06-01` Fix Nova26 INDEX.md — add all 51 patterns (49 gaps found)
+- [ ] `KIRO-06-02` Fix 7 intelligence patterns — add missing has-source, has-when-to-use, has-benefits sections
+- [ ] `KIRO-06-03` Fix 11 BistroLens hook filenames — camelCase → kebab-case
+- [ ] `KIRO-06-04` Fix stale reference in AI_COORDINATION.md (sun-prd-generator.js line 215)
+- [ ] `KIRO-06-05` Extract patterns from 21 EARTH XML agent templates (21 pattern files in `.nova/nova26-knowledge/agents/`)
+- [ ] `KIRO-06-06` Build agent interaction graph (JSON + ASCII) from input_requirements + handoff data
+- [ ] `KIRO-06-07` Re-run structural audit — target: 0 failures (down from 87)
 
 ### Queued
 
-- [ ] `KIRO-06-01` Extract patterns from new modules when Kimi builds lifecycle hooks + behaviors
-- [ ] `KIRO-06-02` Validate Kimi's mega-wiring sprint output (structural audit of ralph-loop.ts changes)
-- [ ] `KIRO-06-03` Extract patterns from Grok R19/R20 specs when ready
+- [ ] `KIRO-07-01` Extract patterns from Kimi lifecycle hooks + behaviors (when built)
+- [ ] `KIRO-07-02` Validate Kimi's mega-wiring sprint output (structural audit of ralph-loop.ts changes)
+- [ ] `KIRO-07-03` Extract patterns from Grok R19/R20 specs (when ready)
 
 ### Completed
 
@@ -102,6 +104,7 @@
 - [x] KIRO-02: Quality audit + cross-reference mapping + Nova26 extraction
 - [x] KIRO-03: 104 pattern nodes + 93 edges, unified manifest
 - [x] KIRO-04: Audit spec created, 4 scripts written, 140 patterns validated with fast-check
+- [x] KIRO-05: ESM bug fixed, all 4 audit scripts ran clean, 99.6% doc accuracy, 140-node dependency map
 
 ---
 
@@ -110,19 +113,20 @@
 > Output format: Structured research reports with priority matrix
 > Style: Exhaustive, every tool analyzed, priority-ranked
 
-### Current: Tools & UX Research
+### Current: UX Research
 
-- [ ] `GEMINI-01` Exhaustive AI tools & frameworks audit (11 categories, every significant tool in 2026)
 - [ ] `GEMINI-02` World-class UX patterns & product polish research (9 categories, calm technology, DX, retention)
 
 ### Queued
 
 - [ ] `GEMINI-03` Mobile ecosystem deep dive (React Native vs Flutter vs native in 2026, Expo EAS latest, store submission best practices)
 - [ ] `GEMINI-04` Monetization & go-to-market strategy research (pricing models for AI dev tools, PLG patterns, community building)
+- [ ] `GEMINI-05` EU AI Act + compliance deep dive (Article 86 Right to Explanation, audit trails, NIST RMF)
+- [ ] `GEMINI-06` Local SLM optimization (Qwen 2.5 Coder 32B, DeepSeek R1, Ollama config, quantization strategies)
 
 ### Completed
 
-- (New agent — no completed tasks yet)
+- [x] GEMINI-01: 2026 AI ecosystem audit — 11 categories, 30+ tools analyzed, 4-phase roadmap
 
 ---
 
@@ -135,8 +139,8 @@
 
 - [ ] `CL-20` Evaluate Kimi mega-wiring sprint output (verify ralph-loop.ts has all 17 features wired)
 - [ ] `CL-21` Evaluate Grok R19 specs (accept/reject each, identify gaps)
-- [ ] `CL-22` Evaluate Gemini-01 research (extract actionable items, update task board)
-- [ ] `CL-23` Evaluate Kiro audit reports (review structural findings, prioritize fixes)
+- [x] `CL-22` ~~Evaluate Gemini-01 research~~ DONE — 30+ tools analyzed, 4-phase roadmap, 2 new Gemini tasks added
+- [x] `CL-23` ~~Evaluate Kiro audit reports~~ DONE — 87 failures triaged, KIRO-06 sprint created (7 remediation tasks)
 - [ ] `CL-24` Write Kimi sprint prompts from Grok R19 specs (3 implementation sprints)
 - [x] `CL-25` ~~Remaining 11 agent templates to EARTH XML format~~ DONE — all 21/21 agents converted
 - [x] `CL-26` ~~Update MISSING_FEATURES.md~~ DONE — 13 features marked as implemented
@@ -181,8 +185,8 @@
 | Claude Code | CL-20→CL-30 | 45+ | Evaluate agent outputs |
 | Kimi | KIMI-W-01→W-05 | 30+ | Mega wiring sprint |
 | Grok | GROK-R19-01→03 | 60+ | R19 then R20 |
-| Kiro | KIRO-05-01→05 | 12+ | Fix audit scripts, run reports |
-| Gemini | GEMINI-01→02 | 0 | Tools + UX research |
+| Kiro | KIRO-06-01→07 | 17+ | Audit remediation + agent extraction |
+| Gemini | GEMINI-02→06 | 1 | UX research → compliance → SLMs |
 | Perplexity | P-07→P-12 (paused) | 6 | Documentation portal |
 
 ---
