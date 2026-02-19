@@ -5,7 +5,7 @@
 > that sends you back here. Find your section, pick the next unchecked task, do it.
 > **Coordinator**: Claude Code (assigns tasks, evaluates output, resolves conflicts)
 > **Repo**: https://github.com/nelsen3000/nova26
-> **Current state**: 4,007 tests, 0 TS errors, 151 test files
+> **Current state**: 4,552 tests, 0 TS errors, 158 test files
 > **Vision**: Eternal Engine — self-evolving Rust core + ZeroClaw/TinyClaw/NanoClaw patterns
 
 ---
@@ -16,7 +16,7 @@
 |-------|--------|--------|----------------|
 | **Claude Code** | Coordinator + Core Engine + Convex | Active | Evaluation + prompt writing |
 | **Sonnet** | Integration + Hardening + Wiring | Active | S-01 (6 tasks) + CL-50 hardening sprint (7 tasks) |
-| **Kimi** | Implementation (TypeScript + Tests) | Active | R22-R24 source delivered, R25 testing sprint queued |
+| **Kimi** | Implementation (TypeScript + Tests) | Active | R22-R24 source committed, R25 testing sprint ready |
 | **Grok** | Research + Deep Specs | Active | R23+R24 delivered, awaiting R25 |
 | **Kiro** | Knowledge Extraction + Quality Audits | Active | KIRO-06 + KIRO-07 done (by Claude), awaiting KIRO-08 |
 | **Gemini** | Deep Research + Competitive Intel | Active | GEMINI-12 delivered, GEMINI-07→11 + 13→15 pending |
@@ -70,16 +70,16 @@
 - [x] `KIMI-R21-01` Implement MCP integration (spec: .nova/specs/grok-r21-01-mcp-integration.md, 78 tests) — DELIVERED, 5 files, 2 TS errors fixed by Claude
 - [x] `KIMI-R21-02` Implement ACP integration (spec: .nova/specs/grok-r21-02-acp-integration.md, 67 tests) — DELIVERED, 6 files
 - [x] `KIMI-R21-03` Implement Compliance & Audit Trail (spec: .nova/specs/grok-r21-03-compliance-audit.md, 84 tests) — DELIVERED, 5 files, 1 TS error fixed by Claude
-- [ ] `KIMI-PERP-01` Implement Perplexity research integration (spec: .nova/specs/perplexity-integration.md, 25 tests)
-- [ ] `KIMI-R22-01` Implement Agent Model Routing (spec: .nova/specs/grok-r22-01-model-routing.md, 79 tests)
-- [ ] `KIMI-R23-01` Implement Persistent Visual Workflow Engine (spec: .nova/specs/grok-r23-eternal-symphony.md, 70 tests)
+- [x] `KIMI-PERP-01` Implement Perplexity research integration — DELIVERED, committed (perplexity-agent.ts, types.ts, index.ts + 30 tests)
+- [x] `KIMI-R22-01` Implement Agent Model Routing — DELIVERED, committed (router.ts, model-registry.ts, hardware-detector.ts, speculative-decoder.ts, inference-queue.ts + 80 tests), 1 TS error fixed by Claude
+- [x] `KIMI-R23-01` Implement Persistent Visual Workflow Engine — DELIVERED, committed (ralph-visual-engine.ts, ralph-loop-visual-adapter.ts + 70 tests)
 - [x] ~~`KIMI-R23-02` Implement MicroVM / WASI Ultra-Sandbox~~ **CUT** (Firecracker requires Linux KVM, no macOS)
-- [ ] `KIMI-R23-03` Implement Infinite Hierarchical Memory (spec: .nova/specs/grok-r23-eternal-symphony.md, 70 tests)
+- [x] `KIMI-R23-03` Implement Infinite Hierarchical Memory — DELIVERED, committed (infinite-memory-core.ts, letta-soul-manager.ts, mem0-adapter.ts, memory-taste-scorer.ts + 115 tests), 2 off-by-one test bugs fixed by Claude
 - [x] ~~`KIMI-R23-04` Implement Agent Debate & Swarm Layer~~ **CUT** (over-engineered, expensive multi-model debate before product exists)
-- [ ] `KIMI-R23-05` Implement Cinematic Observability & Eval Suite (spec: .nova/specs/grok-r23-eternal-symphony.md, 60 tests)
-- [ ] `KIMI-R24-01` Implement AI Model Database (spec: .nova/specs/grok-r24-immortal-omniverse.md, 70 tests)
+- [x] `KIMI-R23-05` Implement Cinematic Observability & Eval Suite — DELIVERED, committed (cinematic-core.ts, braintrust-adapter.ts, langsmith-bridge.ts + 60 tests)
+- [x] `KIMI-R24-01` Implement AI Model Database — DELIVERED, committed (ai-model-vault.ts, ensemble-engine.ts, model-router.ts + 70 tests), 9 TS errors fixed by Claude
 - [x] ~~`KIMI-R24-02` Implement Eternal Engine Rust Core~~ **CUT** (no Rust crate exists yet)
-- [ ] `KIMI-R24-03` Implement Real-time CRDT Collaboration (spec: .nova/specs/grok-r24-immortal-omniverse.md, 65 tests)
+- [x] `KIMI-R24-03` Implement Real-time CRDT Collaboration — DELIVERED, committed (crdt-core.ts, types.ts, index.ts + 65 tests)
 - [x] ~~`KIMI-R24-04` Implement Voice & Multimodal Interface~~ **CUT** (premature without working UI)
 
 ### Queued: R25 Testing Mega-Sprint
@@ -245,8 +245,8 @@
 - [x] `CL-47` ~~Evaluate Kimi R21 test files~~ DONE — 317 tests (97 MCP + 110 ACP + 110 compliance), all pass, ESM .js imports, no `any`
 - [x] `CL-48` ~~KIRO-06-07 structural audit~~ DONE — 95→0 failures, 18 files fixed (INDEX, 14 pattern files, scan-utils.ts, audit report)
 - [x] `CL-49` ~~KIRO-07 pattern extraction~~ DONE — 7 new patterns, 2 audit reports, INDEX 51→58
-- [ ] `CL-50` Delete CUT module artifacts (src/sandbox/, src/swarm/, src/engine/, src/multimodal/) — assigned to Sonnet
-- [ ] `CL-51` Evaluate + commit Kimi R22-R24 source (7 modules) — assigned to Sonnet
+- [x] `CL-50` ~~Delete CUT module artifacts~~ DONE — deleted src/sandbox/, src/swarm/, src/engine/, src/multimodal/ + cleaned swarm imports from CLI
+- [x] `CL-51` ~~Evaluate + commit Kimi R22-R24 source~~ DONE — 35 files (18K lines), 7 modules committed, 0 `any`, ESM .js imports correct, 2 test bugs fixed
 - [ ] `CL-52` Wire R22-R24 modules into RalphLoopOptions — assigned to Sonnet
 - [ ] `CL-53` Wire R22-R24 into lifecycle hooks — assigned to Sonnet
 - [ ] `CL-54` Create barrel exports for new modules — assigned to Sonnet
@@ -286,9 +286,9 @@
 
 | Agent | Active Tasks | Completed | Next Up |
 |-------|-------------|-----------|---------|
-| Claude Code | Coordination | 75+ | Evaluate deliveries, write prompts, assign tasks |
-| Sonnet | S-01-01→06 | 0 | P0 dedup → wire modules → cleanup → harden → integration tests |
-| Kimi | R22-R24 mega-sprint (7 tasks) | 48+ | PERP-01 → R22-01 → R23-01/03/05 → R24-01/03 |
+| Claude Code | CL-52→56, coordination | 80+ | Wire R22-R24 into RalphLoopOptions + lifecycle, integration tests |
+| Sonnet | S-01-01→05 | S-01-03/06 done by Claude | P0 dedup → wire 4 modules → failure handler → integration tests |
+| Kimi | R25 testing sprint (7 tasks) | 55+ | T-01→T-07 (445+ tests for 7 KEEP modules) |
 | Grok | GROK-R22-02 (Shannon) | 80+ | R23+R24 done, Shannon adaptation pending |
 | Kiro | — | 31+ | KIRO-07 complete, 58 total patterns, awaiting KIRO-08 |
 | Gemini | GEMINI-07→15 | 7 | 07-11 current → 13-15 frontier research |
