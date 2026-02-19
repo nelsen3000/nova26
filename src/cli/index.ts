@@ -2,45 +2,12 @@
 // Integrates slash commands, swarm mode, model routing, and agent explanations
 
 import { extendedSlashCommands } from './slash-commands-extended.js';
-import { executeSwarmMode, quickSwarm, fullSwarm, type SwarmTask } from '../swarm/swarm-mode.js';
 import { selectTier, selectModel, showModelComparison, getCurrentModel, getCurrentTier, AVAILABLE_MODELS } from '../llm/model-router.js';
 import { getAgentExplanation, formatExplanation, formatReasoning } from '../orchestrator/agent-explanations.js';
 
 // Combine all slash commands
 const allCommands = {
   ...extendedSlashCommands,
-  
-  // Swarm Mode Commands
-  '/swarm': {
-    name: '/swarm',
-    description: 'Enter swarm mode for task completion',
-    usage: '/swarm "task description" [--quick|--full]',
-    handler: async (args: string[]) => {
-      const taskDesc = args.filter(a => !a.startsWith('--')).join(' ');
-      const mode = args.find(a => a === '--full') ? 'full' : args.find(a => a === '--quick') ? 'quick' : 'adaptive';
-      
-      if (!taskDesc) {
-        console.log('❌ Usage: /swarm "your task description" [--quick|--full]');
-        return;
-      }
-      
-      if (mode === 'quick') {
-        await quickSwarm(taskDesc);
-      } else if (mode === 'full') {
-        await fullSwarm(taskDesc);
-      } else {
-        // Adaptive mode - choose based on complexity
-        const task: SwarmTask = {
-          id: `swarm-${Date.now()}`,
-          description: taskDesc,
-          complexity: taskDesc.length > 100 ? 'complex' : 'medium',
-          requiredAgents: ['SUN', 'EARTH', 'MARS', 'VENUS', 'MERCURY'],
-          deliverables: ['Implementation', 'Tests']
-        };
-        await executeSwarmMode(task);
-      }
-    }
-  },
   
   // Model Commands
   '/tier': {
@@ -229,10 +196,7 @@ export function startCLI(): void {
       if (input.startsWith('/')) {
         await executeCommand(input);
       } else if (input.trim()) {
-        // Natural language input - treat as /swarm command
-        console.log(`🤔 Interpreting: "${input}"`);
-        console.log('Starting swarm mode...\n');
-        await quickSwarm(input);
+        console.log(`🤔 Unknown input: "${input}". Type /help for available commands.`);
       }
       
       prompt();
