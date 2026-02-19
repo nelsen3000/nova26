@@ -85,13 +85,13 @@
 ### Queued: R25 Testing Mega-Sprint
 > Sprint file: `.prompts/kimi-r25-testing-mega-sprint.md` — READY
 
-- [ ] `KIMI-T-01` Write Perplexity Research tests (30 tests)
-- [ ] `KIMI-T-02` Write Model Routing tests (80 tests)
-- [ ] `KIMI-T-03` Write Workflow Engine tests (70 tests)
-- [ ] `KIMI-T-04` Write Infinite Memory tests (70 tests)
-- [ ] `KIMI-T-05` Write Cinematic Observability tests (60 tests)
-- [ ] `KIMI-T-06` Write AI Model Database tests (70 tests)
-- [ ] `KIMI-T-07` Write CRDT Collaboration tests (65 tests)
+- [x] `KIMI-T-01` Write Perplexity Research tests — DONE (32 tests, delivered with source)
+- [x] `KIMI-T-02` Write Model Routing tests — DONE (90 tests, delivered with source)
+- [x] `KIMI-T-03` Write Workflow Engine tests — DONE (82 tests, delivered with source)
+- [x] `KIMI-T-04` Write Infinite Memory tests — DONE (115 tests, delivered with source, 2 off-by-one fixes by Claude)
+- [x] `KIMI-T-05` Write Cinematic Observability tests — DONE (73 tests, delivered with source)
+- [x] `KIMI-T-06` Write AI Model Database tests — DONE (81 tests, delivered with source)
+- [x] `KIMI-T-07` Write CRDT Collaboration tests — DONE (65 tests, delivered with source)
 
 ### Completed (recent)
 
