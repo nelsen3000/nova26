@@ -411,5 +411,35 @@ export const ARIA_PATTERNS = {
 
 ---
 
+## Source
+
+BistroLens `50-ACCESSIBILITY-WCAG-COMPLIANCE.md`
+
+## Anti-Patterns
+
+- Using `<div onClick>` instead of `<button>` for interactive elements
+- Relying solely on color to convey state (e.g., red for errors without text or icons)
+- Omitting focus management in modals and dialogs
+- Skipping `aria-live` regions for dynamically updated content
+
+## When to Use
+
+- When VENUS generates any UI component with interactive elements
+- When the visual validator audits generated code for WCAG compliance
+- When adding hard limits to `.nova/config/hard-limits.json` for accessibility rules
+
+## Benefits
+
+- Automated a11y checks catch violations before they reach production
+- Keyboard navigation requirements ensure full keyboard operability
+- Screen reader patterns provide consistent announcements across the app
+- Accessible color pairs eliminate guesswork about contrast ratios
+
+## Related Patterns
+
+- `nova26-error-patterns.md` for accessible error boundary and loading state patterns
+- `nova26-prompt-improvements.md` for VENUS agent constraints that enforce a11y rules
+- `nova26-test-plan.md` for accessibility test coverage requirements
+
 *Adapted from BistroLens WCAG compliance rules*
 *For Nova26 accessibility requirements*

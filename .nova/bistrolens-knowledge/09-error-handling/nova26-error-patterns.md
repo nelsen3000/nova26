@@ -498,5 +498,35 @@ export function showBuildToast(
 
 ---
 
+## Source
+
+BistroLens `48-ERROR-HANDLING-UX.md`
+
+## Anti-Patterns
+
+- Showing raw error messages or stack traces to end users
+- Retrying non-retryable errors (e.g., 403 Forbidden, validation failures)
+- Swallowing errors silently without logging or user feedback
+- Using a single generic error boundary for the entire application
+
+## When to Use
+
+- When implementing user-facing error states in any VENUS-generated component
+- When adding retry logic to agent calls or API requests
+- When wrapping agent output sections in error boundaries
+
+## Benefits
+
+- Standardized error messages provide consistent, user-friendly feedback
+- Exponential backoff retry prevents thundering herd on transient failures
+- Agent-specific degradation strategies keep the build moving when one agent fails
+- Toast notification system surfaces build status without blocking the UI
+
+## Related Patterns
+
+- `nova26-cost-protection.md` for circuit breaker and cost-overrun error handling
+- `nova26-accessibility-rules.md` for accessible error state ARIA patterns
+- `nova26-test-plan.md` for testing error paths and agent failure scenarios
+
 *Adapted from BistroLens error UX patterns*
 *For Nova26 error handling*

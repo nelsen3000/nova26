@@ -574,5 +574,39 @@ const GATE_EXECUTION_ORDER = [
 
 ---
 
+## Source
+
+Adapted from BistroLens hook system. See `.kiro/hooks/*.json` (9 automated hooks), `50-ACCESSIBILITY-WCAG-COMPLIANCE.md`, `performance-check.json`, `i18n-string-check.json`, `documentation-sync.json`, `api-cost-monitor.json`.
+
+## Anti-Patterns
+
+- Don't run all gates synchronously -- order them from fastest (hard-limits) to slowest (documentation) and fail early
+- Don't treat gate failures as warnings -- critical gates (security, accessibility errors) must block the build
+- Don't skip cost monitoring gates during development -- unexpected LLM spend can accumulate quickly
+- Don't hardcode thresholds -- make performance limits, cost budgets, and coverage targets configurable
+
+## When to Use
+
+- After any agent generates code, before it is committed or deployed
+- After VENUS generates UI components (accessibility gate, i18n gate)
+- At build milestones to check cumulative cost and documentation coverage
+- Before release to validate the full gate pipeline end-to-end
+
+## Benefits
+
+- Expands Nova26 from 4 gates to 10, covering accessibility, performance, i18n, cost, and documentation
+- Catches WCAG violations at generation time rather than in QA or production
+- Enforces performance budgets (bundle size, component complexity, nesting depth) automatically
+- Tracks LLM costs per agent and per build with configurable thresholds and alerts
+
+## Related Patterns
+
+- See `nova26-security-enforcement.md` for the security scanning gate
+- See `nova26-code-governance.md` for code quality scoring and red line enforcement
+- See `nova26-cost-protection.md` for detailed cost protection and budget management
+- See `nova26-accessibility-rules.md` for the full accessibility design system rules
+
+---
+
 *Adapted from BistroLens hook system*
 *For Nova26 quality assurance*

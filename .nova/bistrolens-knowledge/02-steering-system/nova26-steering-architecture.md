@@ -243,5 +243,39 @@ export function optimizeContext(
 
 ---
 
+## Source
+
+Adapted from BistroLens steering system. See `.kiro/steering/` directory and `README-STEERING-USAGE.md`.
+
+## Anti-Patterns
+
+- Don't load all 21 agent files into context for every request -- this causes token bloat and conflicting guidance
+- Don't use a flat priority model -- always distinguish critical, high, medium, and low priority agents
+- Don't ignore token budgets -- always enforce a maximum context window and trim lower-priority agents first
+- Don't allow manual agent invocation without validation -- verify `#AGENT` references resolve to real agents
+
+## When to Use
+
+- At the start of every build cycle to determine which agents to load into context
+- When user prompts reference specific agents via `#AGENTNAME` syntax
+- When optimizing token usage across multiple agent instructions
+- When resolving conflicts between overlapping agent guidance for the same file
+
+## Benefits
+
+- Reduces token usage by loading only relevant agents per task instead of all 21
+- Enables file-pattern-based agent selection so database tasks get PLUTO while UI tasks get VENUS
+- Supports on-demand agent loading via `#AGENT` syntax for specialized tasks
+- Provides priority-based context budgeting to ensure critical agents always fit in the window
+
+## Related Patterns
+
+- See `nova26-security-enforcement.md` for security scanning of agent outputs
+- See `nova26-expanded-gates.md` for quality gates that validate agent-generated code
+- See `nova26-cost-protection.md` for token budget and cost management
+- See `nova26-prompt-improvements.md` for prompt engineering patterns used within agent templates
+
+---
+
 *Adapted from BistroLens steering system*
 *For Nova26 agent context management*

@@ -436,5 +436,39 @@ export function requiresApproval(
 
 ---
 
+## Source
+
+Adapted from BistroLens image governance system. See `04-IMAGE-SYSTEM-MASTER.md`, `36-IMAGE-SYSTEM-RED-LINES.md`.
+
+## Anti-Patterns
+
+- Don't allow any agent to generate code outside its authorized capabilities -- enforce `AGENT_CODE_CAPABILITIES` strictly
+- Don't skip quality scoring for auto-approved code types -- even low-risk UI components should be scored
+- Don't disable the kill switch during development -- it exists to catch cascading failures early
+- Don't rely solely on regex-based red line detection -- combine with AST analysis for structural violations
+
+## When to Use
+
+- Before code generation to validate that the requesting agent is authorized for the code type
+- After code generation to score quality and check for red line violations
+- When build failure rates spike above thresholds to trigger automatic kill switches
+- When deduplicating generated code to avoid regenerating existing logic
+
+## Benefits
+
+- Prevents unauthorized code generation by enforcing per-agent capability boundaries
+- Provides quantitative quality scoring (0-100) across security, type safety, style, testability, and documentation
+- Kill switch system enables emergency stop of all code generation when critical thresholds are breached
+- Code deduplication via content, AST, and semantic hashing avoids wasted LLM calls
+
+## Related Patterns
+
+- See `nova26-security-enforcement.md` for the security scanning layer that feeds into quality scoring
+- See `nova26-expanded-gates.md` for the full gate pipeline that integrates governance checks
+- See `nova26-cost-protection.md` for cost thresholds that can trigger kill switches
+- See `nova26-test-plan.md` for testing strategies that validate governance enforcement
+
+---
+
 *Adapted from BistroLens image governance system*
 *For Nova26 code generation governance*

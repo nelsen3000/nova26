@@ -534,5 +534,35 @@ function summarizeAgentOutput(output: string): string {
 
 ---
 
+## Source
+
+BistroLens `40-AI-PROMPT-ENGINEERING.md`
+
+## Anti-Patterns
+
+- Using high temperature values for code generation agents (MARS, PLUTO)
+- Omitting output format constraints, leading to unparseable responses
+- Skipping pre-generation validation, allowing prompt injection patterns through
+- Ignoring context window limits, causing truncated or degraded outputs
+
+## When to Use
+
+- When configuring system prompts for any Nova26 agent
+- When adding safety filters to the prompt builder pipeline
+- When tuning grounding parameters (temperature, topP, topK) per agent role
+
+## Benefits
+
+- Agent-specific system prompts produce consistent, role-appropriate output
+- Pre/post generation safety filters block injection and anti-pattern code
+- Hallucination prevention via low temperature and grounding constraints
+- Context window management keeps prompts within token limits
+
+## Related Patterns
+
+- `nova26-cost-protection.md` for cache-first strategy that reduces redundant LLM calls
+- `nova26-error-patterns.md` for handling failed or invalid LLM responses
+- `nova26-test-plan.md` for validating agent output against required patterns
+
 *Adapted from BistroLens AI prompt engineering*
 *For Nova26 prompt improvements*

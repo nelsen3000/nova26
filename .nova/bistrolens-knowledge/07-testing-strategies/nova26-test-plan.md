@@ -378,5 +378,35 @@ export function selectRelevantTests(
 
 ---
 
+## Source
+
+BistroLens `01-QA-TEST-SUITE.md`, `testing/TESTPLAN.md`
+
+## Anti-Patterns
+
+- Running all tests sequentially when they can be parallelized by agent
+- Skipping integration tests for agent handoffs (SUN to EARTH, PLUTO to MARS)
+- Using real LLM calls in unit tests instead of mock agent responses
+- Ignoring performance thresholds until production issues surface
+
+## When to Use
+
+- When defining the test plan for any new Nova26 feature or agent chain
+- When setting up SATURN validation checklists for agent output
+- When configuring CI pipelines with coverage thresholds and smart test selection
+
+## Benefits
+
+- Structured coverage requirements prevent blind spots across agents
+- Mock agent utilities enable fast, deterministic tests without LLM calls
+- Smart test selection reduces CI time by only running affected tests
+- Swarm mode enables parallel test execution across agent domains
+
+## Related Patterns
+
+- `nova26-cost-protection.md` for performance budget thresholds per agent
+- `nova26-error-patterns.md` for testing error boundaries and retry logic
+- `nova26-accessibility-rules.md` for accessibility test requirements
+
 *Adapted from BistroLens QA test suite*
 *For Nova26 testing strategy*

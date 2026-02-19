@@ -428,5 +428,39 @@ export function validateNumber(
 
 ---
 
+## Source
+
+Adapted from BistroLens Convex patterns. See `38-CONVEX-DATABASE-PATTERNS.md`, `convex/schema.ts`.
+
+## Anti-Patterns
+
+- Don't use hard delete -- always use the soft delete pattern with `isDeleted` and `deletedAt` fields
+- Don't skip audit fields (`createdAt`, `updatedAt`) on any table -- they are required for every entity
+- Don't query without indexes -- always define and use indexes for `userId`, `status`, and common query paths
+- Don't trust client input -- always validate with auth guards (`requireAuth`, `requireOwnership`) before mutations
+
+## When to Use
+
+- When PLUTO generates new Convex schema definitions or table structures
+- When implementing CRUD operations that need auth guards and ownership checks
+- When adding pagination, rate limiting, or soft delete to existing queries and mutations
+- When standardizing validation patterns across all Convex functions
+
+## Benefits
+
+- Standardized table structure ensures every entity has audit fields, soft delete support, and proper indexes
+- Auth guard helpers (`requireAuth`, `requireAdmin`, `requireOwnership`) eliminate boilerplate and prevent access control gaps
+- Pagination helpers enforce consistent page sizes and prevent unbounded queries
+- Database-level rate limiting provides a second defense layer beyond application-level limits
+
+## Related Patterns
+
+- See `nova26-security-enforcement.md` for application-level rate limiting that complements DB-level limits
+- See `nova26-code-governance.md` for governance rules that enforce schema conventions
+- See `nova26-expanded-gates.md` for the schema-validation gate that checks generated database code
+- See `soft-delete-pattern.md` for the extracted BistroLens soft delete implementation
+
+---
+
 *Adapted from BistroLens Convex patterns*
 *For Nova26 database best practices*

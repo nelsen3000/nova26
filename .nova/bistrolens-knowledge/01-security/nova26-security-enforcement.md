@@ -315,5 +315,39 @@ export function validateGeneratedCode(
 
 ---
 
+## Source
+
+Adapted from BistroLens security architecture. See `29-SECURITY-STEERING.md`, `utils/contentSafety.ts`, `api/waf-middleware.ts`.
+
+## Anti-Patterns
+
+- Don't skip security scanning for "trusted" agents -- all agent output must be validated regardless of source
+- Don't hardcode rate limits -- make them configurable per deployment and per agent tier
+- Don't rely on a single scanning pass -- layer multiple detection strategies (regex, AST, semantic)
+- Don't silently swallow security findings -- always log and surface violations to the orchestrator
+
+## When to Use
+
+- After any agent generates code that will be written to disk or executed
+- When monitoring build behavior for suspicious patterns (rapid requests, repeated failures)
+- Before committing generated code to version control
+- When validating LLM-generated output that includes executable code or configuration
+
+## Benefits
+
+- Catches security vulnerabilities (secrets, injection, XSS) before code reaches production
+- Provides defense-in-depth with multiple scanning layers (secrets, injection, XSS, prototype pollution)
+- Rate limiting prevents runaway LLM costs and abuse from individual agents
+- Suspicion scoring enables proactive detection of anomalous build behavior
+
+## Related Patterns
+
+- See `nova26-code-governance.md` for code quality governance and red line enforcement
+- See `nova26-cost-protection.md` for budget enforcement and cost monitoring
+- See `nova26-expanded-gates.md` for the full quality gate pipeline that integrates security scanning
+- See `nova26-error-patterns.md` for error handling when security violations are detected
+
+---
+
 *Adapted from BistroLens security architecture*
 *For Nova26 agent output validation*

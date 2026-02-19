@@ -368,5 +368,35 @@ export function sendAlert(alert: CostAlert): void {
 
 ---
 
+## Source
+
+BistroLens `31-API-COST-PROTECTION.md`, `api/rateLimiter.ts`
+
+## Anti-Patterns
+
+- Allowing unlimited LLM calls with no per-agent or per-build budget caps
+- Hardcoding model selections without a cost-aware routing layer
+- Ignoring cache opportunities for repeated or similar prompts
+- Skipping graceful degradation when budgets are nearly exhausted
+
+## When to Use
+
+- When orchestrating multiple LLM agents that each incur token costs
+- When running builds of varying complexity that need predictable spend limits
+- When cost overruns could silently escalate without alerting or circuit-breaking
+
+## Benefits
+
+- Prevents runaway LLM costs with per-agent and per-build budget caps
+- Provides early warnings at configurable spend thresholds
+- Enables graceful degradation to cheaper models before hard limits are hit
+- Cache-first strategy eliminates redundant API calls
+
+## Related Patterns
+
+- `nova26-error-patterns.md` for graceful degradation on failure
+- `nova26-prompt-improvements.md` for hallucination prevention and grounding configs
+- `nova26-test-plan.md` for performance threshold testing per agent
+
 *Adapted from BistroLens API cost protection*
 *For Nova26 LLM cost management*

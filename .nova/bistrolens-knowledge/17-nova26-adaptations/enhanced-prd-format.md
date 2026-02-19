@@ -335,5 +335,35 @@ Use the template above. The Ralph Loop should:
 
 ---
 
+## Source
+
+BistroLens `.kiro/specs/*/{requirements.md,design.md,tasks.md}`
+
+## Anti-Patterns
+
+- Using flat task lists with no phased execution or dependency tracking
+- Omitting acceptance criteria, leading to ambiguous "done" definitions
+- Skipping the design phase, causing VENUS to guess at UI specifications
+- Writing ADRs after implementation rather than before architectural decisions
+
+## When to Use
+
+- When SUN generates a PRD for any new feature or enhancement
+- When migrating existing v1 flat PRDs to the structured v2 format
+- When the Ralph Loop needs phased execution with explicit agent dependencies
+
+## Benefits
+
+- Gherkin acceptance criteria make pass/fail unambiguous for SATURN
+- Design phase gives VENUS and EUROPA explicit layout and interaction specs
+- ADR section captures architectural trade-offs before code is written
+- Phased task structure enables the Ralph Loop to execute agents in dependency order
+
+## Related Patterns
+
+- `nova26-test-plan.md` for test coverage requirements referenced in Phase 4
+- `nova26-error-patterns.md` for error state specifications in the design phase
+- `nova26-accessibility-rules.md` for accessibility requirements in UI specifications
+
 *Adapted from BistroLens spec-driven development*
 *For Nova26 enhanced PRD format*
