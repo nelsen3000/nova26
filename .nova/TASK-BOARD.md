@@ -47,7 +47,7 @@
 
 - [x] `KIMI-R20-01` Implement L0/L1/L2/L3 orchestrator hierarchy (spec: .nova/specs/grok-r20-01-orchestrator-hierarchy.md, 112 tests) — DELIVERED, 11 files, 214 tests, 8 TS errors fixed by Claude
 - [x] `KIMI-R20-02` Implement Tauri desktop wrapper (spec: .nova/specs/grok-r20-02-tauri-desktop.md, 87 tests) — DELIVERED, 11 files + 4 Rust files, 110 tests, detectTauri bug fixed by Claude
-- [ ] `KIMI-R20-03` Implement AI design pipeline (spec: .nova/specs/grok-r20-03-design-pipeline.md, 82 tests)
+- [x] `KIMI-R20-03` Implement AI design pipeline (spec: .nova/specs/grok-r20-03-design-pipeline.md, 82 tests) — DELIVERED (source only, tests pending), 5 files, 10 TS errors fixed by Claude
 - [ ] `KIMI-PERP-01` Implement Perplexity research integration (spec: .nova/specs/perplexity-integration.md)
 - [ ] `KIMI-R21-01` Implement MCP integration (spec: .nova/specs/grok-r21-01-mcp-integration.md, 78 tests)
 - [ ] `KIMI-R21-02` Implement ACP integration (spec: .nova/specs/grok-r21-02-acp-integration.md, 67 tests)
