@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "title": "Nova26 Agent Interaction Graph",
+    "version": "1.0.0",
+    "generated": "2026-02-19",
+    "totalNodes": 21,
+    "totalEdges": 89
+  },
+  "nodes": [
+    { "id": "SUN", "role": "Central Orchestrator", "cluster": "orchestration" },
+    { "id": "MERCURY", "role": "Spec Validator / Quality Gate", "cluster": "validation" },
+    { "id": "EARTH", "role": "Product Specifications", "cluster": "planning" },
+    { "id": "JUPITER", "role": "Architecture Agent", "cluster": "planning" },
+    { "id": "ANDROMEDA", "role": "Idea Generator", "cluster": "planning" },
+    { "id": "MARS", "role": "Convex Backend Specialist", "cluster": "implementation" },
+    { "id": "VENUS", "role": "Frontend / UX Specialist", "cluster": "implementation" },
+    { "id": "PLUTO", "role": "Database Schema Agent", "cluster": "implementation" },
+    { "id": "TITAN", "role": "Real-time Subscription Specialist", "cluster": "implementation" },
+    { "id": "GANYMEDE", "role": "API Integration Agent", "cluster": "implementation" },
+    { "id": "SATURN", "role": "Testing Specialist", "cluster": "quality" },
+    { "id": "NEPTUNE", "role": "Analytics Agent", "cluster": "quality" },
+    { "id": "IO", "role": "Performance Agent", "cluster": "quality" },
+    { "id": "ENCELADUS", "role": "Security Agent", "cluster": "quality" },
+    { "id": "ATLAS", "role": "Meta-Learner", "cluster": "support" },
+    { "id": "CALLISTO", "role": "Documentation Agent", "cluster": "support" },
+    { "id": "CHARON", "role": "Error UX Agent", "cluster": "support" },
+    { "id": "MIMAS", "role": "Resilience Agent", "cluster": "support" },
+    { "id": "EUROPA", "role": "Mobile / Responsive Design", "cluster": "support" },
+    { "id": "TRITON", "role": "DevOps / Deployment", "cluster": "support" },
+    { "id": "URANUS", "role": "Research & Development", "cluster": "support" }
+  ],
+  "edges": [
+    { "from": "SUN", "to": "EARTH", "type": "delegation", "description": "SUN delegates feature requests to EARTH for spec writing" },
+    { "from": "SUN", "to": "JUPITER", "type": "delegation", "description": "SUN delegates architecture tasks to JUPITER" },
+    { "from": "SUN", "to": "PLUTO", "type": "delegation", "description": "SUN delegates schema design to PLUTO" },
+    { "from": "SUN", "to": "MARS", "type": "delegation", "description": "SUN delegates backend tasks to MARS" },
+    { "from": "SUN", "to": "VENUS", "type": "delegation", "description": "SUN delegates frontend tasks to VENUS" },
+    { "from": "SUN", "to": "SATURN", "type": "delegation", "description": "SUN delegates testing tasks to SATURN" },
+    { "from": "SUN", "to": "MERCURY", "type": "delegation", "description": "SUN triggers validation via MERCURY" },
+    { "from": "SUN", "to": "URANUS", "type": "delegation", "description": "SUN requests research from URANUS" },
+    { "from": "SUN", "to": "NEPTUNE", "type": "delegation", "description": "SUN delegates analytics tasks to NEPTUNE" },
+    { "from": "SUN", "to": "TITAN", "type": "delegation", "description": "SUN delegates real-time tasks to TITAN" },
+    { "from": "SUN", "to": "EUROPA", "type": "delegation", "description": "SUN delegates mobile/responsive tasks to EUROPA" },
+    { "from": "SUN", "to": "ENCELADUS", "type": "delegation", "description": "SUN delegates security tasks to ENCELADUS" },
+    { "from": "SUN", "to": "MIMAS", "type": "delegation", "description": "SUN delegates resilience tasks to MIMAS" },
+    { "from": "SUN", "to": "GANYMEDE", "type": "delegation", "description": "SUN delegates API integration tasks to GANYMEDE" },
+    { "from": "SUN", "to": "CALLISTO", "type": "delegation", "description": "SUN delegates documentation to CALLISTO" },
+    { "from": "SUN", "to": "IO", "type": "delegation", "description": "SUN delegates performance tasks to IO" },
+    { "from": "SUN", "to": "TRITON", "type": "delegation", "description": "SUN delegates deployment tasks to TRITON" },
+    { "from": "SUN", "to": "CHARON", "type": "delegation", "description": "SUN delegates error UX tasks to CHARON" },
+    { "from": "SUN", "to": "ATLAS", "type": "delegation", "description": "SUN triggers retrospectives and pattern extraction" },
+    { "from": "SUN", "to": "ANDROMEDA", "type": "delegation", "description": "SUN delegates ideation to ANDROMEDA" },
+
+    { "from": "EARTH", "to": "MERCURY", "type": "handoff", "description": "EARTH submits specs to MERCURY for validation" },
+    { "from": "EARTH", "to": "PLUTO", "type": "handoff", "description": "EARTH delivers validated specs to PLUTO for schema design" },
+    { "from": "EARTH", "to": "JUPITER", "type": "handoff", "description": "EARTH delivers specs to JUPITER for architecture design" },
+    { "from": "EARTH", "to": "MARS", "type": "handoff", "description": "EARTH delivers specs to MARS for backend implementation" },
+    { "from": "EARTH", "to": "VENUS", "type": "handoff", "description": "EARTH delivers specs to VENUS for frontend implementation" },
+
+    { "from": "MERCURY", "to": "SUN", "type": "status", "description": "MERCURY reports validation pass to SUN" },
+    { "from": "MERCURY", "to": "EARTH", "type": "feedback", "description": "MERCURY returns spec issues to EARTH" },
+    { "from": "MERCURY", "to": "JUPITER", "type": "feedback", "description": "MERCURY returns architecture issues to JUPITER" },
+    { "from": "MERCURY", "to": "PLUTO", "type": "feedback", "description": "MERCURY returns schema issues to PLUTO" },
+    { "from": "MERCURY", "to": "VENUS", "type": "feedback", "description": "MERCURY returns design issues to VENUS" },
+
+    { "from": "JUPITER", "to": "SUN", "type": "handoff", "description": "JUPITER delivers architecture decisions to SUN" },
+    { "from": "JUPITER", "to": "MARS", "type": "handoff", "description": "JUPITER delivers system design to MARS" },
+    { "from": "JUPITER", "to": "VENUS", "type": "handoff", "description": "JUPITER delivers component hierarchy to VENUS" },
+    { "from": "JUPITER", "to": "PLUTO", "type": "handoff", "description": "JUPITER delivers data model guidance to PLUTO" },
+    { "from": "JUPITER", "to": "MERCURY", "type": "handoff", "description": "JUPITER submits architecture for MERCURY validation" },
+
+    { "from": "PLUTO", "to": "SUN", "type": "handoff", "description": "PLUTO delivers schema to SUN for routing" },
+    { "from": "PLUTO", "to": "MARS", "type": "handoff", "description": "PLUTO delivers schema to MARS for queries/mutations" },
+    { "from": "PLUTO", "to": "NEPTUNE", "type": "handoff", "description": "PLUTO delivers schema to NEPTUNE for analytics tracking" },
+    { "from": "PLUTO", "to": "MERCURY", "type": "handoff", "description": "PLUTO submits schema to MERCURY for validation" },
+
+    { "from": "MARS", "to": "SATURN", "type": "handoff", "description": "MARS delivers backend code to SATURN for testing" },
+    { "from": "MARS", "to": "VENUS", "type": "handoff", "description": "MARS delivers query/mutation APIs to VENUS for frontend integration" },
+
+    { "from": "VENUS", "to": "SUN", "type": "handoff", "description": "VENUS notifies SUN of frontend completion" },
+    { "from": "VENUS", "to": "SATURN", "type": "handoff", "description": "VENUS delivers components to SATURN for testing" },
+    { "from": "VENUS", "to": "TRITON", "type": "handoff", "description": "VENUS delivers build artifacts to TRITON for deployment" },
+
+    { "from": "SATURN", "to": "SUN", "type": "status", "description": "SATURN reports test pass to SUN" },
+    { "from": "SATURN", "to": "MARS", "type": "feedback", "description": "SATURN returns backend test failures to MARS" },
+    { "from": "SATURN", "to": "VENUS", "type": "feedback", "description": "SATURN returns frontend test failures to VENUS" },
+
+    { "from": "ANDROMEDA", "to": "SUN", "type": "handoff", "description": "ANDROMEDA delivers ideas to SUN for prioritization" },
+    { "from": "ANDROMEDA", "to": "EARTH", "type": "handoff", "description": "ANDROMEDA delivers ideas to EARTH for spec writing" },
+
+    { "from": "ATLAS", "to": "SUN", "type": "handoff", "description": "ATLAS delivers improvement proposals to SUN" },
+    { "from": "ATLAS", "to": "JUPITER", "type": "handoff", "description": "ATLAS delivers pattern recommendations to JUPITER" },
+    { "from": "ATLAS", "to": "EARTH", "type": "input", "description": "ATLAS provides historical context to EARTH" },
+    { "from": "ATLAS", "to": "MARS", "type": "input", "description": "ATLAS provides code patterns to MARS" },
+    { "from": "ATLAS", "to": "VENUS", "type": "input", "description": "ATLAS provides UI patterns to VENUS" },
+
+    { "from": "NEPTUNE", "to": "SUN", "type": "handoff", "description": "NEPTUNE delivers analytics reports to SUN" },
+    { "from": "NEPTUNE", "to": "VENUS", "type": "handoff", "description": "NEPTUNE delivers dashboard specs to VENUS" },
+    { "from": "NEPTUNE", "to": "EARTH", "type": "handoff", "description": "NEPTUNE delivers data-driven insights to EARTH for product decisions" },
+
+    { "from": "IO", "to": "SUN", "type": "handoff", "description": "IO delivers performance reports to SUN" },
+    { "from": "IO", "to": "MARS", "type": "handoff", "description": "IO delivers query optimization recommendations to MARS" },
+    { "from": "IO", "to": "VENUS", "type": "handoff", "description": "IO delivers rendering optimization recommendations to VENUS" },
+    { "from": "IO", "to": "PLUTO", "type": "handoff", "description": "IO delivers index optimization recommendations to PLUTO" },
+
+    { "from": "ENCELADUS", "to": "SUN", "type": "handoff", "description": "ENCELADUS delivers security audit reports to SUN" },
+    { "from": "ENCELADUS", "to": "MARS", "type": "handoff", "description": "ENCELADUS delivers backend security requirements to MARS" },
+    { "from": "ENCELADUS", "to": "VENUS", "type": "handoff", "description": "ENCELADUS delivers frontend security requirements to VENUS" },
+    { "from": "ENCELADUS", "to": "PLUTO", "type": "handoff", "description": "ENCELADUS delivers schema security requirements to PLUTO" },
+
+    { "from": "CALLISTO", "to": "SUN", "type": "handoff", "description": "CALLISTO delivers documentation to SUN" },
+
+    { "from": "CHARON", "to": "VENUS", "type": "handoff", "description": "CHARON delivers error component specs to VENUS" },
+    { "from": "CHARON", "to": "MIMAS", "type": "handoff", "description": "CHARON delivers recovery flow specs to MIMAS" },
+    { "from": "CHARON", "to": "CALLISTO", "type": "handoff", "description": "CHARON delivers help content specs to CALLISTO" },
+
+    { "from": "EUROPA", "to": "VENUS", "type": "handoff", "description": "EUROPA delivers responsive patterns to VENUS" },
+    { "from": "EUROPA", "to": "IO", "type": "handoff", "description": "EUROPA delivers mobile perf requirements to IO for validation" },
+    { "from": "EUROPA", "to": "TRITON", "type": "handoff", "description": "EUROPA delivers PWA config to TRITON for deployment" },
+
+    { "from": "GANYMEDE", "to": "SUN", "type": "handoff", "description": "GANYMEDE delivers integration status to SUN" },
+    { "from": "GANYMEDE", "to": "MARS", "type": "handoff", "description": "GANYMEDE delivers integration interfaces to MARS" },
+    { "from": "GANYMEDE", "to": "VENUS", "type": "handoff", "description": "GANYMEDE delivers integration data to VENUS" },
+
+    { "from": "MIMAS", "to": "SUN", "type": "handoff", "description": "MIMAS delivers resilience reports to SUN" },
+    { "from": "MIMAS", "to": "GANYMEDE", "type": "handoff", "description": "MIMAS delivers external service resilience patterns to GANYMEDE" },
+    { "from": "MIMAS", "to": "VENUS", "type": "handoff", "description": "MIMAS delivers error boundary specs to VENUS" },
+    { "from": "MIMAS", "to": "MARS", "type": "handoff", "description": "MIMAS delivers backend fault tolerance patterns to MARS" },
+
+    { "from": "TITAN", "to": "VENUS", "type": "handoff", "description": "TITAN delivers subscription hooks to VENUS" },
+    { "from": "TITAN", "to": "MARS", "type": "handoff", "description": "TITAN delivers real-time query definitions to MARS" },
+
+    { "from": "TRITON", "to": "ATLAS", "type": "handoff", "description": "TRITON delivers build logs to ATLAS for pattern learning" },
+    { "from": "TRITON", "to": "SUN", "type": "status", "description": "TRITON reports deployment status to SUN" },
+    { "from": "TRITON", "to": "MIMAS", "type": "handoff", "description": "TRITON delivers failure reports to MIMAS" },
+
+    { "from": "URANUS", "to": "JUPITER", "type": "handoff", "description": "URANUS delivers research findings to JUPITER for ADR decisions" },
+    { "from": "URANUS", "to": "MARS", "type": "handoff", "description": "URANUS delivers implementation findings to MARS" },
+    { "from": "URANUS", "to": "VENUS", "type": "handoff", "description": "URANUS delivers implementation findings to VENUS" },
+
+    { "from": "CHARON", "to": "ATLAS", "type": "input", "description": "CHARON feeds error patterns to ATLAS for learning" },
+    { "from": "MIMAS", "to": "ATLAS", "type": "input", "description": "MIMAS feeds resilience patterns to ATLAS for learning" }
+  ],
+  "clusters": {
+    "orchestration": {
+      "label": "Orchestration Layer",
+      "description": "Central task routing and coordination",
+      "agents": ["SUN"]
+    },
+    "planning": {
+      "label": "Planning Layer",
+      "description": "Ideation, specifications, and architecture",
+      "agents": ["ANDROMEDA", "EARTH", "JUPITER"]
+    },
+    "validation": {
+      "label": "Validation Layer",
+      "description": "Quality gate for all specs and designs",
+      "agents": ["MERCURY"]
+    },
+    "implementation": {
+      "label": "Implementation Layer",
+      "description": "Code writing — backend, frontend, schema, real-time, integrations",
+      "agents": ["MARS", "VENUS", "PLUTO", "TITAN", "GANYMEDE"]
+    },
+    "quality": {
+      "label": "Quality Layer",
+      "description": "Testing, analytics, performance, security",
+      "agents": ["SATURN", "NEPTUNE", "IO", "ENCELADUS"]
+    },
+    "support": {
+      "label": "Support Layer",
+      "description": "Meta-learning, docs, error UX, resilience, mobile, devops, research",
+      "agents": ["ATLAS", "CALLISTO", "CHARON", "MIMAS", "EUROPA", "TRITON", "URANUS"]
+    }
+  }
+}

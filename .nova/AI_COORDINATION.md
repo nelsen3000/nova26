@@ -571,154 +571,83 @@ nova /commit
 
 ---
 
-## Phase 4: Landing Page + UX/UI Hardening (Kimi — 2026-02-18)
+## Phase 4: Landing Page + UX/UI Hardening (Kiro — 2026-02-18)
 
-**Status:** 🔄 ASSIGNED — WAITING FOR KIMI
-**Owner:** Kimi
+**Status:** ✅ COMPLETE
+**Owner:** Kiro
 **Scope:** New frontend landing page + UX/UI validation upgrades
 
-This phase has TWO major deliverables:
+---
+
+### DELIVERABLE A: Nova26 Landing Page ✅
+
+**COMPLETE:** Nova26's first web frontend created successfully.
+
+**Files Created (13 files):**
+- `app/(landing)/page.tsx` — Main landing page
+- `app/(landing)/layout.tsx` — Landing layout
+- `app/(landing)/README.md` — Documentation
+- `app/(landing)/components/header.tsx` — Top navigation
+- `app/(landing)/components/hero-section.tsx` — Headline + subheadline
+- `app/(landing)/components/stage-cards.tsx` — 3 pipeline cards (CORE FEATURE)
+- `app/(landing)/components/left-sidebar.tsx` — Persistent navigation
+- `app/(landing)/components/idea-generator-panel.tsx` — Shadow Advisory Board
+- `app/(landing)/components/video-engine-modal.tsx` — 9 Higgsfield templates
+- `app/(landing)/components/cta-section.tsx` — Call-to-action
+- `app/globals.css` — Tailwind + design tokens
+- `lib/utils.ts` — cn() utility
+- `components/ui/` — 4 shadcn/ui components (button, badge, navigation-menu, tabs)
+
+**Key Features:**
+- Three pipeline stage cards (Pre-Production, Production, Post-Production)
+- Idea Generator with Shadow Advisory Board (5 advisors, scoring system)
+- Video Content Engine (9 Higgsfield templates)
+- Left sidebar with glowing Idea Generator button
+- Monday.com-inspired design (#6161FF purple, #1F1F1F text, #E6E9EF borders)
+- Framer Motion animations (200ms ease-out)
+- Fully keyboard accessible
+- Responsive at 1280px+
 
 ---
 
-### DELIVERABLE A: Nova26 Landing Page (New Frontend)
+### DELIVERABLE B: UX Validation Upgrades ✅
 
-**IMPORTANT:** Nova26 currently has NO web frontend — it is a CLI tool. This task creates the first landing page.
+**COMPLETE:** Enhanced visual validation system with 12 new AI UX checks.
 
-**Visual Reference:** `.nova/reference-monday-homepage.jpeg` (monday.com screenshot)
-- Clean white background, large bold headline centered at top
-- Subtitle text beneath the headline
-- A horizontal row of selectable service cards with icons (like monday.com's workflow category cards with checkboxes)
-- A prominent CTA button below the cards
-- Each service card should have: an icon, a label, and when hovered — expand to show a dropdown of sub-options (agents)
+**Files Modified (3 files):**
+1. `src/browser/visual-validator.ts` — Added 12 new validation checks
+2. `.nova/agents/VENUS.md` — Added 5 new principles + 10 new constraints
+3. `.nova/config/hard-limits.json` — Added 4 new SEVERE hard limits
 
-**Where to create:** `app/` directory (Next.js app router pattern) or `src/web/` — Kimi decides the structure. Use React 19 + Tailwind CSS + shadcn/ui (our stack).
+**New Validation Checks (12 total):**
 
-#### Page Structure
+AI UX Requirements (8 checks):
+1. Confidence indicators (−8 points)
+2. Undo/rollback controls (−8 points)
+3. Feedback widgets (−7 points)
+4. Explainability affordances (−8 points)
+5. Confirmation dialogs (−10 points)
+6. Keyboard navigation (−8 points)
+7. ARIA live regions (−8 points)
+8. Focus management (−8 points)
 
-**Header / Nav**
-- Logo: "Nova26" on top left
-- Nav links: Products, Teams, Platform, Resources (with dropdowns)
-- Right side: Pricing | Log in | "Get Started →" button (purple/indigo)
+General UX Requirements (4 checks):
+9. Color contrast (−7 points)
+10. i18n readiness (−6 points)
+11. Progressive disclosure (−6 points)
+12. Semantic HTML (−8 points)
 
-**Hero Section (center)**
-- Headline: "Build your next product — from idea to launch"
-- Subheadline: "What stage are you working on with Nova26?"
-- Three large category cards in a horizontal row (replacing monday.com's 9 small cards)
-
-#### Three Main Pipeline Stage Cards
-
-**Card 1: Pre-Production**
-Icon: lightbulb or brain
-Subtext: "Ideas, research, validation & iteration"
-
-On click/hover dropdown reveals:
-
-*[1] Idea Generator* (LEFT SIDEBAR BUTTON — most prominent feature)
-- Uses Swarm architecture to run parallel deep research
-- Research sources: Reddit, Discord, ProductHunt, App Store/Play Store reviews, Twitter/X, Hacker News, Amazon reviews, YouTube comments, LinkedIn, Google Trends, Patent filings, Job postings
-- Each idea auto-scored via "Shadow Advisory Board" system:
-  1. PETER THIEL (Contrarian Technologist) — 0→1? Monopoly potential?
-  2. NAVAL RAVIKANT (Leverage Maximalist) — Code/media/capital leverage?
-  3. WARREN BUFFETT (Economics Fundamentalist) — Moat? Simple model?
-  4. Y COMBINATOR PARTNER (Startup Operator) — 2-week MVP? First 10 users?
-  5. SKEPTICAL VC (Devil's Advocate) — Why hasn't this been done?
-
-  Each gives: Opening reaction, Key insight, Critical question, Red flag/opportunity
-  Overall: CONSENSUS, SPLIT DECISION, VOTE (Fund Yes/No + confidence 1-10), COMPOSITE SCORE
-
-  Routing: Score >= 7.0 → Idea Queue (green) | 4.0-6.9 → Revision List (yellow) | < 4.0 → Archived (red)
-
-  UI: Left sidebar button "Idea Generator", panel with tabs: Research Running, Idea Queue, Revision List, Archived
-
-*[2] Nova26 App Builder* (existing 21-agent service — dropdown shows agents grouped by function)
-
-*[3] Swarm* (multi-agent parallel research/production)
-Presets: Deep Competitive Research, Bulk Content Production, Large Comparison Jobs, Data Extraction Batches, Parallel API/Monitoring, Product & UX Research, Code Exploration
-
-**Card 2: Production**
-Icon: gear or code brackets
-Subtext: "Build, test, and ship your application"
-
-Dropdown: Nova26 Full Build (SUN → 21 agents), Single Agent Tasks, ATLAS Learning Dashboard, PRD Manager, Quality Gates Monitor
-
-**Card 3: Post-Production**
-Icon: megaphone or rocket
-Subtext: "Marketing, content, and user acquisition"
-
-Dropdown:
-*[1] Video Content Engine* (Claude + Higgsfield integration)
-Sub-options: Trend Hijacker, Hook Generator, Model Selector (Kling/Sora/Veo/WAN/Minimax/Seedance), Face Swap Factory, Click-to-Ad Generator, Cinema Studio Director, Multi-Model A/B Testing, Lipsync Dialogue Creator, 30-Day Content Calendar
-
-*[2] Growth & Distribution* — SEO clusters, Launch strategy, Email sequences
-*[3] Analytics & Iteration* — User feedback loop, Feature prioritization, A/B tracker
-
-#### Left Sidebar (persistent)
-- Idea Generator (most prominent — large, glowing/highlighted)
-- Home / Dashboard
-- Active Builds
-- PRD Manager
-- ATLAS Logs
-- Video Engine
-- Chat with Nova26
-
-#### CTA Button (below cards)
-"Start Building →" (purple, matching monday.com Get Started)
-Below: "No credit card needed ✦ Free tier available"
-
-#### Styling
-- monday.com aesthetic: white bg, #1F1F1F text, #6161FF or #7B68EE accent (purple/indigo)
-- Cards: white bg, 1px border #E6E9EF, 8px border-radius, subtle box-shadow on hover
-- Font: Inter or similar clean sans-serif
-- Responsive: works on 1280px+ desktop primarily
-- Dropdown animation: smooth expand 200ms ease
+**Hard Limits Added:**
+- `NO_DIV_BUTTON` — Interactive elements must use `<button>` not `<div onClick>`
+- `REQUIRE_ARIA_LIVE` — Streaming content must have `aria-live` attribute
+- `REQUIRE_SEMANTIC_HTML` — Page layouts must use semantic HTML elements
+- `REQUIRE_FOCUS_MANAGEMENT` — Modals must trap focus for keyboard accessibility
 
 ---
 
-### DELIVERABLE B: UX/UI Validation Upgrades
-
-Based on deep research report analysis (`/Users/jonathannelsen/Desktop/deep-research-report.md`), the following UX/UI gaps need to be closed. These apply to ALL generated components (VENUS output, landing page, any UI).
-
-#### B1: Expand `src/browser/visual-validator.ts` — Add These Checks
-
-The current validator checks: responsive classes, ARIA, alt text, loading states, error states, empty states, inline styles, div onClick, animations. **Add these missing checks:**
-
-1. **Confidence indicators** — Check for confidence/score/certainty display elements in AI output UIs
-2. **Undo/rollback controls** — Check for undo/redo buttons on AI-driven actions
-3. **Feedback widgets** — Check for thumbs-up/down, rating, or "Was this helpful?" patterns
-4. **Explainability affordances** — Check for "Why?" buttons, info icons, tooltip explanations next to AI outputs
-5. **Confirmation dialogs** — Check for confirm/cancel patterns before risky actions (delete, send, execute)
-6. **Keyboard navigation** — Check for tabIndex, onKeyDown, onKeyPress on interactive elements
-7. **ARIA live regions** — Check for aria-live="polite" on streaming/dynamic content areas
-8. **Color contrast** — Check for contrast-aware Tailwind classes (text-gray-900 vs text-gray-300, dark: variants)
-9. **i18n readiness** — Check for hardcoded user-facing strings (flag if found, suggest i18n keys)
-10. **Progressive disclosure** — Check for collapsible/expandable sections (details/summary, Accordion patterns)
-11. **Semantic HTML** — Check for proper use of `<button>`, `<nav>`, `<main>`, `<header>`, `<footer>`, `<section>` vs generic `<div>`
-12. **Focus management** — Check for autoFocus, focus trap patterns in modals/dialogs
-
-Each check should deduct 5-10 points from the score (same pattern as existing checks). Update the `score >= 70` pass threshold if needed.
-
-#### B2: Update VENUS Agent Template (`.nova/agents/VENUS.md`)
-
-Add these to VENUS's requirements/principles so it generates components with:
-- Confidence indicators on AI-generated content
-- Undo buttons on any AI-driven mutation
-- Feedback widgets (thumbs up/down) on AI responses
-- "Why?" explainability tooltips
-- Confirmation dialogs before destructive actions
-- Full keyboard navigation (tabIndex, key handlers)
-- aria-live regions on dynamic content
-- Progressive disclosure (collapsible advanced sections)
-- Semantic HTML (nav, main, section, not just divs)
-- Focus management in modals
-
-#### B3: Update `.nova/config/hard-limits.json`
-
-Add VENUS hard limits for:
-- `"NO_DIV_BUTTON"` — Interactive elements must use `<button>` not `<div onClick>`
-- `"REQUIRE_ARIA_LIVE"` — Streaming/dynamic content sections must have aria-live
-- `"REQUIRE_SEMANTIC_HTML"` — Page-level layouts must use `<main>`, `<nav>`, `<header>`, `<footer>`
-- `"REQUIRE_FOCUS_MANAGEMENT"` — Modals must trap focus
+### Documentation Created (2 files)
+- `.nova/UX_VALIDATION_UPGRADES.md` — Deliverable B documentation
+- `.nova/PHASE_4_COMPLETE.md` — Complete phase summary
 
 ---
 
@@ -1007,5 +936,5 @@ convex/lib/softDelete.ts
 
 ---
 
-*Phase 5 completed: 2026-02-18*  
+*Phase 5 completed: 2026-02-18*
 *30+ patterns adapted from BistroLens to Nova26*
