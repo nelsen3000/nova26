@@ -5,7 +5,7 @@
 > that sends you back here. Find your section, pick the next unchecked task, do it.
 > **Coordinator**: Claude Code (assigns tasks, evaluates output, resolves conflicts)
 > **Repo**: https://github.com/nelsen3000/nova26
-> **Current state**: 3,445 tests, 0 TS errors, 143 test files
+> **Current state**: 3,690 tests, 0 TS errors, 148 test files
 > **Vision**: Eternal Engine — self-evolving Rust core + ZeroClaw/TinyClaw/NanoClaw patterns
 
 ---
@@ -15,10 +15,10 @@
 | Agent | Domain | Status | Current Sprint |
 |-------|--------|--------|----------------|
 | **Claude Code** | Coordinator + Core Engine + Convex | Active | Evaluation + prompt writing |
-| **Kimi** | Implementation (TypeScript + Tests) | Active | R20 Feature Sprint |
-| **Grok** | Research + Deep Specs | Active | R23-01→05 specs |
-| **Kiro** | Knowledge Extraction + Quality Audits | Active | Audit fixes |
-| **Gemini** | Deep Research + Competitive Intel | Active | GEMINI-07→15 |
+| **Kimi** | Implementation (TypeScript + Tests) | Active | R21 delivered, awaiting R22+ |
+| **Grok** | Research + Deep Specs | Active | R23+R24 delivered, awaiting R25 |
+| **Kiro** | Knowledge Extraction + Quality Audits | Active | KIRO-06 done (by Claude), KIRO-07 queued |
+| **Gemini** | Deep Research + Competitive Intel | Active | GEMINI-12 delivered, GEMINI-07→11 + 13→15 pending |
 
 ---
 
@@ -47,17 +47,21 @@
 
 - [x] `KIMI-R20-01` Implement L0/L1/L2/L3 orchestrator hierarchy (spec: .nova/specs/grok-r20-01-orchestrator-hierarchy.md, 112 tests) — DELIVERED, 11 files, 214 tests, 8 TS errors fixed by Claude
 - [x] `KIMI-R20-02` Implement Tauri desktop wrapper (spec: .nova/specs/grok-r20-02-tauri-desktop.md, 87 tests) — DELIVERED, 11 files + 4 Rust files, 110 tests, detectTauri bug fixed by Claude
-- [x] `KIMI-R20-03` Implement AI design pipeline (spec: .nova/specs/grok-r20-03-design-pipeline.md, 82 tests) — DELIVERED (source only, tests pending), 5 files, 10 TS errors fixed by Claude
+- [x] `KIMI-R20-03` Implement AI design pipeline (spec: .nova/specs/grok-r20-03-design-pipeline.md, 82 tests) — DELIVERED (source + tests), 10 files, 10 TS errors fixed by Claude
+- [x] `KIMI-R21-01` Implement MCP integration (spec: .nova/specs/grok-r21-01-mcp-integration.md, 78 tests) — DELIVERED, 5 files, 2 TS errors fixed by Claude
+- [x] `KIMI-R21-02` Implement ACP integration (spec: .nova/specs/grok-r21-02-acp-integration.md, 67 tests) — DELIVERED, 6 files
+- [x] `KIMI-R21-03` Implement Compliance & Audit Trail (spec: .nova/specs/grok-r21-03-compliance-audit.md, 84 tests) — DELIVERED, 5 files, 1 TS error fixed by Claude
 - [ ] `KIMI-PERP-01` Implement Perplexity research integration (spec: .nova/specs/perplexity-integration.md)
-- [ ] `KIMI-R21-01` Implement MCP integration (spec: .nova/specs/grok-r21-01-mcp-integration.md, 78 tests)
-- [ ] `KIMI-R21-02` Implement ACP integration (spec: .nova/specs/grok-r21-02-acp-integration.md, 67 tests)
-- [ ] `KIMI-R21-03` Implement Compliance & Audit Trail (spec: .nova/specs/grok-r21-03-compliance-audit.md, 84 tests)
 - [ ] `KIMI-R22-01` Implement Agent Model Routing (spec: .nova/specs/grok-r22-01-model-routing.md, 79 tests)
-- [ ] `KIMI-R23-01` Implement Persistent Visual Workflow Engine (awaiting Grok R23-01 spec)
-- [ ] `KIMI-R23-02` Implement MicroVM / WASI Ultra-Sandbox (awaiting Grok R23-02 spec)
-- [ ] `KIMI-R23-03` Implement Infinite Hierarchical Memory (awaiting Grok R23-03 spec)
-- [ ] `KIMI-R23-04` Implement Agent Debate & Swarm Layer (awaiting Grok R23-04 spec)
-- [ ] `KIMI-R23-05` Implement Cinematic Observability & Eval Suite (awaiting Grok R23-05 spec)
+- [ ] `KIMI-R23-01` Implement Persistent Visual Workflow Engine (spec: .nova/specs/grok-r23-eternal-symphony.md)
+- [ ] `KIMI-R23-02` Implement MicroVM / WASI Ultra-Sandbox (spec: .nova/specs/grok-r23-eternal-symphony.md)
+- [ ] `KIMI-R23-03` Implement Infinite Hierarchical Memory (spec: .nova/specs/grok-r23-eternal-symphony.md)
+- [ ] `KIMI-R23-04` Implement Agent Debate & Swarm Layer (spec: .nova/specs/grok-r23-eternal-symphony.md)
+- [ ] `KIMI-R23-05` Implement Cinematic Observability & Eval Suite (spec: .nova/specs/grok-r23-eternal-symphony.md)
+- [ ] `KIMI-R24-01` Implement AI Model Database (spec: .nova/specs/grok-r24-immortal-omniverse.md)
+- [ ] `KIMI-R24-02` Implement Eternal Engine Rust Core (spec: .nova/specs/grok-r24-immortal-omniverse.md)
+- [ ] `KIMI-R24-03` Implement Real-time CRDT Collaboration (spec: .nova/specs/grok-r24-immortal-omniverse.md)
+- [ ] `KIMI-R24-04` Implement Voice & Multimodal Interface (spec: .nova/specs/grok-r24-immortal-omniverse.md)
 
 ### Completed (recent)
 
@@ -77,19 +81,16 @@
 
 ### Sprint: R23 Gap Enhancements + Shannon Adaptation
 
-- [ ] `GROK-R23-01` Persistent Visual Workflow Engine spec (Temporal + LangGraph patterns)
-- [ ] `GROK-R23-02` MicroVM / WASI Ultra-Sandbox spec (Firecracker + gVisor + OPA)
-- [ ] `GROK-R23-03` Infinite Hierarchical Memory spec (Mem0 + Letta/MemGPT patterns)
-- [ ] `GROK-R23-04` Agent Debate & Swarm Layer spec (CrewAI + AutoGen + OpenAI Swarm)
-- [ ] `GROK-R23-05` Cinematic Observability & Eval Suite spec (Braintrust + LangSmith)
+- [x] `GROK-R23-01` Persistent Visual Workflow Engine spec (Temporal + LangGraph) — DELIVERED
+- [x] `GROK-R23-02` MicroVM / WASI Ultra-Sandbox spec (Firecracker + OPA) — DELIVERED
+- [x] `GROK-R23-03` Infinite Hierarchical Memory spec (Mem0 + Letta) — DELIVERED
+- [x] `GROK-R23-04` Agent Debate & Swarm Layer spec (CrewAI + AutoGen) — DELIVERED
+- [x] `GROK-R23-05` Cinematic Observability & Eval Suite spec (Braintrust + LangSmith) — DELIVERED
+- [x] `GROK-R24-01` AI Model Database spec (Gemini-12 research) — DELIVERED
+- [x] `GROK-R24-02` Eternal Engine Rust Core Architecture spec (ZeroClaw/TinyClaw/NanoClaw) — DELIVERED
+- [x] `GROK-R24-03` Real-time CRDT Collaboration spec (Gemini-15 research) — DELIVERED
+- [x] `GROK-R24-04` Voice & Multimodal Interface spec (Gemini-13 research) — DELIVERED
 - [ ] `GROK-R22-02` Shannon Patterns Adaptation Spec (Temporal replay + UCB router + WASI sandbox)
-
-### Queued: R24 Frontier Specs
-
-- [ ] `GROK-R24-01` AI Model Database spec (live benchmarks, per-agent routing table, one-click toggles)
-- [ ] `GROK-R24-02` Eternal Engine Rust Core Architecture spec (ZeroClaw traits, TinyClaw swarm, NanoClaw isolation)
-- [ ] `GROK-R24-03` Real-time CRDT Collaboration spec (multiplayer agent sessions, conflict resolution)
-- [ ] `GROK-R24-04` Voice & Multimodal Interface spec (speech-to-intent, image input, screen sharing)
 
 ### Completed
 
@@ -118,12 +119,12 @@
 
 ### Current Sprint: Audit Remediation + Agent Template Extraction
 
-- [ ] `KIRO-06-01` Fix Nova26 INDEX.md — add all 51 patterns (49 gaps found)
-- [ ] `KIRO-06-02` Fix 7 intelligence patterns — add missing has-source, has-when-to-use, has-benefits sections
-- [ ] `KIRO-06-03` Fix 11 BistroLens hook filenames — camelCase → kebab-case
-- [ ] `KIRO-06-04` Fix stale reference in AI_COORDINATION.md (sun-prd-generator.js line 215)
-- [ ] `KIRO-06-05` Extract patterns from 21 EARTH XML agent templates (21 pattern files in `.nova/nova26-knowledge/agents/`)
-- [ ] `KIRO-06-06` Build agent interaction graph (JSON + ASCII) from input_requirements + handoff data
+- [x] `KIRO-06-01` Fix Nova26 INDEX.md — verified: 51/51 patterns already present (by Claude)
+- [x] `KIRO-06-02` Fix 7 intelligence patterns — verified: all sections present (by Claude)
+- [x] `KIRO-06-03` Fix 11 BistroLens hook filenames — camelCase → kebab-case + cross-ref updates (by Claude)
+- [x] `KIRO-06-04` Fix stale reference in AI_COORDINATION.md — sun-prd-generator now exists (by Claude)
+- [x] `KIRO-06-05` Extract patterns from 21 EARTH XML agent templates — 21 files, 35-42 lines each (by Claude)
+- [x] `KIRO-06-06` Build agent interaction graph — 21 nodes, 89 edges, 6 clusters, JSON + ASCII (by Claude)
 - [ ] `KIRO-06-07` Re-run structural audit — target: 0 failures (down from 87)
 
 ### Queued (all unblocked)
@@ -156,9 +157,9 @@
 - [ ] `GEMINI-10` Enterprise self-hosted deployment (Docker/K8s, SSO/RBAC, SOC 2, FedRAMP, update management)
 - [ ] `GEMINI-11` AI design systems & component generation (design tokens, shadcn, multi-screen journeys, screenshot-to-code)
 
-### Queued: GEMINI-12→15 (Frontier Research)
+### Delivered: GEMINI-12 (Frontier Research)
 
-- [ ] `GEMINI-12` AI Model Database — neverending live database of every AI model (benchmarks, rankings per use case, agent-to-model mapping, closed/open toggle, non-coder explanations, instant updates)
+- [x] `GEMINI-12` AI Model Database — 4 categories, 21 agent-to-model mappings, JSON schema, auto-update strategy, priority matrix — DELIVERED, saved to .nova/research/gemini-12-model-intelligence.md
 - [ ] `GEMINI-13` Voice & Multimodal AI Interfaces (speech-to-intent, Whisper/Deepgram, image grounding, screen sharing for agents)
 - [ ] `GEMINI-14` Edge AI & On-Device Inference (MLX for Apple Silicon, NVIDIA NIM, TinyML, on-device fine-tuning, hybrid cloud/edge)
 - [ ] `GEMINI-15` Real-time Collaboration & CRDT Sync (multiplayer coding, CRDT libraries, Yjs/Automerge, conflict resolution for agents)
