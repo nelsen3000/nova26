@@ -5,7 +5,7 @@
 > that sends you back here. Find your section, pick the next unchecked task, do it.
 > **Coordinator**: Claude Code (assigns tasks, evaluates output, resolves conflicts)
 > **Repo**: https://github.com/nelsen3000/nova26
-> **Current state**: 3,121 tests, 0 TS errors, 132 test files
+> **Current state**: 3,445 tests, 0 TS errors, 143 test files
 > **Vision**: Eternal Engine — self-evolving Rust core + ZeroClaw/TinyClaw/NanoClaw patterns
 
 ---
@@ -45,8 +45,8 @@
 ### Queued: R20 Feature Implementation
 > Sprint file: `.prompts/kimi-r20-sprint.md` — READY
 
-- [ ] `KIMI-R20-01` Implement L0/L1/L2/L3 orchestrator hierarchy (spec: .nova/specs/grok-r20-01-orchestrator-hierarchy.md, 112 tests)
-- [ ] `KIMI-R20-02` Implement Tauri desktop wrapper (spec: .nova/specs/grok-r20-02-tauri-desktop.md, 87 tests)
+- [x] `KIMI-R20-01` Implement L0/L1/L2/L3 orchestrator hierarchy (spec: .nova/specs/grok-r20-01-orchestrator-hierarchy.md, 112 tests) — DELIVERED, 11 files, 214 tests, 8 TS errors fixed by Claude
+- [x] `KIMI-R20-02` Implement Tauri desktop wrapper (spec: .nova/specs/grok-r20-02-tauri-desktop.md, 87 tests) — DELIVERED, 11 files + 4 Rust files, 110 tests, detectTauri bug fixed by Claude
 - [ ] `KIMI-R20-03` Implement AI design pipeline (spec: .nova/specs/grok-r20-03-design-pipeline.md, 82 tests)
 - [ ] `KIMI-PERP-01` Implement Perplexity research integration (spec: .nova/specs/perplexity-integration.md)
 - [ ] `KIMI-R21-01` Implement MCP integration (spec: .nova/specs/grok-r21-01-mcp-integration.md, 78 tests)
@@ -204,7 +204,7 @@
 - [x] `CL-37b` ~~Save Grok spec summaries + Shannon research to .nova/~~ DONE — 5 specs + 1 research file
 - [x] `CL-38` ~~Update MISSING_FEATURES.md~~ DONE — R19 marked complete, R20-R22 updated, R23 gaps + frontier features added, 77 features tracked
 - [x] `CL-39` ~~Evaluate Kimi R19-03 output~~ DONE — 9 files, 124 tests, evaluate() bug fixed (both Claude + Kimi found it independently)
-- [ ] `CL-40` Evaluate Kimi R20 sprint output (when delivered)
+- [x] `CL-40` ~~Evaluate Kimi R20-01 + R20-02 output~~ DONE — R20-01: 11 source + 7 test files (214 tests), R20-02: 6 source + 4 test files + 4 Rust (110 tests), 8 TS errors + 1 bug fixed
 - [x] `CL-41` ~~Write Grok R23 research prompts~~ DONE — `.prompts/grok-r23.md` (5 specs)
 - [x] `CL-42` ~~Write Gemini-12→15 research prompts~~ DONE — 4 frontier research topics
 - [x] `CL-43` ~~Write Kimi R20 continuation prompt~~ DONE — R19 complete, begin R20-01

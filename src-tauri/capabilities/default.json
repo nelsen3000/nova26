@@ -1,0 +1,25 @@
+{
+  "identifier": "default",
+  "description": "Default capabilities for Nova26",
+  "local": true,
+  "windows": ["main"],
+  "permissions": [
+    "fs:allow-read-file",
+    "fs:allow-write-file",
+    "fs:allow-create-dir",
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "$HOME/projects" }, { "path": "$HOME/projects/**" }, { "path": "$PWD" }, { "path": "$PWD/**" }]
+    },
+    "shell:allow-open",
+    "notification:default",
+    "window:allow-close",
+    "window:allow-hide",
+    "window:allow-show",
+    "window:allow-maximize",
+    "window:allow-minimize",
+    "window:allow-unmaximize",
+    "window:allow-unminimize",
+    "window:allow-start-dragging"
+  ]
+}

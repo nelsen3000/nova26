@@ -21,6 +21,7 @@ import type { HealthConfig } from '../health/health-dashboard.js';
 import type { MobileLaunchConfig } from '../mobile-launch/types.js';
 import type { SemanticModelConfig } from '../atlas/types.js';
 import type { StudioRulesConfig } from '../studio-rules/types.js';
+import type { OrchestratorHierarchyConfig } from './hierarchy-types.js';
 
 import type { DreamModeConfig } from '../dream/dream-engine.js';
 import type { ParallelUniverseConfig } from '../universe/parallel-universe.js';
@@ -144,6 +145,9 @@ export interface RalphLoopOptions {
   // R19: Studio Rules (R19-03)
   studioRulesEnabled?: boolean;
   studioRulesConfig?: StudioRulesConfig;
+  // R20: Orchestrator Hierarchy (R20-01)
+  orchestratorHierarchyEnabled?: boolean;
+  orchestratorHierarchy?: OrchestratorHierarchyConfig;
 }
 
 // Re-export HookRegistry from lifecycle-hooks
