@@ -16,7 +16,7 @@
 |-------|--------|--------|----------------|
 | **Claude Code** | Coordinator + Core Engine + Convex | Active | Evaluation + prompt writing |
 | **Sonnet** | Integration + Hardening + Wiring | Active | S-01 (6 tasks) + CL-50 hardening sprint (7 tasks) |
-| **Kimi** | Implementation (TypeScript + Tests) | Active | R22-R24 source committed, R25 testing sprint ready |
+| **Kimi** | Implementation (TypeScript + Tests) | Active | R22-R24 done, R25 tests done (538), R26 lifecycle adapters ready |
 | **Grok** | Research + Deep Specs | Active | R23+R24 delivered, awaiting R25 |
 | **Kiro** | Knowledge Extraction + Quality Audits | Active | KIRO-06 + KIRO-07 done (by Claude), awaiting KIRO-08 |
 | **Gemini** | Deep Research + Competitive Intel | Active | GEMINI-12 delivered, GEMINI-07→11 + 13→15 pending |
@@ -92,6 +92,17 @@
 - [x] `KIMI-T-05` Write Cinematic Observability tests — DONE (73 tests, delivered with source)
 - [x] `KIMI-T-06` Write AI Model Database tests — DONE (81 tests, delivered with source)
 - [x] `KIMI-T-07` Write CRDT Collaboration tests — DONE (65 tests, delivered with source)
+
+### Queued: R26 Lifecycle Adapters Sprint
+> Sprint file: `.prompts/kimi-r26-lifecycle-adapters-sprint.md` — READY
+
+- [ ] `KIMI-R26-01` Model Routing lifecycle adapter (25 tests)
+- [ ] `KIMI-R26-02` Perplexity Research lifecycle adapter (20 tests)
+- [ ] `KIMI-R26-03` Workflow Engine lifecycle adapter (25 tests)
+- [ ] `KIMI-R26-04` Infinite Memory lifecycle adapter (25 tests)
+- [ ] `KIMI-R26-05` Cinematic Observability lifecycle adapter (30 tests)
+- [ ] `KIMI-R26-06` AI Model Database lifecycle adapter (20 tests)
+- [ ] `KIMI-R26-07` CRDT Collaboration lifecycle adapter (20 tests)
 
 ### Completed (recent)
 
