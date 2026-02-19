@@ -17,7 +17,7 @@
 | **Claude Code** | Coordinator + Core Engine + Convex | Active | Evaluation + prompt writing |
 | **Kimi** | Implementation (TypeScript + Tests) | Active | R21 delivered, awaiting R22+ |
 | **Grok** | Research + Deep Specs | Active | R23+R24 delivered, awaiting R25 |
-| **Kiro** | Knowledge Extraction + Quality Audits | Active | KIRO-06 done (by Claude), KIRO-07 queued |
+| **Kiro** | Knowledge Extraction + Quality Audits | Active | KIRO-06 + KIRO-07 done (by Claude), awaiting KIRO-08 |
 | **Gemini** | Deep Research + Competitive Intel | Active | GEMINI-12 delivered, GEMINI-07→11 + 13→15 pending |
 
 ---
@@ -129,10 +129,10 @@
 
 ### Queued (all unblocked)
 
-- [ ] `KIRO-07-01` Extract patterns from Kimi lifecycle hooks + behaviors (READY — src/orchestrator/lifecycle-hooks.ts, src/behaviors/)
-- [ ] `KIRO-07-02` Validate Kimi's mega-wiring sprint output (READY — structural audit of ralph-loop.ts, 28 new files)
-- [ ] `KIRO-07-03` Extract patterns from Grok R19/R20 specs (READY — 5 specs in .nova/specs/)
-- [ ] `KIRO-07-04` Extract patterns from Gemini research (READY — 5 reports in .nova/research/)
+- [x] `KIRO-07-01` Extract patterns from Kimi lifecycle hooks + behaviors — DONE (2 patterns: lifecycle-hook-registry, feature-lifecycle-wiring)
+- [x] `KIRO-07-02` Validate Kimi's mega-wiring sprint output — DONE (audit report: 46 imports, 38 config fields, 13 wired modules, 4 missing, P0 duplication found)
+- [x] `KIRO-07-03` Extract patterns from Grok R19/R20 specs — DONE (5 patterns: multi-layer-hierarchy, semantic-model-graph, studio-rules-engine, mobile-launch-pipeline, tauri-desktop-bridge)
+- [x] `KIRO-07-04` Extract patterns from Gemini research — DONE (synthesis report: 10 cross-report patterns, priority matrix, model-to-agent mapping)
 
 ### Completed
 
@@ -251,7 +251,7 @@
 | Claude Code | CL-35, CL-40, CL-44→46 | 73+ | Evaluate Gemini + Grok deliveries, write Kimi sprints |
 | Kimi | Awaiting R22→R24 mega-sprint (7 tasks) | 48+ | PERP-01 → R22-01 → R23-01/03/05 → R24-01/03 (4 tasks cut) |
 | Grok | GROK-R23-01→05 + R24-01→04 | 80+ | R23 gap specs → R24 frontier specs (AI DB, Eternal Engine, CRDT, Voice) |
-| Kiro | KIRO-07-01→04 queued | 24+ | R19/R20 pattern extraction + lifecycle audit |
+| Kiro | — | 31+ | KIRO-07 complete, 58 total patterns, awaiting KIRO-08 |
 | Gemini | GEMINI-07→15 | 6 | 07-11 current sprint → 12-15 frontier research (AI DB, Voice, Edge AI, CRDT) |
 | Perplexity | P-07→P-12 (paused) | 6 | Documentation portal |
 
