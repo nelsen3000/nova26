@@ -15,10 +15,29 @@
 | Agent | Domain | Status | Current Sprint |
 |-------|--------|--------|----------------|
 | **Claude Code** | Coordinator + Core Engine + Convex | Active | Evaluation + prompt writing |
-| **Kimi** | Implementation (TypeScript + Tests) | Active | R21 delivered, awaiting R22+ |
+| **Sonnet** | Integration + Hardening + Wiring | Active | S-01 Integration & Hardening sprint (6 tasks) |
+| **Kimi** | Implementation (TypeScript + Tests) | Active | R22-R24 mega-sprint in progress |
 | **Grok** | Research + Deep Specs | Active | R23+R24 delivered, awaiting R25 |
 | **Kiro** | Knowledge Extraction + Quality Audits | Active | KIRO-06 + KIRO-07 done (by Claude), awaiting KIRO-08 |
 | **Gemini** | Deep Research + Competitive Intel | Active | GEMINI-12 delivered, GEMINI-07→11 + 13→15 pending |
+
+---
+
+## SONNET — Integration & Hardening Engine
+
+> Sprint file: `.prompts/sonnet-s01-integration-sprint.md`
+> Rules: TypeScript strict, ESM `.js` imports, vitest, no `any`, mock all I/O
+> Domain: ralph-loop.ts wiring, lifecycle system, module integration, TS error fixing, codebase hardening
+> Constraint: Do NOT create new feature modules (that's Kimi's job). Focus on wiring, fixing, deduplicating, testing integration.
+
+### Sprint S-01: Integration & Hardening
+
+- [ ] `S-01-01` Fix P0: Deduplicate RalphLoopOptions (ralph-loop.ts line 85 vs ralph-loop-types.ts) — keep ralph-loop-types.ts as single source of truth, re-export from ralph-loop.ts
+- [ ] `S-01-02` Wire 4 missing modules into lifecycle-wiring.ts — agentMemory (R16-02), wellbeing (R16-05), advancedRecovery (R17-01), advancedInit (R17-02) — add to DEFAULT_FEATURE_HOOKS + featureFlags map
+- [ ] `S-01-03` Delete cut R23-02 sandbox artifacts — remove src/sandbox/ files (Kimi started before we cut this task). Files: firecracker-adapter.ts, index.ts, opa-policy-engine.ts, security/, types.ts, ultra-sandbox-manager.ts, wasi-bridge.ts
+- [ ] `S-01-04` Extract shared failure handler from processTask() — 3 near-identical failure paths at ralph-loop.ts lines ~1037, ~1066, ~1112 share Taste Vault recording + ACE outcome recording + analytics. Extract into `handleTaskFailure()` helper
+- [ ] `S-01-05` Add integration tests for lifecycle wiring — test that wireFeatureHooks() registers correct hooks for all 17 features (13 existing + 4 new), test priority ordering, test getWiringSummary() accuracy
+- [ ] `S-01-06` Evaluate + integrate Kimi R22-R24 deliveries as they arrive — run `npx tsc --noEmit`, fix TS errors, run `npx vitest run`, commit passing code
 
 ---
 
@@ -248,11 +267,12 @@
 
 | Agent | Active Tasks | Completed | Next Up |
 |-------|-------------|-----------|---------|
-| Claude Code | CL-35, CL-40, CL-44→46 | 73+ | Evaluate Gemini + Grok deliveries, write Kimi sprints |
-| Kimi | Awaiting R22→R24 mega-sprint (7 tasks) | 48+ | PERP-01 → R22-01 → R23-01/03/05 → R24-01/03 (4 tasks cut) |
-| Grok | GROK-R23-01→05 + R24-01→04 | 80+ | R23 gap specs → R24 frontier specs (AI DB, Eternal Engine, CRDT, Voice) |
+| Claude Code | Coordination | 75+ | Evaluate deliveries, write prompts, assign tasks |
+| Sonnet | S-01-01→06 | 0 | P0 dedup → wire modules → cleanup → harden → integration tests |
+| Kimi | R22-R24 mega-sprint (7 tasks) | 48+ | PERP-01 → R22-01 → R23-01/03/05 → R24-01/03 |
+| Grok | GROK-R22-02 (Shannon) | 80+ | R23+R24 done, Shannon adaptation pending |
 | Kiro | — | 31+ | KIRO-07 complete, 58 total patterns, awaiting KIRO-08 |
-| Gemini | GEMINI-07→15 | 6 | 07-11 current sprint → 12-15 frontier research (AI DB, Voice, Edge AI, CRDT) |
+| Gemini | GEMINI-07→15 | 7 | 07-11 current → 13-15 frontier research |
 | Perplexity | P-07→P-12 (paused) | 6 | Documentation portal |
 
 ---
