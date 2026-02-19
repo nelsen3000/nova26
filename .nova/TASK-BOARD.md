@@ -5,7 +5,7 @@
 > that sends you back here. Find your section, pick the next unchecked task, do it.
 > **Coordinator**: Claude Code (assigns tasks, evaluates output, resolves conflicts)
 > **Repo**: https://github.com/nelsen3000/nova26
-> **Current state**: 2,885 tests, 0 TS errors, 119 test files
+> **Current state**: 2,997 tests, 0 TS errors, 124 test files
 
 ---
 
@@ -37,8 +37,8 @@
 ### Next Sprint: R19 Feature Implementation
 > Sprint file: `.prompts/kimi-r19-sprint.md` — READY
 
-- [ ] `KIMI-R19-01` Implement Mobile Launch Stage (spec: .nova/specs/grok-r19-01-mobile-launch.md, 42 tests)
-- [ ] `KIMI-R19-02` Implement Deep Semantic Model (spec: .nova/specs/grok-r19-02-semantic-model.md, 68 tests)
+- [x] `KIMI-R19-01` Implement Mobile Launch Stage (spec: .nova/specs/grok-r19-01-mobile-launch.md, 42 tests) — DELIVERED, 12 files, 109 tests
+- [x] `KIMI-R19-02` Implement Deep Semantic Model (spec: .nova/specs/grok-r19-02-semantic-model.md, 68 tests) — DELIVERED, 7 files, types.ts overwrite fixed by Claude
 - [ ] `KIMI-R19-03` Implement Studio Rules + Prompt Optimization (spec: .nova/specs/grok-r19-03-studio-rules.md, 94 tests)
 
 ### Queued: R20 Feature Implementation
@@ -107,11 +107,12 @@
 - [ ] `KIRO-06-06` Build agent interaction graph (JSON + ASCII) from input_requirements + handoff data
 - [ ] `KIRO-06-07` Re-run structural audit — target: 0 failures (down from 87)
 
-### Queued
+### Queued (all unblocked)
 
-- [ ] `KIRO-07-01` Extract patterns from Kimi lifecycle hooks + behaviors (when built)
-- [ ] `KIRO-07-02` Validate Kimi's mega-wiring sprint output (structural audit of ralph-loop.ts changes)
-- [ ] `KIRO-07-03` Extract patterns from Grok R19/R20 specs (READY — specs in .nova/specs/grok-r19-*.md and grok-r20-*.md)
+- [ ] `KIRO-07-01` Extract patterns from Kimi lifecycle hooks + behaviors (READY — src/orchestrator/lifecycle-hooks.ts, src/behaviors/)
+- [ ] `KIRO-07-02` Validate Kimi's mega-wiring sprint output (READY — structural audit of ralph-loop.ts, 28 new files)
+- [ ] `KIRO-07-03` Extract patterns from Grok R19/R20 specs (READY — 5 specs in .nova/specs/)
+- [ ] `KIRO-07-04` Extract patterns from Gemini research (READY — 5 reports in .nova/research/)
 
 ### Completed
 
@@ -168,7 +169,7 @@
 
 ### New Tasks
 
-- [ ] `CL-31` Evaluate Kimi R19 sprint output (verify mobile-launch, atlas, studio-rules, optimization modules)
+- [x] `CL-31` ~~Evaluate Kimi R19 sprint output~~ DONE — R19-01 + R19-02 delivered (22 files, 112 new tests), fixed types.ts overwrite + 20 TS errors, R19-03 pending
 - [ ] `CL-32` Evaluate Grok R20-03 spec (AI design pipeline)
 - [ ] `CL-33` Write Kimi sprint from Grok R21 specs (MCP, ACP, compliance — 3 implementation sprints)
 - [ ] `CL-34` Evaluate Grok R21 specs (MCP, ACP, compliance)
@@ -210,8 +211,8 @@
 
 | Agent | Active Tasks | Completed | Next Up |
 |-------|-------------|-----------|---------|
-| Claude Code | CL-31→CL-38 | 55+ | Evaluate agent outputs, write sprint prompts |
-| Kimi | KIMI-R19-01→R19-03 | 40+ | R19 Feature Implementation (204+ tests) |
+| Claude Code | CL-32→CL-38 | 56+ | Evaluate agent outputs, write sprint prompts |
+| Kimi | KIMI-R19-03 | 42+ | R19-03 Studio Rules, then R20 Feature Implementation |
 | Grok | GROK-R20-03, R21-01→03, R22-01 | 70+ | AI design pipeline → MCP → ACP → compliance → model routing |
 | Kiro | KIRO-06-01→07 | 17+ | Audit remediation + agent extraction |
 | Gemini | GEMINI-07→11 | 6 | Agent protocols → metrics → testing → enterprise → design systems |

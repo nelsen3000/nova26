@@ -11,6 +11,23 @@ import type { BuildLog } from '../types/index.js';
 export { KronosRetrospective } from './retrospective.js';
 export { ConvexAtlasClient } from './convex-client.js';
 
+// R19-02: Deep Semantic Model exports
+export type {
+  SemanticModelConfig,
+  CodeNode,
+  CodeEdge,
+  CodeGraph,
+  ImpactAnalysisResult,
+  SemanticDiffSummary,
+  CompactedContext,
+} from './types.js';
+
+export { SemanticModel, createSemanticModel } from './semantic-model.js';
+export { ImpactAnalyzer, createImpactAnalyzer } from './impact-analyzer.js';
+export { SemanticDiffer, createSemanticDiffer } from './semantic-differ.js';
+export { ContextCompactor, createContextCompactor } from './context-compactor.js';
+export { GraphMemory, createGraphMemory } from './graph-memory.js';
+
 const ATLAS_DIR = join(process.cwd(), '.nova', 'atlas');
 const BUILDS_FILE = join(ATLAS_DIR, 'builds.json');
 
