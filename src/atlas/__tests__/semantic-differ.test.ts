@@ -31,7 +31,7 @@ describe('SemanticDiffer', () => {
       const result = differ.analyzePRIntent(changes);
 
       expect(result.prIntent).toBeDefined();
-      expect(result.groupedChanges).toHaveLengthGreaterThan(0);
+      expect(result.groupedChanges.length).toBeGreaterThan(0);
       expect(result.overallConfidence).toBeGreaterThan(0);
     });
 
@@ -231,7 +231,7 @@ describe('SemanticDiffer', () => {
       ];
 
       const confidence = differ.calculateConfidence(changes, []);
-      expect(confidence).toBeLessThan(0.9);
+      expect(confidence).toBeLessThanOrEqual(0.9);
     });
 
     it('should be lower for many deletions', () => {

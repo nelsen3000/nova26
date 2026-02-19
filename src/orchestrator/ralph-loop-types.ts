@@ -17,6 +17,11 @@ import type { FeedbackLoopConfig } from '../prod-feedback/feedback-loop.js';
 // R17-10 Health Dashboard
 import type { HealthConfig } from '../health/health-dashboard.js';
 
+// R19 Imports
+import type { MobileLaunchConfig } from '../mobile-launch/types.js';
+import type { SemanticModelConfig } from '../atlas/types.js';
+import type { StudioRulesConfig } from '../studio-rules/types.js';
+
 import type { DreamModeConfig } from '../dream/dream-engine.js';
 import type { ParallelUniverseConfig } from '../universe/parallel-universe.js';
 import type { OvernightEvolutionConfig } from '../evolution/overnight-engine.js';
@@ -130,6 +135,15 @@ export interface RalphLoopOptions {
   // Orchestration Optimization (R17-12)
   orchestrationOptimizationEnabled?: boolean;
   orchestrationConfig?: OrchestrationModuleConfig;
+  // R19: Mobile Launch (R19-01)
+  mobileLaunchEnabled?: boolean;
+  mobileLaunchConfig?: MobileLaunchConfig;
+  // R19: Semantic Model (R19-02)
+  semanticModelEnabled?: boolean;
+  semanticModelConfig?: SemanticModelConfig;
+  // R19: Studio Rules (R19-03)
+  studioRulesEnabled?: boolean;
+  studioRulesConfig?: StudioRulesConfig;
 }
 
 // Re-export HookRegistry from lifecycle-hooks

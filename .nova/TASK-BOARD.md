@@ -5,7 +5,7 @@
 > that sends you back here. Find your section, pick the next unchecked task, do it.
 > **Coordinator**: Claude Code (assigns tasks, evaluates output, resolves conflicts)
 > **Repo**: https://github.com/nelsen3000/nova26
-> **Current state**: 2,997 tests, 0 TS errors, 124 test files
+> **Current state**: 3,121 tests, 0 TS errors, 132 test files
 
 ---
 
@@ -39,19 +39,24 @@
 
 - [x] `KIMI-R19-01` Implement Mobile Launch Stage (spec: .nova/specs/grok-r19-01-mobile-launch.md, 42 tests) — DELIVERED, 12 files, 109 tests
 - [x] `KIMI-R19-02` Implement Deep Semantic Model (spec: .nova/specs/grok-r19-02-semantic-model.md, 68 tests) — DELIVERED, 7 files, types.ts overwrite fixed by Claude
-- [ ] `KIMI-R19-03` Implement Studio Rules + Prompt Optimization (spec: .nova/specs/grok-r19-03-studio-rules.md, 94 tests)
+- [x] `KIMI-R19-03` Implement Studio Rules + Prompt Optimization (spec: .nova/specs/grok-r19-03-studio-rules.md, 94 tests) — DELIVERED, 9 files, 124 tests, evaluate bug fixed by Claude
 
 ### Queued: R20 Feature Implementation
 > Sprint file: `.prompts/kimi-r20-sprint.md` — READY
 
 - [ ] `KIMI-R20-01` Implement L0/L1/L2/L3 orchestrator hierarchy (spec: .nova/specs/grok-r20-01-orchestrator-hierarchy.md, 112 tests)
 - [ ] `KIMI-R20-02` Implement Tauri desktop wrapper (spec: .nova/specs/grok-r20-02-tauri-desktop.md, 87 tests)
-- [ ] `KIMI-R20-03` Implement AI design pipeline (awaiting Grok R20-03 spec)
+- [ ] `KIMI-R20-03` Implement AI design pipeline (spec: .nova/specs/grok-r20-03-design-pipeline.md, 82 tests)
 - [ ] `KIMI-PERP-01` Implement Perplexity research integration (spec: .nova/specs/perplexity-integration.md)
-- [ ] `KIMI-R21-01` Implement MCP integration (awaiting Grok R21-01 spec)
-- [ ] `KIMI-R21-02` Implement ACP integration (awaiting Grok R21-02 spec)
-- [ ] `KIMI-R21-03` Implement Compliance & Audit Trail (awaiting Grok R21-03 spec)
-- [ ] `KIMI-R22-01` Implement Agent Model Routing (awaiting Grok R22-01 spec)
+- [ ] `KIMI-R21-01` Implement MCP integration (spec: .nova/specs/grok-r21-01-mcp-integration.md, 78 tests)
+- [ ] `KIMI-R21-02` Implement ACP integration (spec: .nova/specs/grok-r21-02-acp-integration.md, 67 tests)
+- [ ] `KIMI-R21-03` Implement Compliance & Audit Trail (spec: .nova/specs/grok-r21-03-compliance-audit.md, 84 tests)
+- [ ] `KIMI-R22-01` Implement Agent Model Routing (spec: .nova/specs/grok-r22-01-model-routing.md, 79 tests)
+- [ ] `KIMI-R23-01` Implement Persistent Visual Workflow Engine (awaiting Grok R23-01 spec)
+- [ ] `KIMI-R23-02` Implement MicroVM / WASI Ultra-Sandbox (awaiting Grok R23-02 spec)
+- [ ] `KIMI-R23-03` Implement Infinite Hierarchical Memory (awaiting Grok R23-03 spec)
+- [ ] `KIMI-R23-04` Implement Agent Debate & Swarm Layer (awaiting Grok R23-04 spec)
+- [ ] `KIMI-R23-05` Implement Cinematic Observability & Eval Suite (awaiting Grok R23-05 spec)
 
 ### Completed (recent)
 
@@ -67,16 +72,16 @@
 > Deliverable format: Deep TypeScript interfaces + integration points + open questions
 > Style: Analogy opener → concrete interfaces → file paths → test strategy
 
-### Current: R20-03
+### Current: Awaiting next assignment
 
-- [ ] `GROK-R20-03` AI-native design pipeline spec (Relume/Uizard-style)
+### Queued: R23 Gap Enhancements + Shannon Adaptation
 
-### Queued: R21-R22
-
-- [ ] `GROK-R21-01` MCP (Model Context Protocol) integration spec (60+ tests)
-- [ ] `GROK-R21-02` ACP (Agent Client Protocol) integration spec (55+ tests)
-- [ ] `GROK-R21-03` Compliance & Audit Trail system spec (70+ tests, based on Gemini-05)
-- [ ] `GROK-R22-01` Agent-specific model routing & speculative decoding spec (65+ tests, based on Gemini-06)
+- [ ] `GROK-R23-01` Persistent Visual Workflow Engine spec (Temporal + LangGraph patterns)
+- [ ] `GROK-R23-02` MicroVM / WASI Ultra-Sandbox spec (Firecracker + gVisor + OPA)
+- [ ] `GROK-R23-03` Infinite Hierarchical Memory spec (Mem0 + Letta/MemGPT patterns)
+- [ ] `GROK-R23-04` Agent Debate & Swarm Layer spec (CrewAI + AutoGen + OpenAI Swarm)
+- [ ] `GROK-R23-05` Cinematic Observability & Eval Suite spec (Braintrust + LangSmith)
+- [ ] `GROK-R22-02` Shannon Patterns Adaptation Spec (Temporal replay + UCB router + WASI sandbox)
 
 ### Completed
 
@@ -89,6 +94,12 @@
 - [x] R19-03: Studio Rules + DSPy Prompt Optimization spec (94 tests)
 - [x] R20-01: Orchestrator-Worker L0/L1/L2/L3 Hierarchy spec (112 tests)
 - [x] R20-02: Tauri Native Desktop Application spec (87 tests)
+- [x] R20-03: AI-Native Design Pipeline spec (82 tests)
+- [x] R21-01: MCP Integration spec (78 tests)
+- [x] R21-02: ACP Integration spec (67 tests)
+- [x] R21-03: Compliance & Audit Trail spec (84 tests)
+- [x] R22-01: Agent Model Routing & Speculative Decoding spec (79 tests)
+- [x] Shannon Patterns research (Kocoro-lab + KeygraphHQ reference architectures)
 
 ---
 
@@ -170,13 +181,15 @@
 ### New Tasks
 
 - [x] `CL-31` ~~Evaluate Kimi R19 sprint output~~ DONE — R19-01 + R19-02 delivered (22 files, 112 new tests), fixed types.ts overwrite + 20 TS errors, R19-03 pending
-- [ ] `CL-32` Evaluate Grok R20-03 spec (AI design pipeline)
-- [ ] `CL-33` Write Kimi sprint from Grok R21 specs (MCP, ACP, compliance — 3 implementation sprints)
-- [ ] `CL-34` Evaluate Grok R21 specs (MCP, ACP, compliance)
+- [x] `CL-32` ~~Evaluate Grok R20-03 spec~~ DONE — accepted, 82 tests, saved to .nova/specs/
+- [x] `CL-33` ~~Write Kimi sprint from Grok R21 specs~~ DONE — `.prompts/kimi-r21-sprint.md` (3 tasks, 229+ tests)
+- [x] `CL-34` ~~Evaluate Grok R21 specs~~ DONE — all 3 accepted (MCP 78, ACP 67, Compliance 84 = 229 tests)
 - [ ] `CL-35` Evaluate Gemini-07→11 research (extract actionable features)
-- [ ] `CL-36` Write Kimi sprint from Grok R22 spec (model routing)
-- [ ] `CL-37` Save Gemini research summaries to .nova/research/ for reference
+- [x] `CL-36` ~~Write Kimi sprint from Grok R22 spec~~ DONE — `.prompts/kimi-r22-sprint.md` (1 task, 79 tests)
+- [x] `CL-37b` ~~Save Grok spec summaries + Shannon research to .nova/~~ DONE — 5 specs + 1 research file
 - [ ] `CL-38` Update MISSING_FEATURES.md after each sprint completion
+- [ ] `CL-39` Evaluate Kimi R19-03 output (Studio Rules — when delivered)
+- [ ] `CL-40` Evaluate Kimi R20 sprint output (when delivered)
 
 ### Completed (recent)
 
@@ -211,9 +224,9 @@
 
 | Agent | Active Tasks | Completed | Next Up |
 |-------|-------------|-----------|---------|
-| Claude Code | CL-32→CL-38 | 56+ | Evaluate agent outputs, write sprint prompts |
-| Kimi | KIMI-R19-03 | 42+ | R19-03 Studio Rules, then R20 Feature Implementation |
-| Grok | GROK-R20-03, R21-01→03, R22-01 | 70+ | AI design pipeline → MCP → ACP → compliance → model routing |
+| Claude Code | CL-35, CL-38→40 | 63+ | Evaluate Gemini-07→11, evaluate Kimi outputs |
+| Kimi | KIMI-R19-03, then R20→R22 | 42+ | R19-03 Studio Rules → R20 → R21 → R22 (590+ tests queued) |
+| Grok | GROK-R23-01→05 | 80+ | R23 gap enhancements (workflow, sandbox, memory, swarm, observability) |
 | Kiro | KIRO-06-01→07 | 17+ | Audit remediation + agent extraction |
 | Gemini | GEMINI-07→11 | 6 | Agent protocols → metrics → testing → enterprise → design systems |
 | Perplexity | P-07→P-12 (paused) | 6 | Documentation portal |
