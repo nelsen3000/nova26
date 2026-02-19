@@ -15,7 +15,7 @@
 |-------|--------|--------|----------------|
 | **Claude Code** | Coordinator + Core Engine + Convex | Active | Downtime tasks |
 | **Kimi** | Implementation (TypeScript + Tests) | Active | Mega Wiring Sprint |
-| **Grok** | Research + Deep Specs | Active | R19 specs |
+| **Grok** | Research + Deep Specs | Active | R20-03 spec |
 | **Kiro** | Knowledge Extraction + Quality Audits | Active | Audit fixes |
 | **Gemini** | Deep Research + Competitive Intel | Active | Tools audit |
 
@@ -34,15 +34,20 @@
 - [ ] `KIMI-W-04` Edge case tests for all 10 R17 modules (76 new tests across 10 existing test files)
 - [ ] `KIMI-W-05` Cross-module integration tests (20 tests — module interop + lifecycle + behaviors)
 
-### Queued (after current sprint)
+### Next Sprint: R19 Feature Implementation
+> Sprint file: `.prompts/kimi-r19-sprint.md` — READY
 
-- [ ] `KIMI-R19-01` Implement Mobile Launch Stage (from Grok R19-01 spec, when ready)
-- [ ] `KIMI-R19-02` Implement Deep Semantic Model (from Grok R19-02 spec, when ready)
-- [ ] `KIMI-R19-03` Implement Studio Rules + Prompt Optimization (from Grok R19-03 spec, when ready)
-- [ ] `KIMI-R20-01` Implement L0/L1/L2/L3 orchestrator hierarchy (from Grok R20-01 spec, when ready)
-- [ ] `KIMI-R20-02` Implement Tauri desktop wrapper (from Grok R20-02 spec, when ready)
-- [ ] `KIMI-R20-03` Implement AI design pipeline (from Grok R20-03 spec, when ready)
-- [ ] `KIMI-PERP-01` Implement Perplexity research integration (from Grok spec in .nova/specs/perplexity-integration.md)
+- [ ] `KIMI-R19-01` Implement Mobile Launch Stage (spec: .nova/specs/grok-r19-01-mobile-launch.md, 42 tests)
+- [ ] `KIMI-R19-02` Implement Deep Semantic Model (spec: .nova/specs/grok-r19-02-semantic-model.md, 68 tests)
+- [ ] `KIMI-R19-03` Implement Studio Rules + Prompt Optimization (spec: .nova/specs/grok-r19-03-studio-rules.md, 94 tests)
+
+### Queued: R20 Feature Implementation
+> Sprint file: `.prompts/kimi-r20-sprint.md` — READY
+
+- [ ] `KIMI-R20-01` Implement L0/L1/L2/L3 orchestrator hierarchy (spec: .nova/specs/grok-r20-01-orchestrator-hierarchy.md, 112 tests)
+- [ ] `KIMI-R20-02` Implement Tauri desktop wrapper (spec: .nova/specs/grok-r20-02-tauri-desktop.md, 87 tests)
+- [ ] `KIMI-R20-03` Implement AI design pipeline (awaiting Grok R20-03 spec)
+- [ ] `KIMI-PERP-01` Implement Perplexity research integration (spec: .nova/specs/perplexity-integration.md)
 
 ### Completed (recent)
 
@@ -58,23 +63,25 @@
 > Deliverable format: Deep TypeScript interfaces + integration points + open questions
 > Style: Analogy opener → concrete interfaces → file paths → test strategy
 
-### Current: R19 Specs
+### Current: R20-03
 
-- [ ] `GROK-R19-01` Mobile Launch Stage spec (Expo + EAS + asset generation + ASO)
-- [ ] `GROK-R19-02` Deep Project Semantic Model spec (ATLAS brain upgrade, ts-morph, impact analysis)
-- [ ] `GROK-R19-03` Studio Rules + DSPy prompt optimization spec
-
-### Queued: R20 Specs
-
-- [ ] `GROK-R20-01` Orchestrator-Worker L0/L1/L2/L3 hierarchy spec
-- [ ] `GROK-R20-02` Tauri native desktop application spec
 - [ ] `GROK-R20-03` AI-native design pipeline spec (Relume/Uizard-style)
+
+### Queued: R21+
+
+- (No specs queued yet — awaiting direction from Jon)
 
 ### Completed
 
 - [x] R7→R17 (11 research rounds, 55+ feature specs)
 - [x] R18 (5 specs: Dashboard, Deployment, VS Code, Integration Layer, Observability)
 - [x] Claude skills analysis, JetBrains analysis, Rork/mobile analysis, exhaustive tools sweep
+- [x] Perplexity Intelligence Division spec (accepted)
+- [x] R19-01: Mobile Launch Stage spec (42 tests)
+- [x] R19-02: Deep Project Semantic Model spec (68 tests)
+- [x] R19-03: Studio Rules + DSPy Prompt Optimization spec (94 tests)
+- [x] R20-01: Orchestrator-Worker L0/L1/L2/L3 Hierarchy spec (112 tests)
+- [x] R20-02: Tauri Native Desktop Application spec (87 tests)
 
 ---
 
@@ -139,16 +146,16 @@
 ### Downtime Tasks (self-assigned)
 
 - [ ] `CL-20` Evaluate Kimi mega-wiring sprint output (verify ralph-loop.ts has all 17 features wired)
-- [ ] `CL-21` Evaluate Grok R19 specs (accept/reject each, identify gaps)
+- [x] `CL-21` ~~Evaluate Grok R19 specs~~ DONE — all 3 accepted, 204 test cases, specs saved to .nova/specs/
 - [x] `CL-22` ~~Evaluate Gemini-01 research~~ DONE — 30+ tools analyzed, 4-phase roadmap, 2 new Gemini tasks added
 - [x] `CL-23` ~~Evaluate Kiro audit reports~~ DONE — 87 failures triaged, KIRO-06 sprint created (7 remediation tasks)
-- [ ] `CL-24` Write Kimi sprint prompts from Grok R19 specs (3 implementation sprints)
+- [x] `CL-24` ~~Write Kimi sprint prompts from Grok R19 specs~~ DONE — `.prompts/kimi-r19-sprint.md` (3 tasks, 204+ tests)
 - [x] `CL-25` ~~Remaining 11 agent templates to EARTH XML format~~ DONE — all 21/21 agents converted
 - [x] `CL-26` ~~Update MISSING_FEATURES.md~~ DONE — 13 features marked as implemented
 - [ ] `CL-27` Update .nova/TASK-BOARD.md progress summary after each agent delivery
 - [ ] `CL-28` Evaluate Gemini-02 research (extract UX patterns for Kimi to implement)
-- [ ] `CL-29` Write Kimi sprint prompts from Grok R20 specs (3 implementation sprints)
-- [ ] `CL-30` Evaluate Grok R20 specs (accept/reject, identify gaps)
+- [x] `CL-29` ~~Write Kimi sprint prompts from Grok R20 specs~~ DONE — `.prompts/kimi-r20-sprint.md` (2 tasks, 199+ tests)
+- [x] `CL-30` ~~Evaluate Grok R20 specs~~ DONE — both accepted, 199 test cases, specs saved to .nova/specs/
 
 ### Completed (recent)
 
@@ -183,9 +190,9 @@
 
 | Agent | Active Tasks | Completed | Next Up |
 |-------|-------------|-----------|---------|
-| Claude Code | CL-20→CL-30 | 45+ | Evaluate agent outputs |
-| Kimi | KIMI-W-01→W-05 | 30+ | Mega wiring sprint |
-| Grok | GROK-R19-01→03 | 60+ | R19 then R20 |
+| Claude Code | CL-20, CL-24, CL-27→CL-29 | 50+ | Evaluate Kimi wiring, write sprint prompts |
+| Kimi | KIMI-W-01→W-05 | 30+ | Mega wiring → R19 sprint → R20 sprint |
+| Grok | GROK-R20-03 | 65+ | AI design pipeline spec |
 | Kiro | KIRO-06-01→07 | 17+ | Audit remediation + agent extraction |
 | Gemini | GEMINI-02→06 | 1 | UX research → compliance → SLMs |
 | Perplexity | P-07→P-12 (paused) | 6 | Documentation portal |

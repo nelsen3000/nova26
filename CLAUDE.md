@@ -51,6 +51,11 @@
 - [x] Evaluated Grok Perplexity spec — accepted, saved to .nova/specs/perplexity-integration.md
 - [x] Updated MISSING_FEATURES.md with Gemini-01 findings — 12 new features, total now 56
 - [x] Created 5 Grok prompts (R19-01→R20-02), 5 Gemini prompts (02→06), 1 Kiro sprint prompt (06)
+- [x] Evaluated Grok R19 specs (CL-21) — all 3 accepted: Mobile Launch (42 tests), Semantic Model (68 tests), Studio Rules (94 tests)
+- [x] Evaluated Grok R20 specs (CL-30) — both accepted: Orchestrator Hierarchy (112 tests), Tauri Desktop (87 tests)
+- [x] Saved 5 accepted spec summaries to `.nova/specs/grok-r19-*.md` and `grok-r20-*.md`
+- [x] Created `.prompts/kimi-r19-sprint.md` — R19 Feature Implementation sprint (3 tasks, 204+ tests)
+- [x] Created `.prompts/kimi-r20-sprint.md` — R20 Feature Implementation sprint (2 tasks, 199+ tests)
 
 ## In Progress
 
