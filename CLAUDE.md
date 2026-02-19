@@ -56,6 +56,7 @@
 - [x] Saved 5 accepted spec summaries to `.nova/specs/grok-r19-*.md` and `grok-r20-*.md`
 - [x] Created `.prompts/kimi-r19-sprint.md` — R19 Feature Implementation sprint (3 tasks, 204+ tests)
 - [x] Created `.prompts/kimi-r20-sprint.md` — R20 Feature Implementation sprint (2 tasks, 199+ tests)
+- [x] Evaluated Kimi mega-wiring sprint (CL-20) — all 13 modules wired, W-01→W-05 delivered, 243 new tests, 9 edge case tests fixed
 
 ## In Progress
 

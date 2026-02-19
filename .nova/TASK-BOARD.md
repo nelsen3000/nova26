@@ -104,7 +104,7 @@
 
 - [ ] `KIRO-07-01` Extract patterns from Kimi lifecycle hooks + behaviors (when built)
 - [ ] `KIRO-07-02` Validate Kimi's mega-wiring sprint output (structural audit of ralph-loop.ts changes)
-- [ ] `KIRO-07-03` Extract patterns from Grok R19/R20 specs (when ready)
+- [ ] `KIRO-07-03` Extract patterns from Grok R19/R20 specs (READY — specs in .nova/specs/grok-r19-*.md and grok-r20-*.md)
 
 ### Completed
 
@@ -145,7 +145,7 @@
 
 ### Downtime Tasks (self-assigned)
 
-- [ ] `CL-20` Evaluate Kimi mega-wiring sprint output (verify ralph-loop.ts has all 17 features wired)
+- [x] `CL-20` ~~Evaluate Kimi mega-wiring sprint output~~ DONE — all 13 modules wired, W-01→W-05 delivered, 243 new tests (9 edge case files had API mismatches → fixed)
 - [x] `CL-21` ~~Evaluate Grok R19 specs~~ DONE — all 3 accepted, 204 test cases, specs saved to .nova/specs/
 - [x] `CL-22` ~~Evaluate Gemini-01 research~~ DONE — 30+ tools analyzed, 4-phase roadmap, 2 new Gemini tasks added
 - [x] `CL-23` ~~Evaluate Kiro audit reports~~ DONE — 87 failures triaged, KIRO-06 sprint created (7 remediation tasks)

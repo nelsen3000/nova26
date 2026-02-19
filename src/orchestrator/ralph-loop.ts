@@ -39,6 +39,49 @@ import type { WellbeingConfig } from '../wellbeing/signal-detector.js';
 import type { AdvancedRecoveryConfig } from '../recovery/recovery-index.js';
 import type { AdvancedInitConfig } from '../init/init-index.js';
 
+// R16-01 Portfolio
+import type { PortfolioEngineConfig } from '../portfolio/index.js';
+// R16-03 Generative UI
+import type { LivePreviewConfig } from '../generative-ui/live-preview.js';
+// R16-04 Autonomous Testing
+import type { TestRunConfig } from '../testing/autonomous-runner.js';
+// R17-01 Code Review
+import type { ReviewConfig } from '../review/pr-intelligence.js';
+// R17-06 Accessibility
+import type { A11yConfig } from '../a11y/wcag-engine.js';
+// R17-07 Technical Debt
+import type { DebtConfig } from '../debt/technical-debt.js';
+// R17-09 Production Feedback
+import type { FeedbackLoopConfig } from '../prod-feedback/feedback-loop.js';
+// R17-10 Health Dashboard
+import type { HealthConfig } from '../health/health-dashboard.js';
+
+// Placeholder configs for modules without dedicated config types
+export interface MigrationModuleConfig {
+  maxStepsPerRun?: number;
+  autoRollback?: boolean;
+}
+
+export interface DebugModuleConfig {
+  maxSessionHistory?: number;
+  autoRegressionTests?: boolean;
+}
+
+export interface DependencyModuleConfig {
+  autoUpdateMinor?: boolean;
+  vulnerabilityScanOnBuild?: boolean;
+}
+
+export interface EnvModuleConfig {
+  secretDetection?: boolean;
+  envDiffOnSwitch?: boolean;
+}
+
+export interface OrchestrationModuleConfig {
+  metaLearningEnabled?: boolean;
+  retrospectiveAfterBuild?: boolean;
+}
+
 export interface RalphLoopOptions {
   parallelMode?: boolean;
   concurrency?: number;
@@ -76,6 +119,45 @@ export interface RalphLoopOptions {
   // Advanced Init (R17-02)
   advancedInitEnabled?: boolean;
   advancedInitConfig?: AdvancedInitConfig;
+  // Portfolio Intelligence (R16-01)
+  portfolioEnabled?: boolean;
+  portfolioConfig?: PortfolioEngineConfig;
+  // Generative UI (R16-03)
+  generativeUIEnabled?: boolean;
+  generativeUIConfig?: LivePreviewConfig;
+  // Autonomous Testing (R16-04)
+  autonomousTestingEnabled?: boolean;
+  testRunConfig?: TestRunConfig;
+  // Code Review (R17-03)
+  codeReviewEnabled?: boolean;
+  codeReviewConfig?: ReviewConfig;
+  // Migration Engine (R17-04)
+  migrationEnabled?: boolean;
+  migrationConfig?: MigrationModuleConfig;
+  // Debugging (R17-05)
+  debugEngineEnabled?: boolean;
+  debugConfig?: DebugModuleConfig;
+  // Accessibility (R17-06)
+  accessibilityEnabled?: boolean;
+  accessibilityConfig?: A11yConfig;
+  // Technical Debt (R17-07)
+  debtScoringEnabled?: boolean;
+  debtConfig?: DebtConfig;
+  // Dependency Management (R17-08)
+  dependencyManagementEnabled?: boolean;
+  dependencyConfig?: DependencyModuleConfig;
+  // Production Feedback (R17-09)
+  productionFeedbackEnabled?: boolean;
+  productionFeedbackConfig?: FeedbackLoopConfig;
+  // Health Dashboard (R17-10)
+  healthDashboardEnabled?: boolean;
+  healthConfig?: HealthConfig;
+  // Environment Management (R17-11)
+  envManagementEnabled?: boolean;
+  envConfig?: EnvModuleConfig;
+  // Orchestration Optimization (R17-12)
+  orchestrationOptimizationEnabled?: boolean;
+  orchestrationConfig?: OrchestrationModuleConfig;
 }
 
 // --- Planning phases (pre-execution plan approval) ---
