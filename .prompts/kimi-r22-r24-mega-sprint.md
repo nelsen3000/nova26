@@ -1,7 +1,8 @@
 # Kimi Mega-Sprint: R22→R24 Feature Implementation
-## 11 Tasks | 700+ Tests | TypeScript Strict | ESM `.js` Imports
+## 7 Tasks | 440+ Tests | TypeScript Strict | ESM `.js` Imports
 
-> **Pre-requisite**: R19 + R20 + R21 sprints complete. 3,690 tests passing, 0 TS errors.
+> **Pre-requisite**: R19 + R20 + R21 sprints complete. 4,007 tests passing, 0 TS errors.
+> **Cut tasks** (deferred — premature or platform-blocked): R23-02 MicroVM/WASI (no macOS support), R23-04 Agent Debate (over-engineered), R24-02 Eternal Engine Rust (no Rust crate yet), R24-04 Voice/Multimodal (no product to talk to yet)
 > **Repo**: https://github.com/nelsen3000/nova26
 > **Branch**: `main` (or feature branch if preferred)
 > **Rules**: TypeScript strict, ESM `.js` imports, vitest, no `any`, mock all I/O, no real API calls
@@ -210,83 +211,7 @@ export interface TemporalEvent {
 
 ---
 
-## Task 4: KIMI-R23-02 — MicroVM / WASI Ultra-Sandbox
-
-**Spec**: `.nova/specs/grok-r23-eternal-symphony.md` → R23-02 section
-**Tests**: 65 vitest cases minimum
-
-### What to Build
-
-Create `src/sandbox/` module for ultra-secure agent code execution.
-
-```
-src/sandbox/
-├── index.ts
-├── types.ts
-├── ultra-sandbox-manager.ts       ← UltraSandboxManager class
-├── firecracker-adapter.ts         ← MicroVM lifecycle management
-├── opa-policy-engine.ts           ← OPA policy evaluation
-├── wasi-bridge.ts                 ← WASI compilation and execution
-├── security/policies/jon-taste.rego  ← OPA policy file
-└── __tests__/sandbox.test.ts
-```
-
-### Key Interfaces
-
-```typescript
-export interface MicroVMConfig {
-  id: string;
-  memoryMB: number;
-  vcpus: number;
-  kernelPath: string;
-  rootfsPath: string;
-  timeoutMs: number;
-  networkEnabled: boolean;
-  capabilities: string[];
-}
-
-export interface SandboxInstance {
-  id: string;
-  config: MicroVMConfig;
-  state: 'booting' | 'ready' | 'running' | 'terminated';
-  pid?: number;
-  startedAt: string;
-  metrics: { memoryUsedMB: number; cpuPercent: number; wallTimeMs: number };
-}
-
-export interface OPAPolicyResult {
-  allowed: boolean;
-  violations: string[];
-  policyName: string;
-  evaluationTimeMs: number;
-}
-
-export interface WASIModule {
-  path: string;
-  compiledBytes: Uint8Array;
-  entrypoint: string;
-  permissions: { fs: boolean; network: boolean; env: string[] };
-}
-```
-
-### Key Implementation Notes
-
-- `spawnSandboxedTask(task)` → WASI compile → Firecracker boot → OPA policy check
-- Cold start target: <100ms (mock in tests, validate interface)
-- OPA policies define what each agent can access (filesystem, network, env vars)
-- All Firecracker/WASI system calls mocked in tests
-- Graceful degradation: if Firecracker unavailable, fall back to process isolation
-
-### Test Requirements (65 cases)
-
-- Sandbox lifecycle (boot → ready → run → terminate)
-- OPA policy evaluation (allow/deny across 20+ scenarios)
-- WASI module compilation and execution
-- Resource limit enforcement (memory, CPU, timeout)
-- Network isolation verification
-- 50 escape technique patterns → all blocked
-- Graceful fallback when Firecracker unavailable
-- Concurrent sandbox management
+## ~~Task 4: KIMI-R23-02 — MicroVM / WASI Ultra-Sandbox~~ **CUT** (Firecracker requires Linux KVM, no macOS support)
 
 ---
 
@@ -363,90 +288,7 @@ export interface ATLASInfiniteMemory {
 
 ---
 
-## Task 6: KIMI-R23-04 — Agent Debate & Swarm Layer
-
-**Spec**: `.nova/specs/grok-r23-eternal-symphony.md` → R23-04 section
-**Tests**: 60 vitest cases minimum
-
-### What to Build
-
-Create `src/swarm/` module for multi-agent debate orchestration.
-
-```
-src/swarm/
-├── index.ts
-├── types.ts
-├── debate-orchestrator.ts         ← SwarmDebateOrchestrator class
-├── crewai-bridge.ts               ← CrewAI integration adapter
-├── autogen-adapter.ts             ← AutoGen integration adapter
-├── orchestrator/l3-swarm-worker.ts  ← L3 layer integration
-└── __tests__/swarm-debate.test.ts
-```
-
-### Key Interfaces
-
-```typescript
-export interface DebateParticipant {
-  agentId: string;
-  role: 'proposer' | 'critic' | 'synthesizer' | 'judge';
-  model?: string;
-  maxTokens: number;
-  tasteWeight: number;
-}
-
-export interface SwarmDebateSession {
-  id: string;
-  topic: string;
-  participants: DebateParticipant[];
-  rounds: DebateRound[];
-  maxRounds: number;
-  consensusThreshold: number;
-  status: 'pending' | 'active' | 'consensus' | 'deadlock' | 'cancelled';
-  tasteVaultAnchor: string;
-  startedAt: string;
-  completedAt?: string;
-}
-
-export interface DebateRound {
-  number: number;
-  arguments: Array<{
-    participantId: string;
-    position: string;
-    confidence: number;
-    evidence: string[];
-  }>;
-  synthesis?: string;
-  consensusScore: number;
-}
-
-export interface SwarmDebateOrchestrator {
-  launchDebate(session: Omit<SwarmDebateSession, 'id' | 'rounds' | 'status'>): Promise<string>;
-  injectJonNote(sessionId: string, note: string): Promise<void>;
-  getStatus(sessionId: string): Promise<SwarmDebateSession>;
-  forceConsensus(sessionId: string, decision: string): Promise<void>;
-  cancelDebate(sessionId: string): Promise<void>;
-}
-```
-
-### Key Implementation Notes
-
-- `launchDebate()` → participants argue in rounds until consensus or maxRounds
-- `injectJonNote()` → real-time director intervention during debate
-- Consensus achieved when all participants' confidence aligns within threshold
-- CrewAI bridge for structured agent roles, AutoGen for flexible multi-agent chat
-- L3 swarm worker integration for high-level orchestration
-- Taste Vault anchor ensures debate stays aligned with user preferences
-
-### Test Requirements (60 cases)
-
-- Debate lifecycle (launch → rounds → consensus/deadlock)
-- Jon note injection mid-debate
-- Consensus scoring across multiple participants
-- Force consensus and cancellation
-- CrewAI bridge round-trip (mocked)
-- AutoGen adapter round-trip (mocked)
-- L3 integration with existing orchestrator layers
-- Deadlock detection and resolution
+## ~~Task 6: KIMI-R23-04 — Agent Debate & Swarm Layer~~ **CUT** (Over-engineered for current stage; expensive multi-model debate before product exists)
 
 ---
 
@@ -625,81 +467,7 @@ export interface AIModelVault {
 
 ---
 
-## Task 9: KIMI-R24-02 — Eternal Engine Rust Core (TypeScript Bridge)
-
-**Spec**: `.nova/specs/grok-r24-immortal-omniverse.md` → R24-02 section
-**Tests**: 55 vitest cases minimum
-
-### What to Build
-
-Create `src/engine/` TypeScript bridge for the Eternal Engine Rust core.
-**Note**: The Rust crate itself (`src/engine/eternal-core/`) is a separate deliverable. This task creates the TypeScript bridge and interfaces.
-
-```
-src/engine/
-├── index.ts
-├── types.ts
-├── rust-bridge.ts                  ← EternalEngineHandle class
-├── orchestrator/eternal-engine-adapter.ts  ← ralph-loop adapter
-├── sandbox/nano-claw-isolation.ts  ← NanoClaw isolation layer
-└── __tests__/eternal-engine.test.ts
-```
-
-### Key Interfaces
-
-```typescript
-export interface EternalEngineConfig {
-  binaryPath: string;
-  memoryLimitMB: number;     // target: <11MB peak
-  maxClaws: number;          // max concurrent claw instances
-  tickIntervalMs: number;
-  isolationLevel: 'process' | 'wasi' | 'microvm';
-}
-
-export interface ClawInstance {
-  id: string;
-  type: 'zero' | 'tiny' | 'nano';
-  state: 'idle' | 'running' | 'blocked' | 'terminated';
-  memoryUsageBytes: number;
-  startedAt: string;
-  taskId?: string;
-}
-
-export interface EternalEngineHandle {
-  start(config: EternalEngineConfig): Promise<void>;
-  stop(): Promise<void>;
-  tick(): Promise<{ clawsActive: number; memoryMB: number; tasksCompleted: number }>;
-  spawnClaw(type: ClawInstance['type'], task: string): Promise<string>;
-  getMemoryUsage(): { totalMB: number; claws: Array<{ id: string; bytes: number }> };
-  getClawStatus(clawId: string): Promise<ClawInstance>;
-  terminateClaw(clawId: string): Promise<void>;
-}
-
-export interface NanoClawIsolation {
-  isolate(clawId: string, permissions: { fs: boolean; network: boolean; maxMemoryMB: number }): Promise<void>;
-  getViolations(clawId: string): Promise<string[]>;
-}
-```
-
-### Key Implementation Notes
-
-- TypeScript bridge communicates with Rust binary via JSON-RPC over stdio
-- All Rust binary calls mocked in tests (spawn process → mock stdin/stdout)
-- ZeroClaw = no_std minimal (bare metal), TinyClaw = small swarm worker, NanoClaw = isolated sandbox
-- Memory tracking at per-claw granularity
-- Binary size gate: <8MB stripped (CI check, not enforced in TS tests)
-- Graceful degradation: if Rust binary not found, fall back to JS-only mode
-
-### Test Requirements (55 cases)
-
-- Engine start/stop lifecycle
-- Claw spawn/terminate across all 3 types
-- Memory tracking accuracy (mocked binary responses)
-- Tick loop execution and metrics collection
-- NanoClaw isolation enforcement
-- Concurrent claw management (32 claws)
-- Graceful fallback when binary missing
-- JSON-RPC communication protocol validation
+## ~~Task 9: KIMI-R24-02 — Eternal Engine Rust Core~~ **CUT** (No Rust crate exists yet; TS bridge has nothing to bridge)
 
 ---
 
@@ -780,81 +548,7 @@ export interface RealTimeCRDTOrchestrator {
 
 ---
 
-## Task 11: KIMI-R24-04 — Voice & Multimodal Interface
-
-**Spec**: `.nova/specs/grok-r24-immortal-omniverse.md` → R24-04 section
-**Tests**: 55 vitest cases minimum
-
-### What to Build
-
-Create `src/multimodal/` module for voice and multimodal input processing.
-
-```
-src/multimodal/
-├── index.ts
-├── types.ts
-├── voice-orchestrator.ts           ← MultimodalDirectorInterface class
-├── vision-fusion.ts                ← image/screenshot processing
-├── gemini13-bridge.ts              ← Gemini multimodal API adapter
-├── DirectorsBooth/GodMic.tsx       ← React component (types only)
-├── mobile/VoiceEye.tsx             ← Mobile component (types only)
-└── __tests__/multimodal.test.ts
-```
-
-### Key Interfaces
-
-```typescript
-export interface MultimodalInput {
-  id: string;
-  type: 'voice' | 'image' | 'screenshot' | 'gesture' | 'combined';
-  data: Uint8Array | string;
-  metadata: {
-    mimeType: string;
-    durationMs?: number;
-    resolution?: { width: number; height: number };
-    deviceType: 'desktop' | 'mobile' | 'tablet';
-  };
-  timestamp: string;
-}
-
-export interface VoiceIntent {
-  utterance: string;
-  intent: string;           // e.g. "create-component", "fix-bug", "change-style"
-  confidence: number;
-  entities: Array<{ name: string; value: string; type: string }>;
-  agentTarget?: string;     // which agent should handle this
-  tasteVaultContext?: string;
-}
-
-export interface MultimodalDirectorInterface {
-  processInput(input: MultimodalInput): Promise<VoiceIntent | { type: string; analysis: unknown }>;
-  speak(text: string, options?: { voice?: string; speed?: number }): Promise<Uint8Array>;
-  registerVoiceprint(userId: string, samples: Uint8Array[]): Promise<{ success: boolean; confidence: number }>;
-  bindToLivingCanvas(canvasId: string): Promise<void>;
-  getActiveModalities(): string[];
-}
-```
-
-### Key Implementation Notes
-
-- Voice → intent pipeline: audio → transcription → NLU → agent routing
-- Vision fusion: screenshot/image → Gemini multimodal → structured analysis
-- Voice clone/TTS via adapter (mocked in tests)
-- Voiceprint registration for speaker identification (3 samples → 98% ID)
-- Living Canvas binding for real-time voice-directed design
-- React components export types only (UI implementation separate)
-- All audio/image processing mocked in tests
-
-### Test Requirements (55 cases)
-
-- Voice intent extraction across 500 utterance patterns (mocked)
-- Image analysis for screenshots and designs (mocked)
-- Combined voice+image multimodal processing
-- Voiceprint registration and verification (mocked)
-- Intent routing to correct agent
-- Living Canvas binding lifecycle
-- Latency validation (<420ms e2e, mocked)
-- Graceful degradation when modalities unavailable
+## ~~Task 11: KIMI-R24-04 — Voice & Multimodal Interface~~ **CUT** (No product to talk to yet; premature without working UI)
 
 ---
 
@@ -865,22 +559,18 @@ Tasks are independent but this order minimizes conflicts:
 1. **KIMI-PERP-01** (smallest, standalone)
 2. **KIMI-R22-01** (model routing — other tasks reference it)
 3. **KIMI-R23-01** (workflow engine — foundation for observability)
-4. **KIMI-R23-03** (memory — used by debate layer)
-5. **KIMI-R23-02** (sandbox — used by engine)
-6. **KIMI-R23-04** (debate — uses memory + models)
-7. **KIMI-R23-05** (observability — spans all modules)
-8. **KIMI-R24-01** (model DB — extends R22-01)
-9. **KIMI-R24-02** (engine bridge — uses sandbox)
-10. **KIMI-R24-03** (CRDT — standalone)
-11. **KIMI-R24-04** (multimodal — standalone)
+4. **KIMI-R23-03** (memory — foundation for model DB)
+5. **KIMI-R23-05** (observability — spans all modules)
+6. **KIMI-R24-01** (model DB — extends R22-01)
+7. **KIMI-R24-03** (CRDT — standalone)
 
 ---
 
 ## Final Checklist
 
-After implementing all 11 tasks:
+After implementing all 7 tasks:
 1. `npx tsc --noEmit` → 0 errors
-2. `npx vitest run` → all tests pass (target: 700+ new tests)
+2. `npx vitest run` → all tests pass (target: 440+ new tests)
 3. Barrel exports in each `index.ts`
 4. No `any` types (use `unknown` + type guards)
 5. All I/O mocked in tests (no real API calls, no real hardware detection)
