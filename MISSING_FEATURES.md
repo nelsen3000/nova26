@@ -1,6 +1,6 @@
 # NOVA26 Missing Features & Functions
-## Updated: February 19, 2026
-## Current state: 2,642 tests, 0 TS errors, 62 src/ directories, 17 R16/R17 modules
+## Updated: February 19, 2026 (post Gemini-01 audit)
+## Current state: 2,642 tests, 0 TS errors, 62 src/ directories, 17 R16/R17 modules, 21 EARTH XML agents
 
 ---
 
@@ -50,8 +50,24 @@
 | — | Mobile Launch Stage (Expo + App Store) | High | High | Grok R19-01 being specced |
 | — | Deep Semantic Model (ATLAS brain) | High | High | Grok R19-02 being specced |
 | — | Studio Rules + Prompt Optimization | High | Medium | Grok R19-03 being specced |
+| — | Orchestrator L0/L1/L2/L3 hierarchy | High | High | Grok R20-01 queued |
+| — | Tauri desktop app (native wrapper) | High | High | Grok R20-02 queued |
+| — | AI design pipeline (Relume/Uizard-style) | Medium | High | Grok R20-03 queued |
 
-### Medium Impact
+### Medium Impact — New from Gemini-01 Audit
+
+| # | Feature | Impact | Effort | Notes |
+|---|---------|--------|--------|-------|
+| — | MCP (Model Context Protocol) support | High | Medium | Must-have ecosystem standard — agent ↔ tool interop |
+| — | ACP (Agent Client Protocol) support | High | Medium | Decouple agents from IDE — run in JetBrains, Zed, etc. |
+| — | Braintrust eval-in-CI | Medium | High | Golden set evaluation on every agent template change |
+| — | EU AI Act audit trails | Medium | Medium | Article 86 Right to Explanation — enterprise requirement |
+| — | Local SLM agent routing | Medium | Medium | Different models per agent role (Qwen for code, DeepSeek for reasoning) |
+| — | Perplexity research integration | Medium | Low | Grok specced, queued for Kimi — cited web research for all agents |
+| — | PostHog session replay | Medium | Medium | Agent session replay for debugging file system interactions |
+| — | Semantic Diff agent | Medium | Medium | Summarize intent behind large AI PRs for human review |
+
+### Medium Impact — Original
 
 | # | Feature | Impact | Effort | Notes |
 |---|---------|--------|--------|-------|
@@ -62,7 +78,6 @@
 | 18 | Performance Budget | Low-Medium | Low | Not built |
 | 19 | Image Optimization Pipeline | Low | Medium | Not built |
 | — | ESLint + Prettier config | Medium | Low | No project-level lint config exists |
-| — | 11 agent templates in legacy format | Medium | Medium | Need EARTH XML conversion |
 
 ### Nice to Have
 
@@ -79,6 +94,20 @@
 | 33 | Voice Interface | Not built |
 | 34 | Screenshot Comparison | Not built |
 | 35 | Auto-Documentation Videos | Not built |
+| — | Snyk pre-commit security gates | Already have security scanner, could add pre-commit hook |
+| — | ElectricSQL offline sync | Local-first persistence exists, no conflict resolution |
+| — | Flowstep multi-screen generation | Living Canvas enhancement — full user journeys |
+| — | DSPy GEPA cost-vs-quality tuning | Multi-objective prompt optimization |
+
+---
+
+## ✅ RECENTLY COMPLETED (not in original tracking)
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| 21 EARTH XML agent templates | DONE | All 21/21 agents standardized (CL-25) |
+| Kiro pattern validation | DONE | 140 patterns, 9 properties, fast-check (KIRO-04) |
+| Gemini-01 ecosystem audit | DONE | 30+ tools across 11 categories analyzed |
 
 ---
 
@@ -96,13 +125,18 @@
 | Multi-Language | High | High | P2 | Not specced yet |
 | ESLint + Prettier | Medium | Low | P2 | Kimi (after Grok R18-05) |
 | Studio Rules | High | Medium | P2 | Kimi (after Grok R19-03) |
+| MCP support | High | Medium | P2 | Gemini-01 flagged as must-have |
+| ACP support | High | Medium | P2 | Gemini-01 flagged — multi-IDE agents |
+| Orchestrator hierarchy | High | High | P2 | Grok R20-01 queued |
+| Tauri desktop | High | High | P2 | Grok R20-02 queued |
+| EU AI Act audit trails | Medium | Medium | P3 | Gemini-05 researching |
 
 ---
 
 ## Summary
 
-**Total features tracked:** 35 original + 9 new = 44
-**Implemented:** 13 (all P0 originals done)
-**In progress/specced:** 13
-**Not yet built:** 18
-**Overall:** ~60% of all tracked features implemented or in progress
+**Total features tracked:** 35 original + 9 new + 12 from Gemini-01 = 56
+**Implemented:** 13 core + 3 recent = 16
+**In progress/specced:** 17
+**Not yet built:** 23
+**Overall:** ~59% of all tracked features implemented or in progress

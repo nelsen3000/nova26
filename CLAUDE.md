@@ -46,6 +46,11 @@
 - [x] Converted remaining 11 agent templates to EARTH XML format (CL-25):
   ATLAS, CHARON, EARTH, EUROPA, MARS, MERCURY, NEPTUNE, SATURN, TITAN, TRITON, URANUS, VENUS
   All 21/21 agents now have standardized EARTH XML structure
+- [x] Evaluated Gemini-01 research (CL-22) — 30+ tools, 4-phase roadmap, 12 new features added to tracking
+- [x] Evaluated Kiro audit reports (CL-23) — 87 failures triaged, KIRO-06 sprint created (7 tasks)
+- [x] Evaluated Grok Perplexity spec — accepted, saved to .nova/specs/perplexity-integration.md
+- [x] Updated MISSING_FEATURES.md with Gemini-01 findings — 12 new features, total now 56
+- [x] Created 5 Grok prompts (R19-01→R20-02), 5 Gemini prompts (02→06), 1 Kiro sprint prompt (06)
 
 ## In Progress
 

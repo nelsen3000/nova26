@@ -42,6 +42,7 @@
 - [ ] `KIMI-R20-01` Implement L0/L1/L2/L3 orchestrator hierarchy (from Grok R20-01 spec, when ready)
 - [ ] `KIMI-R20-02` Implement Tauri desktop wrapper (from Grok R20-02 spec, when ready)
 - [ ] `KIMI-R20-03` Implement AI design pipeline (from Grok R20-03 spec, when ready)
+- [ ] `KIMI-PERP-01` Implement Perplexity research integration (from Grok spec in .nova/specs/perplexity-integration.md)
 
 ### Completed (recent)
 
