@@ -15,8 +15,8 @@
 | Agent | Domain | Status | Current Sprint |
 |-------|--------|--------|----------------|
 | **Claude Code** | Coordinator + Core Engine + Convex | Active | Evaluation + prompt writing |
-| **Sonnet** | Integration + Hardening + Wiring | Active | S-01 Integration & Hardening sprint (6 tasks) |
-| **Kimi** | Implementation (TypeScript + Tests) | Active | R22-R24 mega-sprint in progress |
+| **Sonnet** | Integration + Hardening + Wiring | Active | S-01 (6 tasks) + CL-50 hardening sprint (7 tasks) |
+| **Kimi** | Implementation (TypeScript + Tests) | Active | R22-R24 source delivered, R25 testing sprint queued |
 | **Grok** | Research + Deep Specs | Active | R23+R24 delivered, awaiting R25 |
 | **Kiro** | Knowledge Extraction + Quality Audits | Active | KIRO-06 + KIRO-07 done (by Claude), awaiting KIRO-08 |
 | **Gemini** | Deep Research + Competitive Intel | Active | GEMINI-12 delivered, GEMINI-07→11 + 13→15 pending |
@@ -81,6 +81,17 @@
 - [x] ~~`KIMI-R24-02` Implement Eternal Engine Rust Core~~ **CUT** (no Rust crate exists yet)
 - [ ] `KIMI-R24-03` Implement Real-time CRDT Collaboration (spec: .nova/specs/grok-r24-immortal-omniverse.md, 65 tests)
 - [x] ~~`KIMI-R24-04` Implement Voice & Multimodal Interface~~ **CUT** (premature without working UI)
+
+### Queued: R25 Testing Mega-Sprint
+> Sprint file: `.prompts/kimi-r25-testing-mega-sprint.md` — READY
+
+- [ ] `KIMI-T-01` Write Perplexity Research tests (30 tests)
+- [ ] `KIMI-T-02` Write Model Routing tests (80 tests)
+- [ ] `KIMI-T-03` Write Workflow Engine tests (70 tests)
+- [ ] `KIMI-T-04` Write Infinite Memory tests (70 tests)
+- [ ] `KIMI-T-05` Write Cinematic Observability tests (60 tests)
+- [ ] `KIMI-T-06` Write AI Model Database tests (70 tests)
+- [ ] `KIMI-T-07` Write CRDT Collaboration tests (65 tests)
 
 ### Completed (recent)
 
@@ -233,6 +244,14 @@
 - [x] `CL-46` ~~Evaluate Grok R23 specs + write Kimi R23 sprint~~ DONE — R23+R24 combined into mega-sprint `.prompts/kimi-r22-r24-mega-sprint.md` (7 tasks, 440+ tests; 4 cut as premature)
 - [x] `CL-47` ~~Evaluate Kimi R21 test files~~ DONE — 317 tests (97 MCP + 110 ACP + 110 compliance), all pass, ESM .js imports, no `any`
 - [x] `CL-48` ~~KIRO-06-07 structural audit~~ DONE — 95→0 failures, 18 files fixed (INDEX, 14 pattern files, scan-utils.ts, audit report)
+- [x] `CL-49` ~~KIRO-07 pattern extraction~~ DONE — 7 new patterns, 2 audit reports, INDEX 51→58
+- [ ] `CL-50` Delete CUT module artifacts (src/sandbox/, src/swarm/, src/engine/, src/multimodal/) — assigned to Sonnet
+- [ ] `CL-51` Evaluate + commit Kimi R22-R24 source (7 modules) — assigned to Sonnet
+- [ ] `CL-52` Wire R22-R24 modules into RalphLoopOptions — assigned to Sonnet
+- [ ] `CL-53` Wire R22-R24 into lifecycle hooks — assigned to Sonnet
+- [ ] `CL-54` Create barrel exports for new modules — assigned to Sonnet
+- [ ] `CL-55` Cross-module R22-R24 integration tests (40+ tests) — assigned to Sonnet
+- [ ] `CL-56` Update TASK-BOARD + CLAUDE.md — assigned to Sonnet
 
 ### Completed (recent)
 
