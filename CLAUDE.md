@@ -42,12 +42,17 @@
 - [x] Created `.prompts/grok-r20.md` — Orchestrator-Worker hierarchy, Tauri desktop, AI Design Pipeline (3 specs)
 - [x] Created `.prompts/gemini-01.md` — exhaustive AI tools & frameworks audit (11 categories)
 - [x] Created `.prompts/gemini-02.md` — world-class UX patterns, DX, calm technology, retention (9 categories)
+- [x] Updated MISSING_FEATURES.md — marked 13 features as implemented (CL-26)
+- [x] Converted remaining 11 agent templates to EARTH XML format (CL-25):
+  ATLAS, CHARON, EARTH, EUROPA, MARS, MERCURY, NEPTUNE, SATURN, TITAN, TRITON, URANUS, VENUS
+  All 21/21 agents now have standardized EARTH XML structure
 
 ## In Progress
 
 - [ ] Wire 13 unwired R16/R17 modules into ralph-loop.ts (R16-01, R16-03, R16-04, R17-03→R17-12)
   NOTE: Kimi overnight hardening produced docs + integration tests but did NOT wire ralph-loop.ts.
-  Grok R18-04 will spec the integration layer. Then Kimi implements.
+  Kimi mega-wiring sprint (KIMI-W-01) assigned to handle this.
+- [ ] CL-20→CL-30 downtime evaluation tasks (see .nova/TASK-BOARD.md)
 
 ## Queued
 
@@ -56,7 +61,6 @@
 - [ ] Dashboard UI (K-01→K-15) — 0% complete, waiting on Grok R18-01 spec
 - [ ] VS Code extension — waiting on Grok R18-03 spec
 - [ ] ESLint + Prettier config — waiting on Grok R18-05 spec
-- [ ] Remaining 11 agent templates to EARTH XML format
 
 ---
 

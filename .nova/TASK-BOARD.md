@@ -138,8 +138,8 @@
 - [ ] `CL-22` Evaluate Gemini-01 research (extract actionable items, update task board)
 - [ ] `CL-23` Evaluate Kiro audit reports (review structural findings, prioritize fixes)
 - [ ] `CL-24` Write Kimi sprint prompts from Grok R19 specs (3 implementation sprints)
-- [ ] `CL-25` Remaining 11 agent templates to EARTH XML format (TITAN, TRITON, CHARON, URANUS, EUROPA, SATURN, MERCURY, MARS, VENUS, EARTH, ATLAS)
-- [ ] `CL-26` Update MISSING_FEATURES.md to reflect current state (many P0/P1 items now complete)
+- [x] `CL-25` ~~Remaining 11 agent templates to EARTH XML format~~ DONE — all 21/21 agents converted
+- [x] `CL-26` ~~Update MISSING_FEATURES.md~~ DONE — 13 features marked as implemented
 - [ ] `CL-27` Update .nova/TASK-BOARD.md progress summary after each agent delivery
 - [ ] `CL-28` Evaluate Gemini-02 research (extract UX patterns for Kimi to implement)
 - [ ] `CL-29` Write Kimi sprint prompts from Grok R20 specs (3 implementation sprints)
@@ -152,7 +152,8 @@
 - [x] Wired wellbeing, recovery, init into ralph-loop.ts
 - [x] Created all sprint prompts through R20 + Gemini research prompts
 - [x] Evaluated Grok R7→R18 (all accepted)
-- [x] XML-restructured 10 agent templates to EARTH format
+- [x] XML-restructured all 21 agent templates to EARTH format (CL-25)
+- [x] Updated MISSING_FEATURES.md (CL-26)
 
 ---
 
