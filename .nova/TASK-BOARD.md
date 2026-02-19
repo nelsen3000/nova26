@@ -51,17 +51,17 @@
 - [x] `KIMI-R21-01` Implement MCP integration (spec: .nova/specs/grok-r21-01-mcp-integration.md, 78 tests) — DELIVERED, 5 files, 2 TS errors fixed by Claude
 - [x] `KIMI-R21-02` Implement ACP integration (spec: .nova/specs/grok-r21-02-acp-integration.md, 67 tests) — DELIVERED, 6 files
 - [x] `KIMI-R21-03` Implement Compliance & Audit Trail (spec: .nova/specs/grok-r21-03-compliance-audit.md, 84 tests) — DELIVERED, 5 files, 1 TS error fixed by Claude
-- [ ] `KIMI-PERP-01` Implement Perplexity research integration (spec: .nova/specs/perplexity-integration.md)
+- [ ] `KIMI-PERP-01` Implement Perplexity research integration (spec: .nova/specs/perplexity-integration.md, 25 tests)
 - [ ] `KIMI-R22-01` Implement Agent Model Routing (spec: .nova/specs/grok-r22-01-model-routing.md, 79 tests)
-- [ ] `KIMI-R23-01` Implement Persistent Visual Workflow Engine (spec: .nova/specs/grok-r23-eternal-symphony.md)
-- [ ] `KIMI-R23-02` Implement MicroVM / WASI Ultra-Sandbox (spec: .nova/specs/grok-r23-eternal-symphony.md)
-- [ ] `KIMI-R23-03` Implement Infinite Hierarchical Memory (spec: .nova/specs/grok-r23-eternal-symphony.md)
-- [ ] `KIMI-R23-04` Implement Agent Debate & Swarm Layer (spec: .nova/specs/grok-r23-eternal-symphony.md)
-- [ ] `KIMI-R23-05` Implement Cinematic Observability & Eval Suite (spec: .nova/specs/grok-r23-eternal-symphony.md)
-- [ ] `KIMI-R24-01` Implement AI Model Database (spec: .nova/specs/grok-r24-immortal-omniverse.md)
-- [ ] `KIMI-R24-02` Implement Eternal Engine Rust Core (spec: .nova/specs/grok-r24-immortal-omniverse.md)
-- [ ] `KIMI-R24-03` Implement Real-time CRDT Collaboration (spec: .nova/specs/grok-r24-immortal-omniverse.md)
-- [ ] `KIMI-R24-04` Implement Voice & Multimodal Interface (spec: .nova/specs/grok-r24-immortal-omniverse.md)
+- [ ] `KIMI-R23-01` Implement Persistent Visual Workflow Engine (spec: .nova/specs/grok-r23-eternal-symphony.md, 70 tests)
+- [x] ~~`KIMI-R23-02` Implement MicroVM / WASI Ultra-Sandbox~~ **CUT** (Firecracker requires Linux KVM, no macOS)
+- [ ] `KIMI-R23-03` Implement Infinite Hierarchical Memory (spec: .nova/specs/grok-r23-eternal-symphony.md, 70 tests)
+- [x] ~~`KIMI-R23-04` Implement Agent Debate & Swarm Layer~~ **CUT** (over-engineered, expensive multi-model debate before product exists)
+- [ ] `KIMI-R23-05` Implement Cinematic Observability & Eval Suite (spec: .nova/specs/grok-r23-eternal-symphony.md, 60 tests)
+- [ ] `KIMI-R24-01` Implement AI Model Database (spec: .nova/specs/grok-r24-immortal-omniverse.md, 70 tests)
+- [x] ~~`KIMI-R24-02` Implement Eternal Engine Rust Core~~ **CUT** (no Rust crate exists yet)
+- [ ] `KIMI-R24-03` Implement Real-time CRDT Collaboration (spec: .nova/specs/grok-r24-immortal-omniverse.md, 65 tests)
+- [x] ~~`KIMI-R24-04` Implement Voice & Multimodal Interface~~ **CUT** (premature without working UI)
 
 ### Completed (recent)
 
@@ -211,7 +211,7 @@
 - [x] `CL-43` ~~Write Kimi R20 continuation prompt~~ DONE — R19 complete, begin R20-01
 - [ ] `CL-44` Evaluate Gemini-12→15 research (when delivered)
 - [ ] `CL-45` Write Grok R24 specs from Gemini frontier research (when delivered)
-- [x] `CL-46` ~~Evaluate Grok R23 specs + write Kimi R23 sprint~~ DONE — R23+R24 combined into mega-sprint `.prompts/kimi-r22-r24-mega-sprint.md` (11 tasks, 700+ tests)
+- [x] `CL-46` ~~Evaluate Grok R23 specs + write Kimi R23 sprint~~ DONE — R23+R24 combined into mega-sprint `.prompts/kimi-r22-r24-mega-sprint.md` (7 tasks, 440+ tests; 4 cut as premature)
 - [x] `CL-47` ~~Evaluate Kimi R21 test files~~ DONE — 317 tests (97 MCP + 110 ACP + 110 compliance), all pass, ESM .js imports, no `any`
 - [x] `CL-48` ~~KIRO-06-07 structural audit~~ DONE — 95→0 failures, 18 files fixed (INDEX, 14 pattern files, scan-utils.ts, audit report)
 
@@ -249,7 +249,7 @@
 | Agent | Active Tasks | Completed | Next Up |
 |-------|-------------|-----------|---------|
 | Claude Code | CL-35, CL-40, CL-44→46 | 73+ | Evaluate Gemini + Grok deliveries, write Kimi sprints |
-| Kimi | Awaiting R22→R24 mega-sprint | 48+ | R22 Model Routing → R23 Eternal Symphony → R24 Immortal Omniverse |
+| Kimi | Awaiting R22→R24 mega-sprint (7 tasks) | 48+ | PERP-01 → R22-01 → R23-01/03/05 → R24-01/03 (4 tasks cut) |
 | Grok | GROK-R23-01→05 + R24-01→04 | 80+ | R23 gap specs → R24 frontier specs (AI DB, Eternal Engine, CRDT, Voice) |
 | Kiro | KIRO-07-01→04 queued | 24+ | R19/R20 pattern extraction + lifecycle audit |
 | Gemini | GEMINI-07→15 | 6 | 07-11 current sprint → 12-15 frontier research (AI DB, Voice, Edge AI, CRDT) |
