@@ -5,7 +5,7 @@
 > that sends you back here. Find your section, pick the next unchecked task, do it.
 > **Coordinator**: Claude Code (assigns tasks, evaluates output, resolves conflicts)
 > **Repo**: https://github.com/nelsen3000/nova26
-> **Current state**: 3,690 tests, 0 TS errors, 148 test files
+> **Current state**: 4,007 tests, 0 TS errors, 151 test files
 > **Vision**: Eternal Engine — self-evolving Rust core + ZeroClaw/TinyClaw/NanoClaw patterns
 
 ---
@@ -125,7 +125,7 @@
 - [x] `KIRO-06-04` Fix stale reference in AI_COORDINATION.md — sun-prd-generator now exists (by Claude)
 - [x] `KIRO-06-05` Extract patterns from 21 EARTH XML agent templates — 21 files, 35-42 lines each (by Claude)
 - [x] `KIRO-06-06` Build agent interaction graph — 21 nodes, 89 edges, 6 clusters, JSON + ASCII (by Claude)
-- [ ] `KIRO-06-07` Re-run structural audit — target: 0 failures (down from 87)
+- [x] `KIRO-06-07` Re-run structural audit — 0 failures (down from 95), 18 files fixed (by Claude)
 
 ### Queued (all unblocked)
 
@@ -211,7 +211,9 @@
 - [x] `CL-43` ~~Write Kimi R20 continuation prompt~~ DONE — R19 complete, begin R20-01
 - [ ] `CL-44` Evaluate Gemini-12→15 research (when delivered)
 - [ ] `CL-45` Write Grok R24 specs from Gemini frontier research (when delivered)
-- [ ] `CL-46` Evaluate Grok R23 specs + write Kimi R23 sprint (when delivered)
+- [x] `CL-46` ~~Evaluate Grok R23 specs + write Kimi R23 sprint~~ DONE — R23+R24 combined into mega-sprint `.prompts/kimi-r22-r24-mega-sprint.md` (11 tasks, 700+ tests)
+- [x] `CL-47` ~~Evaluate Kimi R21 test files~~ DONE — 317 tests (97 MCP + 110 ACP + 110 compliance), all pass, ESM .js imports, no `any`
+- [x] `CL-48` ~~KIRO-06-07 structural audit~~ DONE — 95→0 failures, 18 files fixed (INDEX, 14 pattern files, scan-utils.ts, audit report)
 
 ### Completed (recent)
 
@@ -247,9 +249,9 @@
 | Agent | Active Tasks | Completed | Next Up |
 |-------|-------------|-----------|---------|
 | Claude Code | CL-35, CL-40, CL-44→46 | 73+ | Evaluate Gemini + Grok deliveries, write Kimi sprints |
-| Kimi | R20-01→R20-03 (281 tests) | 45+ | R20 Orchestrator/Tauri/Design → R21 MCP/ACP/Compliance → R22 Model Routing |
+| Kimi | Awaiting R22→R24 mega-sprint | 48+ | R22 Model Routing → R23 Eternal Symphony → R24 Immortal Omniverse |
 | Grok | GROK-R23-01→05 + R24-01→04 | 80+ | R23 gap specs → R24 frontier specs (AI DB, Eternal Engine, CRDT, Voice) |
-| Kiro | KIRO-06-01→07 | 17+ | Audit remediation + agent extraction |
+| Kiro | KIRO-07-01→04 queued | 24+ | R19/R20 pattern extraction + lifecycle audit |
 | Gemini | GEMINI-07→15 | 6 | 07-11 current sprint → 12-15 frontier research (AI DB, Voice, Edge AI, CRDT) |
 | Perplexity | P-07→P-12 (paused) | 6 | Documentation portal |
 
