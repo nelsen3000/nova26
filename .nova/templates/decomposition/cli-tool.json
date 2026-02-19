@@ -1,0 +1,11 @@
+{
+  "id": "cli-tool",
+  "name": "CLI Tool",
+  "projectType": "cli-tool",
+  "description": "Create a CLI tool",
+  "tasks": [],
+  "successCount": 5,
+  "avgTokensUsed": 2000,
+  "createdAt": "2026-02-19T02:38:08.965Z",
+  "lastUsedAt": "2026-02-19T02:38:08.965Z"
+}

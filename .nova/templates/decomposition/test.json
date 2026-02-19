@@ -1,0 +1,11 @@
+{
+  "id": "test",
+  "name": "Test",
+  "projectType": "general",
+  "description": "Test template",
+  "tasks": [],
+  "successCount": 5,
+  "avgTokensUsed": 1000,
+  "createdAt": "2026-02-19T02:38:08.985Z",
+  "lastUsedAt": "2026-02-19T02:38:08.985Z"
+}

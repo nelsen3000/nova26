@@ -31,8 +31,74 @@
     <item>Use z-index over 50 without explicit justification</item>
     <item>Create components over 200 lines (split into sub-components)</item>
     <item>Props drill more than 2 levels (use context or composition)</item>
+    <item>Generate a component without calling generateUIComponent first (for components over 50 lines)</item>
+    <item>Use a custom button, input, or card when a shadcn/ui equivalent exists</item>
+    <item>Add an interactive element without keyboard navigation (onClick without onKeyDown or using Button component)</item>
+    <item>Omit aria-label on icon-only buttons</item>
+    <item>Skip the loading state (use Skeleton, not a spinner, for content areas)</item>
   </never>
 </constraints>
+
+<ui_skills>
+  <skill name="Component Generation Workflow">
+    <description>Before writing any component, call the generateUIComponent tool to build a structured specification. Use the spec as your implementation scaffold.</description>
+    <workflow>
+      <step>1. Call generateUIComponent with componentName, purpose, and any known props</step>
+      <step>2. Review the spec — add domain-specific requirements from the task brief</step>
+      <step>3. Implement the component, hitting every requirement in the spec</step>
+      <step>4. Verify: grep for aria-, keyboard handlers, and all 5 UI state renders</step>
+    </workflow>
+  </skill>
+
+  <skill name="shadcn/ui Awareness">
+    <description>Prefer shadcn/ui primitives over hand-rolled equivalents. Use these when the task involves the corresponding UI pattern.</description>
+    <components>
+      <item>Button — all click targets, form submits, icon buttons</item>
+      <item>Card, CardHeader, CardContent, CardFooter — content containers</item>
+      <item>Badge — status indicators, tags, counts</item>
+      <item>Dialog, AlertDialog — modals and confirmations</item>
+      <item>Sheet — slide-over panels</item>
+      <item>Tooltip — hover information</item>
+      <item>Select, Checkbox, RadioGroup, Switch — form controls</item>
+      <item>Table, TableHeader, TableRow, TableCell — data tables</item>
+      <item>Skeleton — loading states (preferred over spinners for content areas)</item>
+      <item>Alert — inline error and warning messages</item>
+      <item>Tabs — multi-panel navigation</item>
+      <item>DropdownMenu — contextual menus</item>
+    </components>
+    <rule>Never implement a custom component that duplicates a shadcn/ui primitive. Import from @/components/ui/*.</rule>
+  </skill>
+
+  <skill name="Accessibility by Default">
+    <description>Every component must be usable by keyboard-only and screen-reader users. These are not optional enhancements — they are part of the component contract.</description>
+    <checklist>
+      <item>Interactive elements: Button (not div[onClick]), input, select, or role="button" with tabIndex="0"</item>
+      <item>Images: alt text always present — descriptive for informational images, empty alt="" for decorative</item>
+      <item>Form inputs: always paired with a visible or sr-only label via htmlFor/id</item>
+      <item>Icons used alone: aria-hidden="true" on the icon + aria-label on the wrapping button</item>
+      <item>Loading states: aria-busy="true" on the loading container</item>
+      <item>Error states: role="alert" on error messages so screen readers announce them</item>
+      <item>Modals: focus trap inside Dialog (shadcn/ui handles this automatically)</item>
+      <item>Color alone never conveys meaning: pair color with text or icon</item>
+    </checklist>
+  </skill>
+
+  <skill name="Responsive Design System">
+    <description>All components are mobile-first. Apply styles without breakpoints for mobile, then override at sm:, md:, lg: for larger screens.</description>
+    <breakpoints>
+      <item>Default (no prefix): &lt;640px — mobile phones</item>
+      <item>sm: 640px+ — large phones and small tablets</item>
+      <item>md: 768px+ — tablets and small laptops</item>
+      <item>lg: 1024px+ — laptops and desktops</item>
+    </breakpoints>
+    <patterns>
+      <item>Stack on mobile, grid on desktop: flex flex-col md:grid md:grid-cols-2</item>
+      <item>Full-width on mobile, constrained on desktop: w-full md:max-w-lg</item>
+      <item>Hide on mobile, show on desktop: hidden md:block</item>
+      <item>Larger tap targets on mobile: p-3 md:p-2 (44px minimum touch target)</item>
+    </patterns>
+  </skill>
+</ui_skills>
 
 ---
 

@@ -21,6 +21,14 @@ import type { PRD, Task, LLMResponse, TodoItem, PlanningPhase } from '../types/i
 import { AgentLoop, type AgentLoopResult } from '../agent-loop/agent-loop.js';
 import { getToolRegistry, type ToolExecution } from '../tools/tool-registry.js';
 import type { AutonomyLevel } from '../config/autonomy.js';
+import { getTasteVault } from '../taste-vault/taste-vault.js';
+import { getInjectedVaultNodeIds, clearInjectedVaultNodeIds, getInjectedPlaybookRuleIds, clearInjectedPlaybookRuleIds } from './prompt-builder.js';
+import { getPlaybookManager } from '../ace/playbook.js';
+import { getAceReflector } from '../ace/reflector.js';
+import { getAceCurator } from '../ace/curator.js';
+import { getSelfImprovementProtocol } from '../agents/self-improvement.js';
+import { getRehearsalStage } from '../rehearsal/stage.js';
+import type { RehearsalSession } from '../rehearsal/stage.js';
 
 export interface RalphLoopOptions {
   parallelMode?: boolean;
@@ -368,6 +376,32 @@ export async function ralphLoop(
   }
 
   console.log('\n=== Ralph Loop finished ===');
+  
+  // Log taste vault wisdom impact
+  try {
+    const vault = getTasteVault();
+    const summary = vault.summary();
+    console.log(`Taste Vault: ${summary.nodeCount} nodes, ${summary.edgeCount} edges, avg confidence: ${summary.avgConfidence.toFixed(2)}`);
+  } catch {
+    // Vault unavailable — skip silently
+  }
+  
+  // ACE: run self-improvement reviews for all agents that have enough task history
+  try {
+    const protocol = getSelfImprovementProtocol();
+    const uniqueAgents = new Set(prd.tasks.map(t => t.agent));
+    for (const agentName of uniqueAgents) {
+      const profile = await protocol.getProfile(agentName);
+      if (profile.totalTasks >= 5) {
+        const review = await protocol.runReview(agentName);
+        if (review.rulesAdded > 0 || review.rulesModified > 0) {
+          console.log(`  ACE Self-Improvement [${agentName}]: ${review.reviewSummary}`);
+        }
+      }
+    }
+  } catch {
+    // Self-improvement unavailable — skip silently
+  }
 }
 
 async function saveTaskOutput(task: Task, response: LLMResponse): Promise<string> {
@@ -672,6 +706,22 @@ async function processTask(
   // Build prompt
   const { systemPrompt, userPrompt } = await buildPrompt(task, prd);
 
+  // ACE: retrieve active playbook rules and inject into prompt context
+  // (actual injection happens in prompt-builder.ts — this just ensures the playbook is loaded)
+  const playbookManager = getPlaybookManager();
+  await playbookManager.getPlaybook(task.agent);  // pre-warm cache
+
+  // Rehearsal Stage: check if task warrants a rehearsal (premium only)
+  let rehearsalSession: RehearsalSession | null = null;
+  if (process.env.NOVA26_TIER === 'premium' && getRehearsalStage().shouldRehearse(task)) {
+    try {
+      rehearsalSession = await getRehearsalStage().rehearse(task, task.agent);
+      console.log(`  Rehearsal Stage: explored ${rehearsalSession.branches.length} branches, winner score: ${rehearsalSession.results[0]?.score.toFixed(2) ?? 'n/a'}`);
+    } catch (err) {
+      console.warn(`  Rehearsal Stage skipped: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
   // --- Pre-execution plan approval ---
   if (loopOptions?.planApproval) {
     console.log(`\n📋 Plan approval enabled — generating plan for ${task.id}...`);
@@ -838,6 +888,18 @@ async function processTask(
         savePRD(prd, prdPath);
         // MEGA-05: Record failed task result for analytics
         recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
+        
+        // ACE: record failure outcome
+        await getSelfImprovementProtocol().recordOutcome(task.agent, {
+          taskId: task.id,
+          taskTitle: task.title,
+          taskType: String(task.phase ?? task.title.split(' ')[0]),
+          success: false,
+          appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+        });
+        clearInjectedPlaybookRuleIds(task.id);
+        await getPlaybookManager().recordTaskApplied(task.agent);
+        
         tracer.endTrace(trace, 'failed', failedMessage);
         throw new Error(failedMessage);
       }
@@ -855,6 +917,26 @@ async function processTask(
         savePRD(prd, prdPath);
         // MEGA-05: Record failed task result for analytics
         recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
+        
+        // Taste Vault: record failure as Mistake node
+        try {
+          const vault = getTasteVault();
+          await vault.learnFromBuildResult(task.title, task.description, '', task.agent, false);
+        } catch {
+          // Vault unavailable — skip silently
+        }
+        
+        // ACE: record failure outcome
+        await getSelfImprovementProtocol().recordOutcome(task.agent, {
+          taskId: task.id,
+          taskTitle: task.title,
+          taskType: String(task.phase ?? task.title.split(' ')[0]),
+          success: false,
+          appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+        });
+        clearInjectedPlaybookRuleIds(task.id);
+        await getPlaybookManager().recordTaskApplied(task.agent);
+        
         tracer.endTrace(trace, 'failed', failedMessage);
         throw new Error(failedMessage);
       }
@@ -864,6 +946,26 @@ async function processTask(
       savePRD(prd, prdPath);
       // MEGA-05: Record failed task result for analytics
       recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
+      
+      // Taste Vault: record failure as Mistake node
+      try {
+        const vault = getTasteVault();
+        await vault.learnFromBuildResult(task.title, task.description, '', task.agent, false);
+      } catch {
+        // Vault unavailable — skip silently
+      }
+      
+      // ACE: record failure outcome
+      await getSelfImprovementProtocol().recordOutcome(task.agent, {
+        taskId: task.id,
+        taskTitle: task.title,
+        taskType: String(task.phase ?? task.title.split(' ')[0]),
+        success: false,
+        appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+      });
+      clearInjectedPlaybookRuleIds(task.id);
+      await getPlaybookManager().recordTaskApplied(task.agent);
+      
       tracer.endTrace(trace, 'failed', failedMessage);
       throw new Error(failedMessage);
     }
@@ -890,6 +992,26 @@ async function processTask(
       savePRD(prd, prdPath);
       // MEGA-05: Record failed task result for analytics
       recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, `Council rejected: ${councilDecision.summary}`, sessionId || undefined);
+      
+      // Taste Vault: record failure as Mistake node
+      try {
+        const vault = getTasteVault();
+        await vault.learnFromBuildResult(task.title, task.description, '', task.agent, false);
+      } catch {
+        // Vault unavailable — skip silently
+      }
+      
+      // ACE: record failure outcome
+      await getSelfImprovementProtocol().recordOutcome(task.agent, {
+        taskId: task.id,
+        taskTitle: task.title,
+        taskType: String(task.phase ?? task.title.split(' ')[0]),
+        success: false,
+        appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+      });
+      clearInjectedPlaybookRuleIds(task.id);
+      await getPlaybookManager().recordTaskApplied(task.agent);
+      
       tracer.endTrace(trace, 'failed', councilDecision.summary);
       throw new Error(`Council rejected: ${councilDecision.summary}`);
     }
@@ -937,6 +1059,57 @@ async function processTask(
 
   // Git workflow: commit phase
   gitWf?.commitPhase(task.id, task.title, task.agent, task.phase);
+
+  // Taste Vault: extract patterns from successful task
+  try {
+    const vault = getTasteVault();
+    await vault.learnFromBuildResult(task.title, task.description, response.content, task.agent, true);
+    
+    // Reinforce patterns that were injected into the prompt for this task
+    const injectedNodeIds = getInjectedVaultNodeIds(task.id);
+    for (const nodeId of injectedNodeIds) {
+      await vault.reinforce(nodeId);
+    }
+    clearInjectedVaultNodeIds(task.id);
+    
+    console.log(`  Taste Vault: learned from task (${injectedNodeIds.length} patterns reinforced)`);
+  } catch {
+    // Vault unavailable — skip silently
+  }
+
+  // ACE: reinforce playbook rules that were applied during this task
+  const appliedRuleIds = getInjectedPlaybookRuleIds(task.id);
+  if (appliedRuleIds.length > 0) {
+    await getPlaybookManager().recordSuccess(task.agent, appliedRuleIds);
+  }
+  clearInjectedPlaybookRuleIds(task.id);
+
+  // ACE: record outcome in self-improvement protocol
+  await getSelfImprovementProtocol().recordOutcome(task.agent, {
+    taskId: task.id,
+    taskTitle: task.title,
+    taskType: String(task.phase ?? task.title.split(' ')[0]),
+    success: true,
+    appliedRuleIds,
+  });
+
+  // ACE: run reflector and curator to evolve the playbook
+  const autonomyLevel = loopOptions?.autonomyLevel;
+  if (autonomyLevel !== undefined && autonomyLevel >= 3) {
+    const playbook = await getPlaybookManager().getPlaybook(task.agent);
+    const deltas = await getAceReflector().reflectOnOutcome(
+      task,
+      { success: true, output: response.content },
+      playbook
+    );
+    if (deltas.length > 0) {
+      const curation = await getAceCurator().curate(deltas, task.agent);
+      console.log(`  ACE: applied ${curation.applied.length} playbook update(s), rejected ${curation.rejected.length}`);
+    }
+  }
+
+  // ACE: record task applied count
+  await getPlaybookManager().recordTaskApplied(task.agent);
 
   console.log(`\n✅ Task ${task.id} completed successfully.`);
   tracer.endTrace(trace, 'done');

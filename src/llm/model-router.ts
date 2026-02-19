@@ -544,5 +544,225 @@ export function resetCircuitBreaker(modelName?: string): void {
   }
 }
 
+// ============================================================================
+// Model Discovery - Detect available models from Ollama
+// ============================================================================
+
+/** Cache for installed models to avoid repeated API calls */
+let installedModels: string[] | null = null;
+let lastModelDetection: number = 0;
+const MODEL_DETECTION_CACHE_MS = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Detect available models from Ollama /api/tags endpoint
+ * Returns cached result if within cache TTL
+ */
+export async function detectAvailableModels(): Promise<string[]> {
+  // Return cached if fresh
+  if (installedModels && Date.now() - lastModelDetection < MODEL_DETECTION_CACHE_MS) {
+    return installedModels;
+  }
+
+  try {
+    const configHost = getConfig().ollama?.host || 'http://localhost:11434';
+    const response = await fetch(`${configHost}/api/tags`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+      installedModels = [];
+      return installedModels;
+    }
+
+    const data = await response.json() as { models?: Array<{ name: string }> };
+    installedModels = (data.models || []).map(m => m.name);
+    lastModelDetection = Date.now();
+    return installedModels;
+  } catch {
+    installedModels = [];
+    return installedModels;
+  }
+}
+
+/**
+ * Clear the installed models cache (for testing)
+ */
+export function clearInstalledModelsCache(): void {
+  installedModels = null;
+  lastModelDetection = 0;
+}
+
+// ============================================================================
+// Phase-Based Model Selection
+// ============================================================================
+
+export type ModelPhase = 'thinking' | 'code_gen' | 'embedding';
+
+/**
+ * Select the best model for a specific phase
+ * Prefers installed models when available
+ */
+export async function selectModelForPhase(phase: ModelPhase): Promise<string> {
+  // Get installed models
+  const available = await detectAvailableModels();
+  
+  // Define preferences for each phase
+  const phasePreferences: Record<ModelPhase, string[]> = {
+    thinking: ['qwen2.5:7b', 'llama3:8b', 'deepseek-coder:6.7b', 'codellama:7b'],
+    code_gen: ['qwen2.5:32b', 'qwen2.5:14b', 'deepseek-coder:6.7b', 'codellama:7b'],
+    embedding: ['nomic-embed-text', 'mxbai-embed-large'],
+  };
+
+  const preferences = phasePreferences[phase];
+  
+  // Find first available preferred model
+  for (const model of preferences) {
+    if (available.length === 0 || available.includes(model)) {
+      return model;
+    }
+  }
+
+  // Fallback to first preferred if no match
+  return preferences[0];
+}
+
+// ============================================================================
+// Cost Tracking
+// ============================================================================
+
+export interface UsageRecord {
+  id: string;
+  model: string;
+  tokens: number;
+  timestamp: string;
+  costPer1KTokens: number;
+}
+
+export interface BuildCost {
+  totalTokens: number;
+  estimatedCostUsd: number;
+  modelBreakdown: Record<string, { tokens: number; costUsd: number }>;
+}
+
+export interface MonthlyUsage {
+  month: string;
+  totalTokens: number;
+  estimatedCostUsd: number;
+  records: UsageRecord[];
+}
+
+/**
+ * CostTracker - Track LLM usage and estimate costs
+ */
+export class CostTracker {
+  private records: UsageRecord[] = [];
+
+  /**
+   * Record a usage entry
+   */
+  recordUsage(model: string, tokens: number, costPer1KTokens?: number): void {
+    // Find model config for cost if not provided
+    const modelConfig = AVAILABLE_MODELS.find(m => m.name === model);
+    const cost = costPer1KTokens ?? modelConfig?.costPer1KTokens ?? 0;
+
+    const record: UsageRecord = {
+      id: `usage-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      model,
+      tokens,
+      timestamp: new Date().toISOString(),
+      costPer1KTokens: cost,
+    };
+
+    this.records.push(record);
+  }
+
+  /**
+   * Get cost breakdown for the current build/session
+   */
+  getBuildCost(): BuildCost {
+    const modelBreakdown: Record<string, { tokens: number; costUsd: number }> = {};
+    let totalTokens = 0;
+    let totalCost = 0;
+
+    for (const record of this.records) {
+      if (!modelBreakdown[record.model]) {
+        modelBreakdown[record.model] = { tokens: 0, costUsd: 0 };
+      }
+      
+      const recordCost = (record.tokens / 1000) * record.costPer1KTokens;
+      modelBreakdown[record.model].tokens += record.tokens;
+      modelBreakdown[record.model].costUsd += recordCost;
+      totalTokens += record.tokens;
+      totalCost += recordCost;
+    }
+
+    return {
+      totalTokens,
+      estimatedCostUsd: totalCost,
+      modelBreakdown,
+    };
+  }
+
+  /**
+   * Get usage for current month
+   */
+  getMonthlyUsage(): MonthlyUsage {
+    const now = new Date();
+    const currentMonth = now.toISOString().slice(0, 7); // YYYY-MM format
+
+    const monthRecords = this.records.filter(r => 
+      r.timestamp.startsWith(currentMonth)
+    );
+
+    const totalTokens = monthRecords.reduce((sum, r) => sum + r.tokens, 0);
+    const totalCost = monthRecords.reduce((sum, r) => sum + (r.tokens / 1000) * r.costPer1KTokens, 0);
+
+    return {
+      month: currentMonth,
+      totalTokens,
+      estimatedCostUsd: totalCost,
+      records: monthRecords,
+    };
+  }
+
+  /**
+   * Clear all records (for testing)
+   */
+  clear(): void {
+    this.records = [];
+  }
+
+  /**
+   * Get all records (for testing)
+   */
+  getRecords(): UsageRecord[] {
+    return [...this.records];
+  }
+}
+
+// Singleton instance
+let costTrackerInstance: CostTracker | null = null;
+
+/**
+ * Get the singleton CostTracker instance
+ */
+export function getCostTracker(): CostTracker {
+  if (!costTrackerInstance) {
+    costTrackerInstance = new CostTracker();
+  }
+  return costTrackerInstance;
+}
+
+/**
+ * Reset the cost tracker singleton (for testing)
+ */
+export function resetCostTracker(): void {
+  if (costTrackerInstance) {
+    costTrackerInstance.clear();
+  }
+  costTrackerInstance = null;
+}
+
 // Note: Environment initialization is handled by the config system
 // The currentTier is initialized from getConfig().models.tier on module load

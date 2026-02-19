@@ -13,6 +13,12 @@ dist/
 .nova/sandbox/
 .nova/events/
 .nova/screenshots/
+.nova/data/*.db
+.nova/memory/
+.nova/code-index/
+.nova/security/
+.nova/taste-vault/
+.nova/personalities/
 
 # Kiro working directory (embedded git repo)
 kiro/

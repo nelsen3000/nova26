@@ -37,12 +37,32 @@ db.exec(`
     duration INTEGER NOT NULL,
     gate_retries INTEGER DEFAULT 0,
     failure_reason TEXT,
-    timestamp TEXT NOT NULL
+    timestamp TEXT NOT NULL,
+    vault_patterns_used INTEGER DEFAULT 0,
+    global_wisdom_applied INTEGER DEFAULT 0,
+    build_phase TEXT
   );
   CREATE INDEX IF NOT EXISTS idx_agent ON agent_results(agent);
   CREATE INDEX IF NOT EXISTS idx_timestamp ON agent_results(timestamp);
   CREATE INDEX IF NOT EXISTS idx_build_id ON agent_results(build_id);
 `);
+
+// Migration: Add new columns if they don't exist (backward compatibility)
+try {
+  db.exec(`ALTER TABLE agent_results ADD COLUMN vault_patterns_used INTEGER DEFAULT 0;`);
+} catch (e) {
+  // Column already exists
+}
+try {
+  db.exec(`ALTER TABLE agent_results ADD COLUMN global_wisdom_applied INTEGER DEFAULT 0;`);
+} catch (e) {
+  // Column already exists
+}
+try {
+  db.exec(`ALTER TABLE agent_results ADD COLUMN build_phase TEXT;`);
+} catch (e) {
+  // Column already exists
+}
 
 /**
  * Record a task result for analytics
@@ -55,12 +75,15 @@ export function recordTaskResult(
   duration: number,
   gateRetries: number = 0,
   failureReason?: string,
-  buildId?: string
+  buildId?: string,
+  vaultPatternsUsed: number = 0,
+  globalWisdomApplied: number = 0,
+  buildPhase?: string,
 ): void {
   const id = `result-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   const stmt = db.prepare(`
-    INSERT INTO agent_results (id, agent, task_id, build_id, success, tokens, duration, gate_retries, failure_reason, timestamp)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+    INSERT INTO agent_results (id, agent, task_id, build_id, success, tokens, duration, gate_retries, failure_reason, timestamp, vault_patterns_used, global_wisdom_applied, build_phase)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?)
   `);
   stmt.run(
     id,
@@ -71,7 +94,10 @@ export function recordTaskResult(
     tokens,
     duration,
     gateRetries,
-    failureReason || null
+    failureReason || null,
+    vaultPatternsUsed,
+    globalWisdomApplied,
+    buildPhase || null
   );
 }
 
@@ -341,4 +367,59 @@ export function formatAgentStats(stats: AgentStats): string {
   
   lines.push('─────────────────────────────────');
   return lines.join('\n');
+}
+
+/**
+ * Wisdom impact statistics
+ */
+export interface WisdomImpactStats {
+  avgVaultPatternsPerTask: number;
+  avgGlobalWisdomPerTask: number;
+  wisdomAssistedSuccessRate: number;
+  baselineSuccessRate: number;
+}
+
+/**
+ * Get wisdom impact statistics comparing tasks with wisdom usage vs without
+ * @param agentOrBuildId - The agent name or build ID to filter by
+ * @param mode - 'agent' to filter by agent, 'build' to filter by build_id
+ * @returns Wisdom impact statistics
+ */
+export function getWisdomImpactStats(
+  agentOrBuildId: string,
+  mode: 'agent' | 'build'
+): WisdomImpactStats {
+  const filterColumn = mode === 'agent' ? 'agent' : 'build_id';
+
+  // Get stats for tasks with wisdom usage (vault_patterns_used > 0 OR global_wisdom_applied > 0)
+  const wisdomRow = db.prepare(`
+    SELECT 
+      COUNT(*) as total,
+      SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) as successes,
+      AVG(vault_patterns_used) as avg_vault_patterns,
+      AVG(global_wisdom_applied) as avg_global_wisdom
+    FROM agent_results
+    WHERE ${filterColumn} = ? AND (vault_patterns_used > 0 OR global_wisdom_applied > 0)
+  `).get(agentOrBuildId) as any;
+
+  // Get stats for tasks without wisdom usage
+  const baselineRow = db.prepare(`
+    SELECT 
+      COUNT(*) as total,
+      SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) as successes
+    FROM agent_results
+    WHERE ${filterColumn} = ? AND (vault_patterns_used = 0 OR vault_patterns_used IS NULL) AND (global_wisdom_applied = 0 OR global_wisdom_applied IS NULL)
+  `).get(agentOrBuildId) as any;
+
+  const wisdomTotal = wisdomRow?.total || 0;
+  const wisdomSuccesses = wisdomRow?.successes || 0;
+  const baselineTotal = baselineRow?.total || 0;
+  const baselineSuccesses = baselineRow?.successes || 0;
+
+  return {
+    avgVaultPatternsPerTask: wisdomTotal > 0 ? (wisdomRow?.avg_vault_patterns || 0) : 0,
+    avgGlobalWisdomPerTask: wisdomTotal > 0 ? (wisdomRow?.avg_global_wisdom || 0) : 0,
+    wisdomAssistedSuccessRate: wisdomTotal > 0 ? wisdomSuccesses / wisdomTotal : 0,
+    baselineSuccessRate: baselineTotal > 0 ? baselineSuccesses / baselineTotal : 0,
+  };
 }

@@ -1,11 +1,14 @@
-// Core Tools — The 6 foundational tools for agent tool use
+// Core Tools — The 10 foundational tools for agent tool use
 // These run locally (or in Docker sandbox when available)
 
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'fs';
 import { execSync } from 'child_process';
 import { join, relative, resolve } from 'path';
 import { z } from 'zod';
-import type { Tool, ToolResult } from './tool-registry.js';
+import type { Tool, ToolResult, ToolRegistry } from './tool-registry.js';
+import { getDocsFetcher } from './docs-fetcher.js';
+import { getKnowledgeBase } from './knowledge-base.js';
+import { getSkillRunner } from '../skills/skill-runner.js';
 
 // ============================================================================
 // Safety constants
@@ -362,9 +365,163 @@ export const listFilesDef: Tool = {
 // Registration helper
 // ============================================================================
 
-import { type ToolRegistry } from './tool-registry.js';
+// ============================================================================
+// Tool: fetchDocs
+// ============================================================================
 
-/** Register all 6 core tools in a registry */
+const fetchDocsSchema = z.object({
+  library: z.string().describe('Library or framework name, e.g. "react", "zod", "tailwindcss", "convex"'),
+  topic: z.string().optional().describe('Specific topic within the library, e.g. "hooks", "schema", "queries"'),
+});
+
+async function fetchDocsTool(args: Record<string, unknown>): Promise<ToolResult> {
+  const start = Date.now();
+  const { library, topic } = fetchDocsSchema.parse(args);
+  const fetcher = getDocsFetcher();
+  const result = await fetcher.fetchDocs(library, topic);
+  const { text, truncated: isTruncated } = truncateOutput(result.content);
+  return {
+    success: true,
+    output: text,
+    duration: Date.now() - start,
+    truncated: isTruncated || result.truncated,
+  };
+}
+
+export const fetchDocsDef: Tool = {
+  name: 'fetchDocs',
+  description: 'Fetch up-to-date documentation for a library or framework. Use this before writing code that uses any external dependency to ensure you have the current API. Returns formatted documentation text.',
+  parameters: fetchDocsSchema,
+  execute: fetchDocsTool,
+  allowedAgents: [],
+  blockedAgents: [],
+  mutating: false,
+  timeout: 15_000,
+};
+
+// ============================================================================
+// Tool: queryKnowledge
+// ============================================================================
+
+const queryKnowledgeSchema = z.object({
+  query: z.string().describe('Natural language query describing what you are looking for, e.g. "form validation with zod", "react server components", "database indexing strategies"'),
+  maxResults: z.number().optional().describe('Maximum number of results to return (default: 5)'),
+});
+
+async function queryKnowledgeTool(args: Record<string, unknown>): Promise<ToolResult> {
+  const start = Date.now();
+  const { query, maxResults } = queryKnowledgeSchema.parse(args);
+  const kb = getKnowledgeBase({ maxResults: maxResults ?? 5 });
+  const result = await kb.query(query);
+  const formatted = kb.formatForPrompt(result);
+  const { text, truncated: isTruncated } = truncateOutput(formatted);
+  return {
+    success: true,
+    output: text,
+    duration: Date.now() - start,
+    truncated: isTruncated || result.results.length < result.totalFound,
+  };
+}
+
+export const queryKnowledgeDef: Tool = {
+  name: 'queryKnowledge',
+  description: 'Search across all knowledge sources: Taste Vault patterns, BistroLens best practices, and cached documentation. Use this before starting any non-trivial implementation to retrieve relevant patterns, prior art, and documentation.',
+  parameters: queryKnowledgeSchema,
+  execute: queryKnowledgeTool,
+  allowedAgents: [],
+  blockedAgents: [],
+  mutating: false,
+  timeout: 10_000,
+};
+
+// ============================================================================
+// Tool: runSkill
+// ============================================================================
+
+const runSkillSchema = z.object({
+  skillName: z.string().describe('Name of the skill to run, e.g. "debug-root-cause", "refactor-safely", "generate-tests"'),
+  inputs: z.record(z.unknown()).describe('Input values for the skill, e.g. { errorFile: "src/foo.ts", errorPattern: "Cannot read property" }'),
+});
+
+async function runSkillTool(args: Record<string, unknown>): Promise<ToolResult> {
+  const { skillName, inputs } = runSkillSchema.parse(args);
+  const runner = getSkillRunner();
+  const result = await runner.execute(skillName, {
+    agentName: 'unknown',
+    taskDescription: '',
+    workingDir: process.cwd(),
+    inputs,
+    stepResults: {},
+  });
+  return {
+    success: result.success,
+    output: runner.formatResultForPrompt(result),
+    duration: result.durationMs,
+    truncated: false,
+  };
+}
+
+export const runSkillDef: Tool = {
+  name: 'runSkill',
+  description: 'Execute a multi-step skill workflow. Skills coordinate sequences of tool calls into reliable outcomes. Use this for complex, multi-step operations like debugging, refactoring, or test generation.',
+  parameters: runSkillSchema,
+  execute: runSkillTool,
+  allowedAgents: [],
+  blockedAgents: [],
+  mutating: false,
+  timeout: 60_000,
+};
+
+// ============================================================================
+// Tool: generateUIComponent
+// ============================================================================
+
+const generateUIComponentSchema = z.object({
+  componentName: z.string().describe('PascalCase component name, e.g. "UserCard", "DataTable"'),
+  purpose: z.string().describe('What this component does and what data it displays'),
+  props: z.array(z.string()).optional().describe('List of prop names this component needs'),
+  shadcnComponents: z.array(z.string()).optional().describe('shadcn/ui components to use, e.g. ["Button", "Card", "Badge"]'),
+  hasInteractivity: z.boolean().optional().describe('Whether component handles user interactions (clicks, form submission)'),
+});
+
+async function generateUIComponentTool(args: Record<string, unknown>): Promise<ToolResult> {
+  const { componentName, purpose, props, shadcnComponents, hasInteractivity } = generateUIComponentSchema.parse(args);
+
+  const spec = [
+    `Component: ${componentName}`,
+    `Purpose: ${purpose}`,
+    props?.length ? `Props: ${props.join(', ')}` : '',
+    shadcnComponents?.length ? `Use shadcn/ui: ${shadcnComponents.join(', ')}` : '',
+    hasInteractivity ? 'Requires: click handlers, form submission, or state management' : '',
+    '',
+    'Requirements:',
+    '- Handle all 5 UI states: loading (skeleton), empty (empty state with CTA), error (error boundary with retry), success (main content), disabled (greyed out with cursor-not-allowed)',
+    '- Include ARIA attributes: aria-label, aria-describedby, role where semantic HTML is insufficient',
+    '- Keyboard navigation: all interactive elements reachable via Tab, activated via Enter/Space',
+    '- Responsive: mobile-first with sm:, md:, lg: breakpoints',
+    '- Follow design tokens: use CSS variables (--background, --foreground, --primary, etc.) via Tailwind',
+    '- Max 200 lines per component file; split sub-components into separate exports if needed',
+  ].filter(Boolean).join('\n');
+
+  return makeResult(true, spec, Date.now());
+}
+
+export const generateUIComponentDef: Tool = {
+  name: 'generateUIComponent',
+  description: 'Generate a React/Tailwind component following Nova26 design system conventions. Returns a complete, accessible, responsive component with all 5 UI states (loading, empty, error, success, disabled).',
+  parameters: generateUIComponentSchema,
+  execute: generateUIComponentTool,
+  allowedAgents: ['VENUS'],
+  blockedAgents: [],
+  mutating: false,
+  timeout: 5_000,
+};
+
+// ============================================================================
+// Registration helper
+// ============================================================================
+
+/** Register all 10 core tools in a registry */
 export function registerCoreTools(registry: ToolRegistry): void {
   registry.register(readFileDef);
   registry.register(writeFileDef);
@@ -372,4 +529,8 @@ export function registerCoreTools(registry: ToolRegistry): void {
   registry.register(checkTypesDef);
   registry.register(runTestsDef);
   registry.register(listFilesDef);
+  registry.register(fetchDocsDef);
+  registry.register(queryKnowledgeDef);
+  registry.register(runSkillDef);
+  registry.register(generateUIComponentDef);
 }

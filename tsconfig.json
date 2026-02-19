@@ -28,6 +28,7 @@
   "exclude": [
     "node_modules",
     "dist",
+    "src/**/*.test.ts",
     "src/integrations/dashboard",
     "src/integrations/fal-ai",
     "src/integrations/instructor",

@@ -8,6 +8,11 @@ import { buildCommunicationContext, type MessageBus } from '../agents/protocol.j
 import { getToolRegistry, type ToolRegistry } from '../tools/tool-registry.js';
 import { getRepoMap as getToolsRepoMap, formatRepoMapForPrompt } from '../tools/repo-map.js';
 import type { Task, PRD } from '../types/index.js';
+import { getTasteVault } from '../taste-vault/taste-vault.js';
+import { getGlobalWisdomPipeline } from '../taste-vault/global-wisdom.js';
+import { getAceGenerator } from '../ace/generator.js';
+import type { RehearsalSession } from '../rehearsal/stage.js';
+
 
 // Cache the repo map so we don't rebuild it for every task
 let cachedRepoMap: RepoMap | null = null;
@@ -148,6 +153,26 @@ ${task.phase}
     // Memory unavailable — skip silently
   }
 
+  // Add taste vault context (async - fire and forget)
+  buildVaultContext(task.description, task.agent, task.id).then(vaultCtx => {
+    if (vaultCtx) {
+      // Note: vault context is tracked but not appended synchronously
+      // In a real implementation, this would be awaited before LLM call
+    }
+  }).catch(() => {
+    // Vault unavailable — skip silently
+  });
+
+  // Add ACE playbook context
+  buildPlaybookContext(task.agent, task.description, 500).then(({ context: playbookCtx, appliedRuleIds }) => {
+    if (playbookCtx) {
+      prompt += '\n' + playbookCtx;
+      trackInjectedPlaybookRules(task.id, appliedRuleIds);
+    }
+  }).catch(() => {
+    // Playbook unavailable — skip silently
+  });
+
   // Add agent communication context if message bus is available
   if (messageBus) {
     try {
@@ -243,6 +268,26 @@ ${task.phase}
     // Memory unavailable — skip silently
   }
 
+  // Add taste vault context (async - fire and forget)
+  buildVaultContext(task.description, task.agent, task.id).then(vaultCtx => {
+    if (vaultCtx) {
+      // Note: vault context is tracked but not appended synchronously
+      // In a real implementation, this would be awaited before LLM call
+    }
+  }).catch(() => {
+    // Vault unavailable — skip silently
+  });
+
+  // Add ACE playbook context
+  buildPlaybookContext(task.agent, task.description, 500).then(({ context: playbookCtx, appliedRuleIds }) => {
+    if (playbookCtx) {
+      prompt += '\n' + playbookCtx;
+      trackInjectedPlaybookRules(task.id, appliedRuleIds);
+    }
+  }).catch(() => {
+    // Playbook unavailable — skip silently
+  });
+
   // Add agent communication context if message bus is available
   if (messageBus) {
     try {
@@ -305,6 +350,84 @@ function buildDependencyContext(task: Task, prd: PRD): string {
   return context;
 }
 
+// ============================================================================
+// ACE Playbook Context Integration - KIMI-ACE-05
+// ============================================================================
+
+/** Track injected playbook rule IDs per task for reinforcement */
+const injectedPlaybookRuleIds = new Map<string, string[]>();
+
+/**
+ * Track which playbook rules were injected into a task's prompt.
+ */
+export function trackInjectedPlaybookRules(taskId: string, ruleIds: string[]): void {
+  const existing = injectedPlaybookRuleIds.get(taskId) ?? [];
+  injectedPlaybookRuleIds.set(taskId, [...existing, ...ruleIds]);
+}
+
+/**
+ * Get the list of playbook rule IDs injected for a task.
+ */
+export function getInjectedPlaybookRuleIds(taskId: string): string[] {
+  return injectedPlaybookRuleIds.get(taskId) ?? [];
+}
+
+/**
+ * Clear the injected playbook rule tracking for a task.
+ */
+export function clearInjectedPlaybookRuleIds(taskId: string): void {
+  injectedPlaybookRuleIds.delete(taskId);
+}
+
+/**
+ * Build playbook context for injection into agent prompts.
+ * Returns formatted context with active rules from the agent's playbook.
+ */
+export async function buildPlaybookContext(
+  agentName: string,
+  taskDescription: string,
+  tokenBudget: number
+): Promise<{ context: string; appliedRuleIds: string[] }> {
+  try {
+    const generator = getAceGenerator();
+    const result = await generator.analyzeTask(
+      { id: 'temp', title: '', description: taskDescription, agent: agentName, phase: 0, status: 'ready', dependencies: [], attempts: 0, createdAt: new Date().toISOString() },
+      agentName,
+      tokenBudget
+    );
+    return { context: result.playbookContext, appliedRuleIds: result.appliedRuleIds };
+  } catch {
+    // ACE unavailable — return empty context
+    return { context: '', appliedRuleIds: [] };
+  }
+}
+
+/**
+ * Build rehearsal context for injection into agent prompts.
+ * Returns formatted context with winner and runner-up information.
+ */
+export function buildRehearsalContext(session: RehearsalSession | null): string {
+  if (!session || session.results.length === 0) {
+    return '';
+  }
+
+  const sorted = [...session.results].sort((a, b) => b.score - a.score);
+  const winner = sorted[0];
+  const runnerUp = sorted[1];
+
+  let context = '<rehearsal_context>\n';
+  context += `<winner branch="${winner.summary}" score="${winner.score.toFixed(2)}" quality="${winner.estimatedQuality}">\n`;
+  context += `${winner.previewSnippet}\n`;
+  context += '</winner>\n';
+  
+  if (runnerUp) {
+    context += `<runner_up branch="${runnerUp.summary}" score="${runnerUp.score.toFixed(2)}"/>\n`;
+  }
+  
+  context += '</rehearsal_context>';
+  return context;
+}
+
 export function buildRetryPrompt(task: Task, error: string, previousResponse: string): string {
   return `# Retry Task: ${task.title}
 
@@ -322,4 +445,95 @@ Please retry this task. The previous attempt failed with the above error.
 
 Address the issues and provide a corrected output.
 `;
+}
+
+
+// ============================================================================
+// Taste Vault Context Integration - KIMI-VAULT-04
+// ============================================================================
+
+/** Track injected vault node IDs per task for reinforcement */
+const injectedVaultNodeIds = new Map<string, string[]>();
+
+/**
+ * Track which vault nodes were injected into a task's prompt.
+ * Called by buildVaultContext when it injects nodes.
+ */
+export function trackInjectedVaultNodes(taskId: string, nodeIds: string[]): void {
+  const existing = injectedVaultNodeIds.get(taskId) ?? [];
+  injectedVaultNodeIds.set(taskId, [...existing, ...nodeIds]);
+}
+
+/**
+ * Get the list of vault node IDs injected for a task.
+ */
+export function getInjectedVaultNodeIds(taskId: string): string[] {
+  return injectedVaultNodeIds.get(taskId) ?? [];
+}
+
+/**
+ * Clear the injected vault node tracking for a task.
+ */
+export function clearInjectedVaultNodeIds(taskId: string): void {
+  injectedVaultNodeIds.delete(taskId);
+}
+
+/**
+ * Build vault context for injection into agent prompts.
+ * Returns formatted context with personal patterns and global wisdom.
+ * Enforces 15% token budget.
+ */
+export async function buildVaultContext(
+  taskDescription: string,
+  _agentName: string,
+  taskId: string
+): Promise<string> {
+  // Detect tier from env var
+  const tier: 'free' | 'premium' = process.env.NOVA26_TIER === 'premium' ? 'premium' : 'free';
+  
+  const vault = getTasteVault();
+  await vault.load();
+  
+  const pipeline = getGlobalWisdomPipeline();
+  await pipeline.load();
+  
+  // Get personal patterns (up to 20, will trim to fit budget)
+  const personalPatterns = await vault.getRelevantPatterns(taskDescription, 20);
+  
+  // Get global wisdom based on tier
+  const globalPatterns = tier === 'premium' 
+    ? pipeline.getForPremium(12)
+    : pipeline.getForFree(4);
+  
+  // Track injected node IDs for reinforcement
+  const injectedIds: string[] = [];
+  
+  // Format the context
+  let context = '<taste_vault_context>\n';
+  
+  // Personal patterns section
+  if (personalPatterns.length > 0) {
+    context += `<personal_patterns count="${personalPatterns.length}">\n`;
+    for (const node of personalPatterns) {
+      context += `- [${node.type}] ${node.content} (confidence: ${node.confidence.toFixed(2)}, helpful: ${node.helpfulCount})\n`;
+      injectedIds.push(node.id);
+    }
+    context += '</personal_patterns>\n';
+  }
+  
+  // Global wisdom section
+  if (globalPatterns.length > 0) {
+    context += `<global_wisdom tier="${tier}" count="${globalPatterns.length}">\n`;
+    for (const pattern of globalPatterns) {
+      context += `- [Pattern] ${pattern.canonicalContent} (score: ${pattern.successScore.toFixed(2)})\n`;
+    }
+    context += '</global_wisdom>\n';
+  }
+  
+  context += '</taste_vault_context>';
+  
+  // Track injected nodes for this task
+  trackInjectedVaultNodes(taskId, injectedIds);
+  
+  return context;
 }

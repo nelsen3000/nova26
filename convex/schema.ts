@@ -119,4 +119,65 @@ export default defineSchema({
   }).index("by_company", ["companyId"])
     .index("by_division", ["divisionId"])
     .index("by_status", ["companyId", "status"]),
+
+  // =====================
+  // NOVA26 Global Wisdom Tables (4)
+  // =====================
+
+  // Global Wisdom patterns with optional embedding vector
+  globalPatterns: defineTable({
+    canonicalContent: v.string(),
+    originalNodeIds: v.array(v.string()),
+    successScore: v.number(),
+    userDiversity: v.number(),
+    lastPromotedAt: v.string(),
+    language: v.optional(v.string()),
+    tags: v.array(v.string()),
+    promotionCount: v.number(),
+    harmReports: v.number(),
+    isActive: v.boolean(),
+    embeddingVector: v.optional(v.array(v.number())),
+  }).index('by_active', ['isActive'])
+    .index('by_success_score', ['successScore'])
+    .index('by_promoted_at', ['lastPromotedAt']),
+
+  // User profiles for Nova26 premium users
+  userProfiles: defineTable({
+    userId: v.string(),
+    email: v.optional(v.string()),
+    tier: v.union(v.literal('free'), v.literal('premium')),
+    globalWisdomOptIn: v.boolean(),
+    createdAt: v.string(),
+    lastActiveAt: v.string(),
+  }).index('by_user_id', ['userId'])
+    .index('by_tier', ['tier']),
+
+  // Wisdom updates feed for real-time subscriptions
+  wisdomUpdates: defineTable({
+    patternId: v.string(),
+    promotedByUserId: v.string(),
+    content: v.string(),
+    tags: v.array(v.string()),
+    successScore: v.number(),
+    timestamp: v.string(),
+  }).index('by_timestamp', ['timestamp'])
+    .index('by_pattern', ['patternId']),
+
+  // Agent activity feed per user
+  agentActivityFeed: defineTable({
+    userId: v.string(),
+    agentName: v.string(),
+    eventType: v.union(
+      v.literal('task_started'),
+      v.literal('task_completed'),
+      v.literal('task_failed'),
+      v.literal('playbook_updated'),
+      v.literal('wisdom_promoted'),
+      v.literal('rehearsal_ran')
+    ),
+    taskId: v.optional(v.string()),
+    details: v.string(),
+    timestamp: v.string(),
+  }).index('by_user_and_time', ['userId', 'timestamp'])
+    .index('by_user_and_agent', ['userId', 'agentName']),
 });
