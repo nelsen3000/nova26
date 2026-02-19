@@ -1,438 +1,108 @@
 # NOVA26 Missing Features & Functions
-## Comprehensive analysis of gaps and opportunities
+## Updated: February 19, 2026
+## Current state: 2,642 tests, 0 TS errors, 62 src/ directories, 17 R16/R17 modules
 
 ---
 
-## 🔴 Critical Missing (Build-Blocking)
+## ✅ IMPLEMENTED — Previously Critical/High (all P0s done)
 
-### 1. **Configuration Management System**
-**Current Gap:** No centralized config - settings scattered across env vars and hardcoded values
-**Impact:** High - Blocks multi-environment deployments
-**Solution:**
-```typescript
-// src/config/config-manager.ts
-interface NovaConfig {
-  // Model settings
-  defaultModel: string;
-  fallbackModels: string[];
-  maxTokens: number;
-  temperature: number;
-  
-  // Build settings
-  maxRetries: number;
-  timeoutMs: number;
-  parallelAgents: number;
-  
-  // Quality gates
-  strictMode: boolean;
-  requiredTests: boolean;
-  minTestCoverage: number;
-  
-  // Paths
-  outputDir: string;
-  tempDir: string;
-  logDir: string;
-}
-```
-
-### 2. **State Persistence & Recovery**
-**Current Gap:** Build state lives only in memory - crashes lose all progress
-**Impact:** Critical - Any crash = restart from scratch
-**Solution:**
-- SQLite/Convex for task state persistence
-- Automatic checkpointing every 5 minutes
-- Resume from any checkpoint on restart
-
-### 3. **LLM Response Caching**
-**Current Gap:** Same prompts re-processed every time = wasted tokens/$$$
-**Impact:** High - Expensive for paid tier, slow for free tier
-**Solution:**
-```typescript
-// Cache key: hash(prompt + model + temperature)
-// TTL: 24 hours for identical prompts
-// Storage: Redis or local SQLite
-```
-
-### 4. **Rate Limiting & Circuit Breakers**
-**Current Gap:** No protection against API limits or failures
-**Impact:** High - Will hit rate limits, no graceful degradation
-**Solution:**
-- Token bucket rate limiter per provider
-- Exponential backoff for retries
-- Circuit breaker pattern for failing providers
-- Queue system for pending requests
+| # | Feature | Status | Where It Lives |
+|---|---------|--------|----------------|
+| 1 | Configuration Management | DONE | `src/config/`, `RalphLoopOptions` in ralph-loop.ts |
+| 2 | State Persistence & Recovery | DONE | `src/persistence/`, event-store.ts, better-sqlite3, R17-01 build snapshots |
+| 3 | LLM Response Caching | DONE | response-cache.ts wired into ollama-client (C-01, C-03) |
+| 4 | Rate Limiting & Circuit Breakers | DONE | model-router circuit breaker (C-07), `src/recovery/circuit-breaker.ts` |
+| 5 | Cost Tracking & Budgets | DONE | `src/cost/cost-tracker.ts`, /cost CLI, budget enforcement (C-04, C-05) |
+| 6 | Performance Monitoring | DONE | `src/analytics/`, `src/health/health-dashboard.ts` (R17-10) |
+| 7 | Dependency Analysis | DONE | `src/dependency-analysis/`, `src/deps/dependency-manager.ts` (R17-08) |
+| 8 | Smart Retry with Escalation | DONE | `src/retry/`, `src/recovery/recovery-strategy.ts` (R17-01) |
+| 9 | Project Templates | DONE | `src/init/template-system.ts` (R17-02) |
+| 17 | Security Scanner | DONE | `src/security/security-scanner.ts`, .novaignore (O-12, O-13, O-14) |
+| 27 | Testing Utilities | DONE | `src/testing/` — runner, coverage, mocks, snapshots, patterns (R16-04) |
+| 26 | Database Migration Manager | DONE | `src/migrate/framework-migrator.ts` (R17-04) |
+| 31 | Self-Improving Agents | DONE | `src/agents/self-improvement.ts`, R17-12 meta-learning |
 
 ---
 
-## 🟠 High Priority (Quality & Experience)
+## 🟠 IN PROGRESS — Being Specced or Built
 
-### 5. **Cost Tracking & Budgets**
-**Current Gap:** No visibility into API spend
-**Impact:** Medium-High - Users will get surprise bills
-**Solution:**
-```bash
-/cost                     # Show today's spend
-/budget set $10          # Set daily limit
-/budget status           # Show % used
-```
-
-### 6. **Performance Monitoring**
-**Current Gap:** No metrics on build times, agent performance, bottlenecks
-**Impact:** Medium - Can't optimize what you don't measure
-**Solution:**
-- Agent execution time tracking
-- Token usage per task
-- Success/failure rates by agent
-- Dashboard with charts
-
-### 7. **Dependency Analysis System**
-**Current Gap:** No understanding of code relationships
-**Impact:** Medium - Agents work blind to architecture
-**Solution:**
-```typescript
-// Auto-generated on each build
-interface DependencyGraph {
-  files: Map<string, FileNode>;
-  imports: ImportEdge[];
-  exports: ExportNode[];
-  circular: string[][];  // Detect circular deps
-}
-```
-
-### 8. **Smart Retry with Escalation**
-**Current Gap:** Simple retry - same model, same approach
-**Impact:** Medium - Wastes retries on hopeless tasks
-**Solution:**
-- Retry #1: Same model, fix specific error
-- Retry #2: Switch to stronger model (free→paid)
-- Retry #3: Escalate to council of agents
-- Retry #4: Human intervention request
-
-### 9. **Project Templates**
-**Current Gap:** Every project starts from scratch
-**Impact:** Medium - Wastes time on boilerplate
-**Templates Needed:**
-- SaaS starter (auth, billing, dashboard)
-- API service (REST/GraphQL, docs)
-- Mobile app (React Native, push notifications)
-- E-commerce (products, cart, checkout)
-- Blog/Content (CMS, SEO)
-
-### 10. **Multi-Language Support**
-**Current Gap:** Hardcoded to TypeScript/React
-**Impact:** Medium - Excludes Python/Go/Rust developers
-**Languages to Add:**
-- Python (FastAPI, Django)
-- Go (standard library, Gin)
-- Rust (Actix, Axum)
-- Java (Spring Boot)
+| # | Feature | Status | Notes |
+|---|---------|--------|-------|
+| 11 | IDE Integration (VS Code) | SPECCED | Grok R18-03 spec delivered, awaiting Kimi sprint |
+| 14 | Documentation Generator | PARTIAL | 16 root markdown docs exist, no auto-gen or OpenAPI |
+| 20 | Team Collaboration | SPECCED | Grok R9 covered teams/enterprise |
+| 29 | Plugin System | PARTIAL | `src/skills/marketplace.ts` scaffold exists |
 
 ---
 
-## 🟡 Medium Priority (Productivity)
+## 🔴 NOT YET BUILT — Remaining Gaps
 
-### 11. **IDE Integration**
-**Current Gap:** Only CLI interface
-**Impact:** Medium - Context switching slows development
-**Solutions:**
-- VS Code extension
-- IntelliJ plugin
-- Neovim integration
+### High Impact
 
-### 12. **Import/Export Formats**
-**Current Gap:** Only custom PRD JSON format
-**Impact:** Medium - Hard to integrate with other tools
-**Formats to Support:**
-- Import: Jira, Linear, GitHub Issues, Trello, Markdown
-- Export: GitHub Issues, Linear, PDF report
+| # | Feature | Impact | Effort | Spec Status |
+|---|---------|--------|--------|-------------|
+| 10 | Multi-Language Support (Python/Go/Rust) | High | High | Not specced |
+| — | Dashboard UI (Next.js 15 + Convex) | Critical | High | Grok R18-01 specced |
+| — | Deployment story (Docker, Vercel, `npx nova26 init`) | Critical | Medium | Grok R18-02 specced |
+| — | Ralph-loop wiring (13 features are dead code) | Critical | Low | Kimi mega-wiring sprint assigned |
+| — | Lifecycle hooks (feature activation system) | High | Medium | Kimi mega-wiring sprint assigned |
+| — | Behavior system (reusable agent patterns) | High | Medium | Kimi mega-wiring sprint assigned |
+| — | Mobile Launch Stage (Expo + App Store) | High | High | Grok R19-01 being specced |
+| — | Deep Semantic Model (ATLAS brain) | High | High | Grok R19-02 being specced |
+| — | Studio Rules + Prompt Optimization | High | Medium | Grok R19-03 being specced |
 
-### 13. **Search System**
-**Current Gap:** Can't search across skills, agents, codebase
-**Impact:** Medium - Hard to find existing patterns
-**Solution:**
-```bash
-/search "auth pattern"           # Search skills
-/search --agents "database"      # Search agents
-/search --code "useMutation"     # Search codebase
-```
+### Medium Impact
 
-### 14. **Documentation Generator**
-**Current Gap:** No auto-generated docs
-**Impact:** Medium - Code becomes hard to maintain
-**Outputs:**
-- API documentation (OpenAPI/Swagger)
-- Component storybook
-- Architecture diagrams (Mermaid)
-- README with usage examples
+| # | Feature | Impact | Effort | Notes |
+|---|---------|--------|--------|-------|
+| 12 | Import/Export Formats (Jira, Linear, GitHub) | Medium | Medium | Not specced |
+| 13 | Search System (cross-skill, cross-agent) | Medium | Medium | Semantic search exists (O-03) but no CLI |
+| 15 | Changelog Generator | Low-Medium | Low | Not built |
+| 16 | Git Integration Enhancements | Medium | Medium | Basic git workflow exists |
+| 18 | Performance Budget | Low-Medium | Low | Not built |
+| 19 | Image Optimization Pipeline | Low | Medium | Not built |
+| — | ESLint + Prettier config | Medium | Low | No project-level lint config exists |
+| — | 11 agent templates in legacy format | Medium | Medium | Need EARTH XML conversion |
 
-### 15. **Changelog Generator**
-**Current Gap:** No tracking of what changed between versions
-**Impact:** Low-Medium - Hard to communicate updates
-**Solution:**
-```bash
-/changelog             # Generate from git history
-/changelog --since v1.2.0
-/changelog --export RELEASE_NOTES.md
-```
+### Nice to Have
 
-### 16. **Git Integration Enhancements**
-**Current Gap:** Basic commit message generation
-**Missing:**
-- Automatic branch naming (`feature/user-auth`)
-- PR description generation with summary
-- Automatic commit splitting (one commit per agent)
-- Stash management during builds
-
-### 17. **Security Scanner**
-**Current Gap:** No security checks in gates
-**Impact:** Medium-High - May ship vulnerabilities
-**Checks:**
-- Hardcoded secrets detection
-- SQL injection patterns
-- XSS vulnerabilities
-- Dependency vulnerability scanning (npm audit)
-
-### 18. **Performance Budget**
-**Current Gap:** No bundle size limits
-**Impact:** Low-Medium - Apps can become bloated
-**Solution:**
-```json
-{
-  "performance": {
-    "maxBundleSize": "500kb",
-    "maxFirstPaint": "1.5s",
-    "maxTimeToInteractive": "3.5s"
-  }
-}
-```
-
-### 19. **Image Optimization Pipeline**
-**Current Gap:** No asset handling
-**Impact:** Low - Manual optimization needed
-**Features:**
-- Auto-compress images
-- Generate responsive srcsets
-- Convert to WebP/AVIF
-- Lazy loading implementation
-
-### 20. **Team Collaboration**
-**Current Gap:** Single-user focused
-**Impact:** Medium - Can't share builds
-**Features:**
-- Multi-user support
-- Comment on agent outputs
-- Approve/reject changes
-- Shared pattern library
+| # | Feature | Notes |
+|---|---------|-------|
+| 21 | Notification System (Slack, Discord, webhooks) | Not built |
+| 22 | A/B Testing Framework | Not built |
+| 23 | Feature Flags System | Not built |
+| 24 | Analytics Integration (PostHog/Sentry) | Langfuse exists for LLM, no product analytics |
+| 25 | Email System | Not built |
+| 28 | Backup & Restore | Not built (build snapshots exist in R17-01) |
+| 30 | Localization (i18n) | Not built |
+| 32 | Visual Programming Interface | Not built |
+| 33 | Voice Interface | Not built |
+| 34 | Screenshot Comparison | Not built |
+| 35 | Auto-Documentation Videos | Not built |
 
 ---
 
-## 🟢 Nice to Have (Polish)
+## 📊 Updated Priority Matrix
 
-### 21. **Notification System**
-```bash
-# Integrations
-/notify slack #builds     # Send to Slack
-/notify discord           # Send to Discord
-/notify email             # Email on completion
-/notify webhook https://... # Custom webhook
-```
-
-### 22. **A/B Testing Framework**
-- Generate variant components
-- Track performance metrics
-- Auto-select winner
-
-### 23. **Feature Flags System**
-```typescript
-// Generated by VENUS
-<FeatureFlag name="new-dashboard">
-  <NewDashboard />
-</FeatureFlag>
-```
-
-### 24. **Analytics Integration**
-- Auto-instrument with PostHog/Amplitude
-- Track user flows
-- Error tracking (Sentry)
-
-### 25. **Email System**
-- Transactional email templates
-- Email preview in browser
-- MJML for responsive emails
-
-### 26. **Database Migration Manager**
-**Current Gap:** Schema changes handled manually
-**Solution:**
-```bash
-/migrate create add-user-roles    # Create migration
-/migrate status                   # Show pending
-/migrate up                       # Apply all
-/migrate down 1                   # Rollback one
-```
-
-### 27. **Testing Utilities**
-**Current Gap:** SATURN writes tests but no test helpers
-**Needed:**
-- Test data factories
-- Mock Convex helpers
-- Visual regression testing
-- Accessibility testing (axe-core)
-
-### 28. **Backup & Restore**
-```bash
-/backup create my-project-v1    # Full backup
-/backup list                    # Show backups
-/restore my-project-v1          # Restore state
-```
-
-### 29. **Plugin System**
-```typescript
-// Allow third-party extensions
-interface NovaPlugin {
-  name: string;
-  onTaskComplete?: (task: Task) => void;
-  onBuildComplete?: (build: Build) => void;
-  commands?: SlashCommand[];
-}
-```
-
-### 30. **Localization (i18n)**
-- Auto-extract strings
-- Translation management
-- RTL support
-
----
-
-## 🔮 Advanced Features (Future)
-
-### 31. **Self-Improving Agents**
-- Agents read their own success/failure data
-- Auto-adjust prompts based on outcomes
-- Personalized to user's coding style
-
-### 32. **Visual Programming Interface**
-- Drag-and-drop agent composition
-- Visual workflow designer
-- Node-based orchestration
-
-### 33. **Voice Interface**
-```bash
-/voice on    # Enable voice commands
-# "Build me a login page"
-# "Add Stripe billing"
-```
-
-### 34. **Screenshot Comparison**
-- Visual diff for UI changes
-- Perceptual diff testing
-- Design fidelity checking
-
-### 35. **Auto-Documentation Videos**
-- Generate explainer videos
-- Animated code walkthroughs
-- Architecture diagrams
-
----
-
-## 📊 Implementation Priority Matrix
-
-| Feature | Impact | Effort | Priority | Phase |
+| Feature | Impact | Effort | Priority | Owner |
 |---------|--------|--------|----------|-------|
-| State Persistence | Critical | Medium | P0 | 0 |
-| LLM Caching | High | Low | P0 | 0 |
-| Config Management | High | Low | P0 | 0 |
-| Rate Limiting | High | Medium | P0 | 0 |
-| Cost Tracking | High | Low | P1 | 1 |
-| Performance Monitor | Medium | Medium | P1 | 1 |
-| Smart Retry | High | Medium | P1 | 1 |
-| Templates | Medium | Medium | P1 | 1 |
-| Security Scanner | High | Medium | P1 | 1 |
-| Dependency Analysis | Medium | High | P2 | 2 |
-| IDE Integration | Medium | High | P2 | 2 |
-| Multi-Language | High | High | P2 | 2 |
-| Documentation Gen | Medium | Medium | P2 | 2 |
-| Search System | Medium | Medium | P2 | 2 |
-| Notifications | Low | Low | P3 | 2+ |
-| Plugins | Medium | High | P3 | 3 |
-
----
-
-## 🎯 Immediate Recommendations (Next 3)
-
-### 1. **Build State Persistence** (Today)
-```typescript
-// Minimal viable: Save to SQLite every 30 seconds
-// On crash: resume from last checkpoint
-// Table: tasks (id, status, output, error, checkpoint_data)
-```
-
-### 2. **LLM Response Cache** (This week)
-```typescript
-// SQLite cache table
-// Key: SHA256(prompt + model + temp)
-// Value: response, timestamp
-// TTL: 24 hours
-// Invalidation: on model update
-```
-
-### 3. **Cost Tracker** (This week)
-```typescript
-// Track per-request cost
-// Daily/weekly aggregation
-// Alert at 80% of budget
-// Simple dashboard
-```
-
----
-
-## 💡 Creative Ideas
-
-### "Agent Market"
-Community-contributed agents for specific domains:
-- GameDev agent (Unity/Unreal)
-- ML/AI agent (PyTorch/TensorFlow)
-- Blockchain agent (Solidity)
-- Scientific computing agent
-
-### "Build Replay"
-Record entire build process:
-- Replay step-by-step
-- Branch at any decision point
-- Share builds as "movies"
-
-### "Code Archaeologist"
-Agent that:
-- Reads legacy codebase
-- Generates architecture docs
-- Identifies technical debt
-- Suggests refactoring path
-
-### "Competitive Analysis"
-- Scrape competitor sites
-- Generate feature comparison
-- Identify UX patterns
-- Suggest improvements
-
-### "Accessibility First" Mode
-VENUS variant that:
-- Starts with screen reader UX
-- Designs for keyboard-only users
-- Tests with axe-core automatically
-- Generates VPAT documents
+| Ralph-loop wiring (13 modules) | Critical | Low | P0 | Kimi (assigned) |
+| Dashboard UI | Critical | High | P0 | Kimi (after Grok R18-01) |
+| Deployment story | Critical | Medium | P1 | Kimi (after Grok R18-02) |
+| Lifecycle hooks | High | Medium | P1 | Kimi (assigned) |
+| Mobile Launch Stage | High | High | P1 | Kimi (after Grok R19-01) |
+| Deep Semantic Model | High | High | P1 | Kimi (after Grok R19-02) |
+| VS Code Extension | Medium | High | P2 | Kimi (after Grok R18-03) |
+| Multi-Language | High | High | P2 | Not specced yet |
+| ESLint + Prettier | Medium | Low | P2 | Kimi (after Grok R18-05) |
+| Studio Rules | High | Medium | P2 | Kimi (after Grok R19-03) |
 
 ---
 
 ## Summary
 
-**Total Missing Features:** 35
-**Critical (P0):** 4
-**High Priority (P1):** 7
-**Medium (P2):** 8
-**Nice to Have (P3):** 16
-
-**Recommended Next Steps:**
-1. Implement state persistence (prevents data loss)
-2. Add LLM caching (saves money/time)
-3. Build cost tracker (prevents surprise bills)
-4. Create project templates (speeds up starts)
-5. Add security scanner (prevents vulnerabilities)
+**Total features tracked:** 35 original + 9 new = 44
+**Implemented:** 13 (all P0 originals done)
+**In progress/specced:** 13
+**Not yet built:** 18
+**Overall:** ~60% of all tracked features implemented or in progress
