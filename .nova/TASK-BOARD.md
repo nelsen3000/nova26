@@ -6,6 +6,7 @@
 > **Coordinator**: Claude Code (assigns tasks, evaluates output, resolves conflicts)
 > **Repo**: https://github.com/nelsen3000/nova26
 > **Current state**: 3,121 tests, 0 TS errors, 132 test files
+> **Vision**: Eternal Engine — self-evolving Rust core + ZeroClaw/TinyClaw/NanoClaw patterns
 
 ---
 
@@ -13,11 +14,11 @@
 
 | Agent | Domain | Status | Current Sprint |
 |-------|--------|--------|----------------|
-| **Claude Code** | Coordinator + Core Engine + Convex | Active | Downtime tasks |
-| **Kimi** | Implementation (TypeScript + Tests) | Active | R19 Feature Sprint |
-| **Grok** | Research + Deep Specs | Active | R20-03 spec |
+| **Claude Code** | Coordinator + Core Engine + Convex | Active | Evaluation + prompt writing |
+| **Kimi** | Implementation (TypeScript + Tests) | Active | R20 Feature Sprint |
+| **Grok** | Research + Deep Specs | Active | R23-01→05 specs |
 | **Kiro** | Knowledge Extraction + Quality Audits | Active | Audit fixes |
-| **Gemini** | Deep Research + Competitive Intel | Active | GEMINI-07→11 |
+| **Gemini** | Deep Research + Competitive Intel | Active | GEMINI-07→15 |
 
 ---
 
@@ -72,9 +73,9 @@
 > Deliverable format: Deep TypeScript interfaces + integration points + open questions
 > Style: Analogy opener → concrete interfaces → file paths → test strategy
 
-### Current: Awaiting next assignment
+### Current: R23 Gap Enhancement Specs
 
-### Queued: R23 Gap Enhancements + Shannon Adaptation
+### Sprint: R23 Gap Enhancements + Shannon Adaptation
 
 - [ ] `GROK-R23-01` Persistent Visual Workflow Engine spec (Temporal + LangGraph patterns)
 - [ ] `GROK-R23-02` MicroVM / WASI Ultra-Sandbox spec (Firecracker + gVisor + OPA)
@@ -82,6 +83,13 @@
 - [ ] `GROK-R23-04` Agent Debate & Swarm Layer spec (CrewAI + AutoGen + OpenAI Swarm)
 - [ ] `GROK-R23-05` Cinematic Observability & Eval Suite spec (Braintrust + LangSmith)
 - [ ] `GROK-R22-02` Shannon Patterns Adaptation Spec (Temporal replay + UCB router + WASI sandbox)
+
+### Queued: R24 Frontier Specs
+
+- [ ] `GROK-R24-01` AI Model Database spec (live benchmarks, per-agent routing table, one-click toggles)
+- [ ] `GROK-R24-02` Eternal Engine Rust Core Architecture spec (ZeroClaw traits, TinyClaw swarm, NanoClaw isolation)
+- [ ] `GROK-R24-03` Real-time CRDT Collaboration spec (multiplayer agent sessions, conflict resolution)
+- [ ] `GROK-R24-04` Voice & Multimodal Interface spec (speech-to-intent, image input, screen sharing)
 
 ### Completed
 
@@ -148,6 +156,13 @@
 - [ ] `GEMINI-10` Enterprise self-hosted deployment (Docker/K8s, SSO/RBAC, SOC 2, FedRAMP, update management)
 - [ ] `GEMINI-11` AI design systems & component generation (design tokens, shadcn, multi-screen journeys, screenshot-to-code)
 
+### Queued: GEMINI-12→15 (Frontier Research)
+
+- [ ] `GEMINI-12` AI Model Database — neverending live database of every AI model (benchmarks, rankings per use case, agent-to-model mapping, closed/open toggle, non-coder explanations, instant updates)
+- [ ] `GEMINI-13` Voice & Multimodal AI Interfaces (speech-to-intent, Whisper/Deepgram, image grounding, screen sharing for agents)
+- [ ] `GEMINI-14` Edge AI & On-Device Inference (MLX for Apple Silicon, NVIDIA NIM, TinyML, on-device fine-tuning, hybrid cloud/edge)
+- [ ] `GEMINI-15` Real-time Collaboration & CRDT Sync (multiplayer coding, CRDT libraries, Yjs/Automerge, conflict resolution for agents)
+
 ### Completed
 
 - [x] GEMINI-01: 2026 AI ecosystem audit — 11 categories, 30+ tools analyzed, 4-phase roadmap
@@ -187,9 +202,15 @@
 - [ ] `CL-35` Evaluate Gemini-07→11 research (extract actionable features)
 - [x] `CL-36` ~~Write Kimi sprint from Grok R22 spec~~ DONE — `.prompts/kimi-r22-sprint.md` (1 task, 79 tests)
 - [x] `CL-37b` ~~Save Grok spec summaries + Shannon research to .nova/~~ DONE — 5 specs + 1 research file
-- [ ] `CL-38` Update MISSING_FEATURES.md after each sprint completion
-- [ ] `CL-39` Evaluate Kimi R19-03 output (Studio Rules — when delivered)
+- [x] `CL-38` ~~Update MISSING_FEATURES.md~~ DONE — R19 marked complete, R20-R22 updated, R23 gaps + frontier features added, 77 features tracked
+- [x] `CL-39` ~~Evaluate Kimi R19-03 output~~ DONE — 9 files, 124 tests, evaluate() bug fixed (both Claude + Kimi found it independently)
 - [ ] `CL-40` Evaluate Kimi R20 sprint output (when delivered)
+- [x] `CL-41` ~~Write Grok R23 research prompts~~ DONE — `.prompts/grok-r23.md` (5 specs)
+- [x] `CL-42` ~~Write Gemini-12→15 research prompts~~ DONE — 4 frontier research topics
+- [x] `CL-43` ~~Write Kimi R20 continuation prompt~~ DONE — R19 complete, begin R20-01
+- [ ] `CL-44` Evaluate Gemini-12→15 research (when delivered)
+- [ ] `CL-45` Write Grok R24 specs from Gemini frontier research (when delivered)
+- [ ] `CL-46` Evaluate Grok R23 specs + write Kimi R23 sprint (when delivered)
 
 ### Completed (recent)
 
@@ -224,11 +245,11 @@
 
 | Agent | Active Tasks | Completed | Next Up |
 |-------|-------------|-----------|---------|
-| Claude Code | CL-35, CL-38→40 | 63+ | Evaluate Gemini-07→11, evaluate Kimi outputs |
-| Kimi | KIMI-R19-03, then R20→R22 | 42+ | R19-03 Studio Rules → R20 → R21 → R22 (590+ tests queued) |
-| Grok | GROK-R23-01→05 | 80+ | R23 gap enhancements (workflow, sandbox, memory, swarm, observability) |
+| Claude Code | CL-35, CL-40, CL-44→46 | 73+ | Evaluate Gemini + Grok deliveries, write Kimi sprints |
+| Kimi | R20-01→R20-03 (281 tests) | 45+ | R20 Orchestrator/Tauri/Design → R21 MCP/ACP/Compliance → R22 Model Routing |
+| Grok | GROK-R23-01→05 + R24-01→04 | 80+ | R23 gap specs → R24 frontier specs (AI DB, Eternal Engine, CRDT, Voice) |
 | Kiro | KIRO-06-01→07 | 17+ | Audit remediation + agent extraction |
-| Gemini | GEMINI-07→11 | 6 | Agent protocols → metrics → testing → enterprise → design systems |
+| Gemini | GEMINI-07→15 | 6 | 07-11 current sprint → 12-15 frontier research (AI DB, Voice, Edge AI, CRDT) |
 | Perplexity | P-07→P-12 (paused) | 6 | Documentation portal |
 
 ---
