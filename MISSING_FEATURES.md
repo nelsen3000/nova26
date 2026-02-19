@@ -1,6 +1,6 @@
 # NOVA26 Missing Features & Functions
-## Updated: February 19, 2026 (post Gemini-01 audit)
-## Current state: 2,642 tests, 0 TS errors, 62 src/ directories, 17 R16/R17 modules, 21 EARTH XML agents
+## Updated: February 19, 2026 (post Gemini-06 + Kimi W-05 + Grok R20-02)
+## Current state: 2,885 tests, 0 TS errors, 119 test files, 17 R16/R17 modules wired, 21 EARTH XML agents
 
 ---
 
@@ -21,6 +21,9 @@
 | 27 | Testing Utilities | DONE | `src/testing/` — runner, coverage, mocks, snapshots, patterns (R16-04) |
 | 26 | Database Migration Manager | DONE | `src/migrate/framework-migrator.ts` (R17-04) |
 | 31 | Self-Improving Agents | DONE | `src/agents/self-improvement.ts`, R17-12 meta-learning |
+| — | Ralph-loop wiring (all 17 features) | DONE | All R16/R17 modules wired into `RalphLoopOptions` (KIMI-W-01) |
+| — | Lifecycle hooks (feature activation) | DONE | `src/orchestrator/lifecycle-hooks.ts`, HookRegistry, 6 phases (KIMI-W-02) |
+| — | Behavior system (reusable patterns) | DONE | `src/behaviors/` — retry, circuit-breaker, timeout, validate, backoff (KIMI-W-03) |
 
 ---
 
@@ -32,6 +35,17 @@
 | 14 | Documentation Generator | PARTIAL | 16 root markdown docs exist, no auto-gen or OpenAPI |
 | 20 | Team Collaboration | SPECCED | Grok R9 covered teams/enterprise |
 | 29 | Plugin System | PARTIAL | `src/skills/marketplace.ts` scaffold exists |
+| — | Mobile Launch Stage | SPECCED → KIMI | Grok R19-01 specced, Kimi R19 sprint ready (.prompts/kimi-r19-sprint.md) |
+| — | Deep Semantic Model | SPECCED → KIMI | Grok R19-02 specced, Kimi R19 sprint ready |
+| — | Studio Rules + Prompt Optimization | SPECCED → KIMI | Grok R19-03 specced, Kimi R19 sprint ready |
+| — | Orchestrator L0/L1/L2/L3 hierarchy | SPECCED → KIMI | Grok R20-01 specced, Kimi R20 sprint ready (.prompts/kimi-r20-sprint.md) |
+| — | Tauri desktop app | SPECCED → KIMI | Grok R20-02 specced, Kimi R20 sprint ready |
+| — | AI design pipeline | SPECCING | Grok R20-03 in progress |
+| — | MCP support | SPECCING | Grok R21-01 prompt ready |
+| — | ACP support | SPECCING | Grok R21-02 prompt ready |
+| — | Compliance & Audit Trail | SPECCING | Grok R21-03 prompt ready (based on Gemini-05 research) |
+| — | Agent-specific model routing | SPECCING | Grok R22-01 prompt ready (based on Gemini-06 research) |
+| — | Perplexity research integration | SPECCED → KIMI | Grok spec in .nova/specs/perplexity-integration.md |
 
 ---
 
@@ -42,30 +56,23 @@
 | # | Feature | Impact | Effort | Spec Status |
 |---|---------|--------|--------|-------------|
 | 10 | Multi-Language Support (Python/Go/Rust) | High | High | Not specced |
-| — | Dashboard UI (Next.js 15 + Convex) | Critical | High | Grok R18-01 specced |
-| — | Deployment story (Docker, Vercel, `npx nova26 init`) | Critical | Medium | Grok R18-02 specced |
-| — | Ralph-loop wiring (13 features are dead code) | Critical | Low | Kimi mega-wiring sprint assigned |
-| — | Lifecycle hooks (feature activation system) | High | Medium | Kimi mega-wiring sprint assigned |
-| — | Behavior system (reusable agent patterns) | High | Medium | Kimi mega-wiring sprint assigned |
-| — | Mobile Launch Stage (Expo + App Store) | High | High | Grok R19-01 being specced |
-| — | Deep Semantic Model (ATLAS brain) | High | High | Grok R19-02 being specced |
-| — | Studio Rules + Prompt Optimization | High | Medium | Grok R19-03 being specced |
-| — | Orchestrator L0/L1/L2/L3 hierarchy | High | High | Grok R20-01 queued |
-| — | Tauri desktop app (native wrapper) | High | High | Grok R20-02 queued |
-| — | AI design pipeline (Relume/Uizard-style) | Medium | High | Grok R20-03 queued |
+| — | Dashboard UI (Next.js 15 + Convex) | Critical | High | Grok R18-01 specced, awaiting Kimi |
+| — | Deployment story (Docker, Vercel, `npx nova26 init`) | Critical | Medium | Grok R18-02 specced, awaiting Kimi |
 
-### Medium Impact — New from Gemini-01 Audit
+### Medium Impact — From Gemini Research
 
 | # | Feature | Impact | Effort | Notes |
 |---|---------|--------|--------|-------|
-| — | MCP (Model Context Protocol) support | High | Medium | Must-have ecosystem standard — agent ↔ tool interop |
-| — | ACP (Agent Client Protocol) support | High | Medium | Decouple agents from IDE — run in JetBrains, Zed, etc. |
 | — | Braintrust eval-in-CI | Medium | High | Golden set evaluation on every agent template change |
-| — | EU AI Act audit trails | Medium | Medium | Article 86 Right to Explanation — enterprise requirement |
-| — | Local SLM agent routing | Medium | Medium | Different models per agent role (Qwen for code, DeepSeek for reasoning) |
-| — | Perplexity research integration | Medium | Low | Grok specced, queued for Kimi — cited web research for all agents |
 | — | PostHog session replay | Medium | Medium | Agent session replay for debugging file system interactions |
 | — | Semantic Diff agent | Medium | Medium | Summarize intent behind large AI PRs for human review |
+| — | Sovereign Tier pricing ($12/$25/$45) | High | Medium | Gemini-04: hybrid seat+usage model, PLG playbook |
+| — | Agent marketplace (Skills/Templates) | Medium | High | Gemini-04: 70/30 revenue share, community agents |
+| — | Celestial CLI aesthetic (ink/charm.sh) | Medium | Medium | Gemini-02: React-based CLI with orbital animations |
+| — | Optimistic task execution | High | Low | Gemini-02: show task as "Done" while MERCURY validates |
+| — | Multi-agent activity stream | Medium | Medium | Gemini-02: Dynamic Island pattern for agent avatars |
+| — | Maestro mobile E2E testing | Medium | Low | Gemini-03: YAML-based, 90% less flaky than Detox |
+| — | Nova-Bench benchmark suite | Medium | Medium | Gemini-06: 5 task types to verify model selection quality |
 
 ### Medium Impact — Original
 
@@ -108,35 +115,47 @@
 | 21 EARTH XML agent templates | DONE | All 21/21 agents standardized (CL-25) |
 | Kiro pattern validation | DONE | 140 patterns, 9 properties, fast-check (KIRO-04) |
 | Gemini-01 ecosystem audit | DONE | 30+ tools across 11 categories analyzed |
+| Mega-wiring sprint (W-01→W-05) | DONE | 13 modules wired, lifecycle hooks, behaviors, 243 new tests |
+| Gemini-02 UX patterns | DONE | 20 must-steal patterns, 9 categories |
+| Gemini-03 Mobile deep dive | DONE | React Native + Expo SDK 54 recommended |
+| Gemini-04 Monetization & GTM | DONE | $12/$25/$45 sovereign tiers, PLG playbook |
+| Gemini-05 EU AI Act compliance | DONE | Article 86 roadmap, OTel tracing, audit trail schema |
+| Gemini-06 Local SLM optimization | DONE | Qwen 3.5 Coder king, hardware-tiered configs |
+| Grok R19 specs (3) | DONE | Mobile Launch, Semantic Model, Studio Rules (204 tests) |
+| Grok R20 specs (2) | DONE | Orchestrator Hierarchy, Tauri Desktop (199 tests) |
 
 ---
 
 ## 📊 Updated Priority Matrix
 
-| Feature | Impact | Effort | Priority | Owner |
-|---------|--------|--------|----------|-------|
-| Ralph-loop wiring (13 modules) | Critical | Low | P0 | Kimi (assigned) |
-| Dashboard UI | Critical | High | P0 | Kimi (after Grok R18-01) |
-| Deployment story | Critical | Medium | P1 | Kimi (after Grok R18-02) |
-| Lifecycle hooks | High | Medium | P1 | Kimi (assigned) |
-| Mobile Launch Stage | High | High | P1 | Kimi (after Grok R19-01) |
-| Deep Semantic Model | High | High | P1 | Kimi (after Grok R19-02) |
-| VS Code Extension | Medium | High | P2 | Kimi (after Grok R18-03) |
-| Multi-Language | High | High | P2 | Not specced yet |
-| ESLint + Prettier | Medium | Low | P2 | Kimi (after Grok R18-05) |
-| Studio Rules | High | Medium | P2 | Kimi (after Grok R19-03) |
-| MCP support | High | Medium | P2 | Gemini-01 flagged as must-have |
-| ACP support | High | Medium | P2 | Gemini-01 flagged — multi-IDE agents |
-| Orchestrator hierarchy | High | High | P2 | Grok R20-01 queued |
-| Tauri desktop | High | High | P2 | Grok R20-02 queued |
-| EU AI Act audit trails | Medium | Medium | P3 | Gemini-05 researching |
+| Feature | Impact | Effort | Priority | Owner | Status |
+|---------|--------|--------|----------|-------|--------|
+| ~~Ralph-loop wiring~~ | ~~Critical~~ | ~~Low~~ | ~~P0~~ | ~~Kimi~~ | DONE |
+| ~~Lifecycle hooks~~ | ~~High~~ | ~~Medium~~ | ~~P0~~ | ~~Kimi~~ | DONE |
+| ~~Behavior system~~ | ~~High~~ | ~~Medium~~ | ~~P0~~ | ~~Kimi~~ | DONE |
+| Dashboard UI | Critical | High | P0 | Kimi (after R19/R20) | Specced |
+| Deployment story | Critical | Medium | P1 | Kimi (after R19/R20) | Specced |
+| Mobile Launch Stage | High | High | P1 | Kimi (R19 sprint) | Sprint ready |
+| Deep Semantic Model | High | High | P1 | Kimi (R19 sprint) | Sprint ready |
+| Studio Rules | High | Medium | P1 | Kimi (R19 sprint) | Sprint ready |
+| Orchestrator hierarchy | High | High | P1 | Kimi (R20 sprint) | Sprint ready |
+| Tauri desktop | High | High | P1 | Kimi (R20 sprint) | Sprint ready |
+| MCP support | High | Medium | P2 | Grok R21-01 → Kimi | Speccing |
+| ACP support | High | Medium | P2 | Grok R21-02 → Kimi | Speccing |
+| Compliance/Audit Trail | Medium | Medium | P2 | Grok R21-03 → Kimi | Speccing |
+| Model routing | Medium | Medium | P2 | Grok R22-01 → Kimi | Speccing |
+| AI design pipeline | Medium | High | P2 | Grok R20-03 → Kimi | Speccing |
+| VS Code Extension | Medium | High | P2 | Kimi (after R20) | Specced |
+| Multi-Language | High | High | P3 | Not specced yet | — |
+| EU AI Act audit trails | Medium | Medium | P2 | Gemini-05 researched | Researched |
 
 ---
 
 ## Summary
 
-**Total features tracked:** 35 original + 9 new + 12 from Gemini-01 = 56
-**Implemented:** 13 core + 3 recent = 16
-**In progress/specced:** 17
-**Not yet built:** 23
-**Overall:** ~59% of all tracked features implemented or in progress
+**Total features tracked:** 35 original + 9 new + 12 from Gemini-01 + 10 from Gemini-02→06 = 66
+**Implemented:** 16 core + 3 mega-wiring + 8 recent = 19 (29%)
+**In progress/specced/sprint-ready:** 22 (33%)
+**Not yet built:** 25 (38%)
+**Overall:** ~62% of all tracked features implemented or in progress
+**Test coverage:** 2,885 tests across 119 files, 0 TypeScript errors
