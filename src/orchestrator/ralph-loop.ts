@@ -29,6 +29,15 @@ import { getAceCurator } from '../ace/curator.js';
 import { getSelfImprovementProtocol } from '../agents/self-improvement.js';
 import { getRehearsalStage } from '../rehearsal/stage.js';
 import type { RehearsalSession } from '../rehearsal/stage.js';
+import type { DreamModeConfig } from '../dream/dream-engine.js';
+import type { ParallelUniverseConfig } from '../universe/parallel-universe.js';
+import type { OvernightEvolutionConfig } from '../evolution/overnight-engine.js';
+import type { SymbiontConfig } from '../symbiont/symbiont-core.js';
+import type { TasteRoomConfig } from '../taste-room/taste-room.js';
+import type { AgentMemoryConfig } from '../memory/agent-memory.js';
+import type { WellbeingConfig } from '../wellbeing/signal-detector.js';
+import type { AdvancedRecoveryConfig } from '../recovery/recovery-index.js';
+import type { AdvancedInitConfig } from '../init/init-index.js';
 
 export interface RalphLoopOptions {
   parallelMode?: boolean;
@@ -44,6 +53,29 @@ export interface RalphLoopOptions {
   convexSync?: boolean;        // Enable real-time Convex cloud dashboard sync (MEGA-04)
   agenticMode?: boolean;       // Enable agentic inner loop with tools
   autonomyLevel?: AutonomyLevel;  // Autonomy level for agent behavior (1-5)
+  // Visionary engine configs (KIMI-VISIONARY)
+  dreamModeEnabled?: boolean;
+  dreamConfig?: DreamModeConfig;
+  parallelUniverseEnabled?: boolean;
+  parallelUniverseConfig?: ParallelUniverseConfig;
+  overnightEvolutionEnabled?: boolean;
+  overnightConfig?: OvernightEvolutionConfig;
+  symbiontEnabled?: boolean;
+  symbiontConfig?: SymbiontConfig;
+  tasteRoomEnabled?: boolean;
+  tasteRoomConfig?: TasteRoomConfig;
+  // Agent memory (R16-02)
+  agentMemoryEnabled?: boolean;
+  memoryConfig?: AgentMemoryConfig;
+  // Developer wellbeing (R16-05)
+  wellbeingEnabled?: boolean;
+  wellbeingConfig?: WellbeingConfig;
+  // Advanced Recovery (R17-01)
+  advancedRecoveryEnabled?: boolean;
+  advancedRecoveryConfig?: AdvancedRecoveryConfig;
+  // Advanced Init (R17-02)
+  advancedInitEnabled?: boolean;
+  advancedInitConfig?: AdvancedInitConfig;
 }
 
 // --- Planning phases (pre-execution plan approval) ---
