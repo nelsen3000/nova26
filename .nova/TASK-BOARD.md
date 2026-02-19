@@ -26,13 +26,13 @@
 > Sprint file: `.prompts/kimi-mega-wiring-sprint.md`
 > Rules: TypeScript strict, ESM `.js` imports, vitest, no `any`, mock all I/O
 
-### Current Sprint: Mega Wiring + Lifecycle Hooks + Hardening
+### Completed: Mega Wiring + Lifecycle Hooks + Hardening
 
-- [ ] `KIMI-W-01` Wire all 13 unwired R16/R17 modules into ralph-loop.ts RalphLoopOptions (26 fields + 8 imports + 5 inline interfaces)
-- [ ] `KIMI-W-02` Build RalphLoopLifecycle hooks system (src/orchestrator/lifecycle-hooks.ts + lifecycle-wiring.ts, HookRegistry class, 20+ tests)
-- [ ] `KIMI-W-03` Build Behavior system (src/behaviors/ — types, registry, 5 built-in behaviors, 25+ tests)
-- [ ] `KIMI-W-04` Edge case tests for all 10 R17 modules (76 new tests across 10 existing test files)
-- [ ] `KIMI-W-05` Cross-module integration tests (20 tests — module interop + lifecycle + behaviors)
+- [x] `KIMI-W-01` Wire all 13 unwired R16/R17 modules into ralph-loop.ts (26 fields, 8 imports, 5 inline interfaces)
+- [x] `KIMI-W-02` Lifecycle hooks system (HookRegistry, 6 phases, Zod schemas, 50 tests)
+- [x] `KIMI-W-03` Behavior system (5 built-ins: retry, circuit-breaker, timeout, validate, backoff, 59 tests)
+- [x] `KIMI-W-04` Edge case tests for 10 R17 modules (80 tests, API mismatches fixed by Claude)
+- [x] `KIMI-W-05` Cross-module integration tests (25 tests across 5 integration categories)
 
 ### Next Sprint: R19 Feature Implementation
 > Sprint file: `.prompts/kimi-r19-sprint.md` — READY
@@ -121,20 +121,18 @@
 > Output format: Structured research reports with priority matrix
 > Style: Exhaustive, every tool analyzed, priority-ranked
 
-### Current: UX Research
+### Current: Awaiting next assignment
 
-- [ ] `GEMINI-02` World-class UX patterns & product polish research (9 categories, calm technology, DX, retention)
-
-### Queued
-
-- [ ] `GEMINI-03` Mobile ecosystem deep dive (React Native vs Flutter vs native in 2026, Expo EAS latest, store submission best practices)
-- [ ] `GEMINI-04` Monetization & go-to-market strategy research (pricing models for AI dev tools, PLG patterns, community building)
-- [ ] `GEMINI-05` EU AI Act + compliance deep dive (Article 86 Right to Explanation, audit trails, NIST RMF)
-- [ ] `GEMINI-06` Local SLM optimization (Qwen 2.5 Coder 32B, DeepSeek R1, Ollama config, quantization strategies)
+(All 6 prompts complete — awaiting new research tasks)
 
 ### Completed
 
 - [x] GEMINI-01: 2026 AI ecosystem audit — 11 categories, 30+ tools analyzed, 4-phase roadmap
+- [x] GEMINI-02: World-class UX patterns — 20 must-steal patterns, 9 categories, implementation roadmap
+- [x] GEMINI-03: Mobile ecosystem deep dive — React Native + Expo SDK 54 recommended, Maestro for testing
+- [x] GEMINI-04: Monetization & GTM — Sovereign Tier pricing ($12/$25/$45), PLG playbook, path to $1M ARR
+- [x] GEMINI-05: EU AI Act compliance — Article 86 roadmap, OTel GenAI tracing, audit trail schema
+- [x] GEMINI-06: Local SLM optimization — Qwen 3.5 Coder king, hardware-tiered configs, agent-to-model routing
 
 ---
 
@@ -191,10 +189,10 @@
 | Agent | Active Tasks | Completed | Next Up |
 |-------|-------------|-----------|---------|
 | Claude Code | CL-20, CL-24, CL-27→CL-29 | 50+ | Evaluate Kimi wiring, write sprint prompts |
-| Kimi | KIMI-W-01→W-05 | 30+ | Mega wiring → R19 sprint → R20 sprint |
+| Kimi | KIMI-R19-01→R19-03 | 35+ | R19 Feature Implementation sprint |
 | Grok | GROK-R20-03 | 65+ | AI design pipeline spec |
 | Kiro | KIRO-06-01→07 | 17+ | Audit remediation + agent extraction |
-| Gemini | GEMINI-02→06 | 1 | UX research → compliance → SLMs |
+| Gemini | GEMINI-07→11 | 6 | Next research round |
 | Perplexity | P-07→P-12 (paused) | 6 | Documentation portal |
 
 ---

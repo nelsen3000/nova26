@@ -57,6 +57,11 @@
 - [x] Created `.prompts/kimi-r19-sprint.md` — R19 Feature Implementation sprint (3 tasks, 204+ tests)
 - [x] Created `.prompts/kimi-r20-sprint.md` — R20 Feature Implementation sprint (2 tasks, 199+ tests)
 - [x] Evaluated Kimi mega-wiring sprint (CL-20) — all 13 modules wired, W-01→W-05 delivered, 243 new tests, 9 edge case tests fixed
+- [x] Evaluated Gemini-02 through Gemini-06 (CL-28) — all 5 research rounds accepted
+  GEMINI-02: UX patterns (20 must-steal), GEMINI-03: Mobile (Expo SDK 54),
+  GEMINI-04: Monetization ($12/$25/$45 tiers), GEMINI-05: EU AI Act compliance,
+  GEMINI-06: Local SLM optimization (Qwen 3.5 king)
+- [x] Created 5 Gemini prompts (GEMINI-07→11), 5 Grok prompts (R20-03→R22-02)
 
 ## In Progress
 
