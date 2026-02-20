@@ -273,3 +273,69 @@ export const updateAgentStatus = mutation({
     return args.agentId;
   },
 });
+
+// Get statistics for all agents
+// Aggregates task data and execution metrics per agent
+export const getAgentStats = query({
+  args: {},
+  handler: async (ctx) => {
+    const agents = await ctx.db.query('agents').collect();
+    const tasks = await ctx.db.query('tasks').collect();
+    const executions = await ctx.db.query('executions').collect();
+
+    const stats = agents.map((agent) => {
+      // Find all tasks assigned to this agent
+      const agentTasks = tasks.filter((t) => t.agent === agent.name);
+      const completedTasks = agentTasks.filter((t) => t.status === 'done').length;
+      const failedTasks = agentTasks.filter((t) => t.status === 'failed').length;
+
+      // Calculate success rate
+      const totalTasks = agentTasks.length;
+      const successRate =
+        totalTasks > 0
+          ? Math.round((completedTasks / totalTasks) * 100 * 100) / 100
+          : 0;
+
+      // Get executions for this agent
+      const agentExecutions = executions.filter((e) => e.agent === agent.name);
+      const avgDuration =
+        agentExecutions.length > 0
+          ? Math.round(
+              agentExecutions.reduce((sum, e) => sum + e.duration, 0) /
+                agentExecutions.length
+            )
+          : 0;
+
+      // Find last activity time
+      const lastExecution = agentExecutions.sort((a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      )[0];
+      const lastActive = lastExecution
+        ? lastExecution.timestamp
+        : agent.createdAt;
+
+      // Determine current status
+      const currentStatus = agentTasks.some((t) => t.status === 'running')
+        ? 'active'
+        : 'idle';
+
+      return {
+        agentId: agent._id,
+        name: agent.name,
+        role: agent.role,
+        totalTasks,
+        successRate,
+        avgDuration,
+        lastActive,
+        currentStatus,
+        completedTasks,
+        failedTasks,
+      };
+    });
+
+    // Sort by most recently active
+    return stats.sort((a, b) =>
+      new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime()
+    );
+  },
+});

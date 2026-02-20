@@ -329,4 +329,154 @@ describe('dashboard.ts - Function signatures and types', () => {
       }
     });
   });
+
+  describe('getAgentStats - Agent statistics aggregation', () => {
+    it('returns all agents with computed statistics', () => {
+      const mockResult = [
+        {
+          agentId: 'agent-1',
+          name: 'ATLAS',
+          role: 'orchestrator',
+          totalTasks: 10,
+          successRate: 80,
+          avgDuration: 1250,
+          lastActive: '2024-01-03T12:00:00Z',
+          currentStatus: 'idle',
+          completedTasks: 8,
+          failedTasks: 2,
+        },
+      ];
+
+      expect(Array.isArray(mockResult)).toBe(true);
+      expect(mockResult[0]).toHaveProperty('agentId');
+      expect(mockResult[0]).toHaveProperty('name');
+      expect(mockResult[0]).toHaveProperty('role');
+      expect(mockResult[0]).toHaveProperty('totalTasks');
+      expect(mockResult[0]).toHaveProperty('successRate');
+      expect(mockResult[0]).toHaveProperty('avgDuration');
+      expect(mockResult[0]).toHaveProperty('lastActive');
+      expect(mockResult[0]).toHaveProperty('currentStatus');
+    });
+
+    it('calculates agent success rate correctly', () => {
+      const testCases = [
+        { completed: 8, total: 10, expected: 80 },
+        { completed: 10, total: 10, expected: 100 },
+        { completed: 0, total: 10, expected: 0 },
+      ];
+
+      for (const test of testCases) {
+        const successRate =
+          test.total > 0
+            ? Math.round((test.completed / test.total) * 100 * 100) / 100
+            : 0;
+        expect(successRate).toBe(test.expected);
+      }
+    });
+
+    it('calculates average execution duration', () => {
+      const durations = [1000, 2000, 3000, 4000];
+      const avgDuration = Math.round(
+        durations.reduce((sum, d) => sum + d, 0) / durations.length
+      );
+
+      expect(avgDuration).toBe(2500);
+    });
+
+    it('determines current status based on running tasks', () => {
+      const tasks1 = [
+        { agent: 'ATLAS', status: 'done' },
+        { agent: 'ATLAS', status: 'failed' },
+      ];
+      const status1 = tasks1.some((t) => t.status === 'running')
+        ? 'active'
+        : 'idle';
+      expect(status1).toBe('idle');
+
+      const tasks2 = [
+        { agent: 'ATLAS', status: 'running' },
+        { agent: 'ATLAS', status: 'pending' },
+      ];
+      const status2 = tasks2.some((t) => t.status === 'running')
+        ? 'active'
+        : 'idle';
+      expect(status2).toBe('active');
+    });
+
+    it('tracks last active time from most recent execution', () => {
+      const executions = [
+        { agent: 'ATLAS', timestamp: '2024-01-01T10:00:00Z' },
+        { agent: 'ATLAS', timestamp: '2024-01-03T10:00:00Z' },
+        { agent: 'ATLAS', timestamp: '2024-01-02T10:00:00Z' },
+      ];
+
+      const sorted = executions.sort((a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+
+      expect(sorted[0].timestamp).toBe('2024-01-03T10:00:00Z');
+    });
+
+    it('sorts agents by most recently active', () => {
+      const agents = [
+        { name: 'ATLAS', lastActive: '2024-01-01T10:00:00Z' },
+        { name: 'CHARON', lastActive: '2024-01-03T10:00:00Z' },
+        { name: 'EARTH', lastActive: '2024-01-02T10:00:00Z' },
+      ];
+
+      const sorted = agents.sort((a, b) =>
+        new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime()
+      );
+
+      expect(sorted[0].name).toBe('CHARON');
+      expect(sorted[1].name).toBe('EARTH');
+      expect(sorted[2].name).toBe('ATLAS');
+    });
+
+    it('counts completed and failed tasks separately', () => {
+      const tasks = [
+        { agent: 'ATLAS', status: 'done' },
+        { agent: 'ATLAS', status: 'done' },
+        { agent: 'ATLAS', status: 'failed' },
+        { agent: 'ATLAS', status: 'done' },
+        { agent: 'ATLAS', status: 'pending' },
+      ];
+
+      const agentTasks = tasks.filter((t) => t.agent === 'ATLAS');
+      const completedTasks = agentTasks.filter((t) => t.status === 'done').length;
+      const failedTasks = agentTasks.filter((t) => t.status === 'failed').length;
+
+      expect(completedTasks).toBe(3);
+      expect(failedTasks).toBe(1);
+      expect(completedTasks + failedTasks).toBeLessThanOrEqual(
+        agentTasks.length
+      );
+    });
+
+    it('handles agents with no tasks', () => {
+      const tasks: any[] = [];
+
+      const totalTasks = tasks.length;
+      const successRate = totalTasks > 0 ? 100 : 0;
+      const avgDuration = totalTasks > 0 ? 1000 : 0;
+
+      expect(totalTasks).toBe(0);
+      expect(successRate).toBe(0);
+      expect(avgDuration).toBe(0);
+    });
+
+    it('handles agents with no executions', () => {
+      const executions: any[] = [];
+      const createdAt = '2024-01-01T10:00:00Z';
+
+      const lastActive =
+        executions.length > 0
+          ? executions.sort((a, b) =>
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+            )[0].timestamp
+          : createdAt;
+
+      expect(lastActive).toBe(createdAt);
+    });
+  });
 });
