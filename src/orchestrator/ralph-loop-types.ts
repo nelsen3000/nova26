@@ -34,6 +34,28 @@ import type { AdvancedRecoveryConfig } from '../recovery/recovery-index.js';
 import type { AdvancedInitConfig } from '../init/init-index.js';
 import type { AutonomyLevel } from '../config/autonomy.js';
 
+// R22-R24 Imports
+import type { ModelRoutingConfig } from '../model-routing/types.js';
+import type { PerplexityToolConfig } from '../tools/perplexity/types.js';
+import type { WorkflowEngineOptions } from '../workflow-engine/types.js';
+import type { CinematicConfig } from '../observability/types.js';
+
+// Placeholder configs for R22-R24 modules without dedicated config types
+export interface InfiniteMemoryModuleConfig {
+  maxNodes?: number;
+  pruneStaleAfterDays?: number;
+}
+
+export interface AIModelDatabaseModuleConfig {
+  autoSyncEnabled?: boolean;
+  tasteAwareRouting?: boolean;
+}
+
+export interface CRDTCollaborationModuleConfig {
+  maxParticipants?: number;
+  conflictResolution?: 'last-write-wins' | 'semantic-merge';
+}
+
 // Placeholder configs for modules without dedicated config types
 export interface MigrationModuleConfig {
   maxStepsPerRun?: number;
@@ -148,6 +170,27 @@ export interface RalphLoopOptions {
   // R20: Orchestrator Hierarchy (R20-01)
   orchestratorHierarchyEnabled?: boolean;
   orchestratorHierarchy?: OrchestratorHierarchyConfig;
+  // R22: Model Routing (R22-01)
+  modelRoutingEnabled?: boolean;
+  modelRoutingConfig?: ModelRoutingConfig;
+  // PERP: Perplexity Research (PERP-01)
+  perplexityEnabled?: boolean;
+  perplexityConfig?: PerplexityToolConfig;
+  // R23: Workflow Engine (R23-01)
+  workflowEngineEnabled?: boolean;
+  workflowEngineConfig?: WorkflowEngineOptions;
+  // R23: Infinite Memory (R23-03)
+  infiniteMemoryEnabled?: boolean;
+  infiniteMemoryConfig?: InfiniteMemoryModuleConfig;
+  // R23: Cinematic Observability (R23-05)
+  cinematicObservabilityEnabled?: boolean;
+  cinematicObservabilityConfig?: CinematicConfig;
+  // R24: AI Model Database (R24-01)
+  aiModelDatabaseEnabled?: boolean;
+  aiModelDatabaseConfig?: AIModelDatabaseModuleConfig;
+  // R24: CRDT Collaboration (R24-03)
+  crdtCollaborationEnabled?: boolean;
+  crdtCollaborationConfig?: CRDTCollaborationModuleConfig;
 }
 
 // Re-export HookRegistry from lifecycle-hooks

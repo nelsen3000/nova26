@@ -29,136 +29,9 @@ import { getAceCurator } from '../ace/curator.js';
 import { getSelfImprovementProtocol } from '../agents/self-improvement.js';
 import { getRehearsalStage } from '../rehearsal/stage.js';
 import type { RehearsalSession } from '../rehearsal/stage.js';
-import type { DreamModeConfig } from '../dream/dream-engine.js';
-import type { ParallelUniverseConfig } from '../universe/parallel-universe.js';
-import type { OvernightEvolutionConfig } from '../evolution/overnight-engine.js';
-import type { SymbiontConfig } from '../symbiont/symbiont-core.js';
-import type { TasteRoomConfig } from '../taste-room/taste-room.js';
-import type { AgentMemoryConfig } from '../memory/agent-memory.js';
-import type { WellbeingConfig } from '../wellbeing/signal-detector.js';
-import type { AdvancedRecoveryConfig } from '../recovery/recovery-index.js';
-import type { AdvancedInitConfig } from '../init/init-index.js';
-
-// R16-01 Portfolio
-import type { PortfolioEngineConfig } from '../portfolio/index.js';
-// R16-03 Generative UI
-import type { LivePreviewConfig } from '../generative-ui/live-preview.js';
-// R16-04 Autonomous Testing
-import type { TestRunConfig } from '../testing/autonomous-runner.js';
-// R17-01 Code Review
-import type { ReviewConfig } from '../review/pr-intelligence.js';
-// R17-06 Accessibility
-import type { A11yConfig } from '../a11y/wcag-engine.js';
-// R17-07 Technical Debt
-import type { DebtConfig } from '../debt/technical-debt.js';
-// R17-09 Production Feedback
-import type { FeedbackLoopConfig } from '../prod-feedback/feedback-loop.js';
-// R17-10 Health Dashboard
-import type { HealthConfig } from '../health/health-dashboard.js';
-
-// Placeholder configs for modules without dedicated config types
-export interface MigrationModuleConfig {
-  maxStepsPerRun?: number;
-  autoRollback?: boolean;
-}
-
-export interface DebugModuleConfig {
-  maxSessionHistory?: number;
-  autoRegressionTests?: boolean;
-}
-
-export interface DependencyModuleConfig {
-  autoUpdateMinor?: boolean;
-  vulnerabilityScanOnBuild?: boolean;
-}
-
-export interface EnvModuleConfig {
-  secretDetection?: boolean;
-  envDiffOnSwitch?: boolean;
-}
-
-export interface OrchestrationModuleConfig {
-  metaLearningEnabled?: boolean;
-  retrospectiveAfterBuild?: boolean;
-}
-
-export interface RalphLoopOptions {
-  parallelMode?: boolean;
-  concurrency?: number;
-  autoTestFix?: boolean;       // Auto test→fix→retest loop
-  maxTestRetries?: number;     // Max retries for test loop (default: 3)
-  planApproval?: boolean;      // Require plan approval before execution
-  eventStore?: boolean;        // Enable event-sourced session logging
-  sessionMemory?: boolean;     // Enable cross-session memory (learn from tasks)
-  gitWorkflow?: boolean;       // Enable auto branch/commit/PR workflow
-  costTracking?: boolean;      // Enable per-call cost tracking (C-04)
-  budgetLimit?: number;        // Daily budget limit in USD — halt builds when exceeded (C-05)
-  convexSync?: boolean;        // Enable real-time Convex cloud dashboard sync (MEGA-04)
-  agenticMode?: boolean;       // Enable agentic inner loop with tools
-  autonomyLevel?: AutonomyLevel;  // Autonomy level for agent behavior (1-5)
-  // Visionary engine configs (KIMI-VISIONARY)
-  dreamModeEnabled?: boolean;
-  dreamConfig?: DreamModeConfig;
-  parallelUniverseEnabled?: boolean;
-  parallelUniverseConfig?: ParallelUniverseConfig;
-  overnightEvolutionEnabled?: boolean;
-  overnightConfig?: OvernightEvolutionConfig;
-  symbiontEnabled?: boolean;
-  symbiontConfig?: SymbiontConfig;
-  tasteRoomEnabled?: boolean;
-  tasteRoomConfig?: TasteRoomConfig;
-  // Agent memory (R16-02)
-  agentMemoryEnabled?: boolean;
-  memoryConfig?: AgentMemoryConfig;
-  // Developer wellbeing (R16-05)
-  wellbeingEnabled?: boolean;
-  wellbeingConfig?: WellbeingConfig;
-  // Advanced Recovery (R17-01)
-  advancedRecoveryEnabled?: boolean;
-  advancedRecoveryConfig?: AdvancedRecoveryConfig;
-  // Advanced Init (R17-02)
-  advancedInitEnabled?: boolean;
-  advancedInitConfig?: AdvancedInitConfig;
-  // Portfolio Intelligence (R16-01)
-  portfolioEnabled?: boolean;
-  portfolioConfig?: PortfolioEngineConfig;
-  // Generative UI (R16-03)
-  generativeUIEnabled?: boolean;
-  generativeUIConfig?: LivePreviewConfig;
-  // Autonomous Testing (R16-04)
-  autonomousTestingEnabled?: boolean;
-  testRunConfig?: TestRunConfig;
-  // Code Review (R17-03)
-  codeReviewEnabled?: boolean;
-  codeReviewConfig?: ReviewConfig;
-  // Migration Engine (R17-04)
-  migrationEnabled?: boolean;
-  migrationConfig?: MigrationModuleConfig;
-  // Debugging (R17-05)
-  debugEngineEnabled?: boolean;
-  debugConfig?: DebugModuleConfig;
-  // Accessibility (R17-06)
-  accessibilityEnabled?: boolean;
-  accessibilityConfig?: A11yConfig;
-  // Technical Debt (R17-07)
-  debtScoringEnabled?: boolean;
-  debtConfig?: DebtConfig;
-  // Dependency Management (R17-08)
-  dependencyManagementEnabled?: boolean;
-  dependencyConfig?: DependencyModuleConfig;
-  // Production Feedback (R17-09)
-  productionFeedbackEnabled?: boolean;
-  productionFeedbackConfig?: FeedbackLoopConfig;
-  // Health Dashboard (R17-10)
-  healthDashboardEnabled?: boolean;
-  healthConfig?: HealthConfig;
-  // Environment Management (R17-11)
-  envManagementEnabled?: boolean;
-  envConfig?: EnvModuleConfig;
-  // Orchestration Optimization (R17-12)
-  orchestrationOptimizationEnabled?: boolean;
-  orchestrationConfig?: OrchestrationModuleConfig;
-}
+// RalphLoopOptions — single source of truth is ralph-loop-types.ts
+import type { RalphLoopOptions } from './ralph-loop-types.js';
+export type { RalphLoopOptions };
 
 // --- Planning phases (pre-execution plan approval) ---
 
@@ -775,6 +648,56 @@ function formatTodos(task: Task): string {
   return lines.join('\n');
 }
 
+// --- Shared failure handler for processTask() failure paths ---
+
+interface TaskFailureParams {
+  task: Task;
+  prd: PRD;
+  prdPath: string;
+  response: LLMResponse;
+  tracer: ReturnType<typeof getTracer>;
+  trace: ReturnType<ReturnType<typeof getTracer>['startTrace']>;
+  failedMessage: string;
+  sessionId: string | null;
+  recordVaultFailure?: boolean;
+}
+
+async function handleTaskFailure({
+  task, prd, prdPath, response, tracer, trace,
+  failedMessage, sessionId, recordVaultFailure = true,
+}: TaskFailureParams): Promise<never> {
+  updateTaskStatus(prd, task.id, 'failed', failedMessage);
+  savePRD(prd, prdPath);
+
+  recordTaskResult(
+    task.agent, task.id, false, response.tokens, response.duration,
+    task.attempts, failedMessage, sessionId || undefined,
+  );
+
+  if (recordVaultFailure) {
+    try {
+      const vault = getTasteVault();
+      await vault.learnFromBuildResult(task.title, task.description, '', task.agent, false);
+    } catch {
+      // Vault unavailable — skip silently
+    }
+  }
+
+  const appliedRuleIds = getInjectedPlaybookRuleIds(task.id);
+  await getSelfImprovementProtocol().recordOutcome(task.agent, {
+    taskId: task.id,
+    taskTitle: task.title,
+    taskType: String(task.phase ?? task.title.split(' ')[0]),
+    success: false,
+    appliedRuleIds,
+  });
+  clearInjectedPlaybookRuleIds(task.id);
+  await getPlaybookManager().recordTaskApplied(task.agent);
+
+  tracer.endTrace(trace, 'failed', failedMessage);
+  throw new Error(failedMessage);
+}
+
 async function processTask(
   task: Task,
   prd: PRD,
@@ -997,25 +920,11 @@ async function processTask(
           response = await callLLM(systemPrompt, retryPrompt, task.agent);
         }
       } catch {
-        const failedMessage = `Gates failed after retry: ${getGatesSummary(gateResults)}`;
-        updateTaskStatus(prd, task.id, 'failed', failedMessage);
-        savePRD(prd, prdPath);
-        // MEGA-05: Record failed task result for analytics
-        recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
-        
-        // ACE: record failure outcome
-        await getSelfImprovementProtocol().recordOutcome(task.agent, {
-          taskId: task.id,
-          taskTitle: task.title,
-          taskType: String(task.phase ?? task.title.split(' ')[0]),
-          success: false,
-          appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+        await handleTaskFailure({
+          task, prd, prdPath, response, tracer, trace,
+          failedMessage: `Gates failed after retry: ${getGatesSummary(gateResults)}`,
+          sessionId, recordVaultFailure: false,
         });
-        clearInjectedPlaybookRuleIds(task.id);
-        await getPlaybookManager().recordTaskApplied(task.agent);
-        
-        tracer.endTrace(trace, 'failed', failedMessage);
-        throw new Error(failedMessage);
       }
       
       const retryGateResults = await runGates(task, response, {
@@ -1026,62 +935,18 @@ async function processTask(
       console.log(getGatesSummary(retryGateResults));
       
       if (!allGatesPassed(retryGateResults)) {
-        const failedMessage = `Gates failed after retry: ${getGatesSummary(retryGateResults)}`;
-        updateTaskStatus(prd, task.id, 'failed', failedMessage);
-        savePRD(prd, prdPath);
-        // MEGA-05: Record failed task result for analytics
-        recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
-        
-        // Taste Vault: record failure as Mistake node
-        try {
-          const vault = getTasteVault();
-          await vault.learnFromBuildResult(task.title, task.description, '', task.agent, false);
-        } catch {
-          // Vault unavailable — skip silently
-        }
-        
-        // ACE: record failure outcome
-        await getSelfImprovementProtocol().recordOutcome(task.agent, {
-          taskId: task.id,
-          taskTitle: task.title,
-          taskType: String(task.phase ?? task.title.split(' ')[0]),
-          success: false,
-          appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+        await handleTaskFailure({
+          task, prd, prdPath, response, tracer, trace,
+          failedMessage: `Gates failed after retry: ${getGatesSummary(retryGateResults)}`,
+          sessionId,
         });
-        clearInjectedPlaybookRuleIds(task.id);
-        await getPlaybookManager().recordTaskApplied(task.agent);
-        
-        tracer.endTrace(trace, 'failed', failedMessage);
-        throw new Error(failedMessage);
       }
     } else {
-      const failedMessage = `Gates failed: ${getGatesSummary(gateResults)}`;
-      updateTaskStatus(prd, task.id, 'failed', failedMessage);
-      savePRD(prd, prdPath);
-      // MEGA-05: Record failed task result for analytics
-      recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
-      
-      // Taste Vault: record failure as Mistake node
-      try {
-        const vault = getTasteVault();
-        await vault.learnFromBuildResult(task.title, task.description, '', task.agent, false);
-      } catch {
-        // Vault unavailable — skip silently
-      }
-      
-      // ACE: record failure outcome
-      await getSelfImprovementProtocol().recordOutcome(task.agent, {
-        taskId: task.id,
-        taskTitle: task.title,
-        taskType: String(task.phase ?? task.title.split(' ')[0]),
-        success: false,
-        appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+      await handleTaskFailure({
+        task, prd, prdPath, response, tracer, trace,
+        failedMessage: `Gates failed: ${getGatesSummary(gateResults)}`,
+        sessionId,
       });
-      clearInjectedPlaybookRuleIds(task.id);
-      await getPlaybookManager().recordTaskApplied(task.agent);
-      
-      tracer.endTrace(trace, 'failed', failedMessage);
-      throw new Error(failedMessage);
     }
   }
   
@@ -1102,32 +967,11 @@ async function processTask(
     
     if (councilDecision.finalVerdict === 'rejected') {
       console.log(`Council rejected: ${councilDecision.summary}`);
-      updateTaskStatus(prd, task.id, 'failed', `Council rejected: ${councilDecision.summary}`);
-      savePRD(prd, prdPath);
-      // MEGA-05: Record failed task result for analytics
-      recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, `Council rejected: ${councilDecision.summary}`, sessionId || undefined);
-      
-      // Taste Vault: record failure as Mistake node
-      try {
-        const vault = getTasteVault();
-        await vault.learnFromBuildResult(task.title, task.description, '', task.agent, false);
-      } catch {
-        // Vault unavailable — skip silently
-      }
-      
-      // ACE: record failure outcome
-      await getSelfImprovementProtocol().recordOutcome(task.agent, {
-        taskId: task.id,
-        taskTitle: task.title,
-        taskType: String(task.phase ?? task.title.split(' ')[0]),
-        success: false,
-        appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+      await handleTaskFailure({
+        task, prd, prdPath, response, tracer, trace,
+        failedMessage: `Council rejected: ${councilDecision.summary}`,
+        sessionId,
       });
-      clearInjectedPlaybookRuleIds(task.id);
-      await getPlaybookManager().recordTaskApplied(task.agent);
-      
-      tracer.endTrace(trace, 'failed', councilDecision.summary);
-      throw new Error(`Council rejected: ${councilDecision.summary}`);
     }
   }
   

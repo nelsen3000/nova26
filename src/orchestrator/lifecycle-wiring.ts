@@ -29,6 +29,11 @@ export const DEFAULT_FEATURE_HOOKS: Record<string, FeatureHookConfig> = {
     phases: { onBeforeBuild: true, onBuildComplete: true },
     priority: 50,
   },
+  agentMemory: {
+    moduleName: 'agent-memory',
+    phases: { onBeforeBuild: true, onAfterTask: true },
+    priority: 45,
+  },
   generativeUI: {
     moduleName: 'generative-ui',
     phases: { onBeforeBuild: true, onAfterTask: true },
@@ -39,8 +44,23 @@ export const DEFAULT_FEATURE_HOOKS: Record<string, FeatureHookConfig> = {
     phases: { onAfterTask: true, onTaskError: true, onBuildComplete: true },
     priority: 40,
   },
+  wellbeing: {
+    moduleName: 'wellbeing',
+    phases: { onBeforeTask: true, onAfterTask: true, onBuildComplete: true },
+    priority: 35,
+  },
   
   // R17 Features
+  advancedRecovery: {
+    moduleName: 'advanced-recovery',
+    phases: { onTaskError: true },
+    priority: 15,
+  },
+  advancedInit: {
+    moduleName: 'advanced-init',
+    phases: { onBeforeBuild: true },
+    priority: 5,
+  },
   codeReview: {
     moduleName: 'code-review',
     phases: { onAfterTask: true, onBuildComplete: true },
@@ -90,6 +110,43 @@ export const DEFAULT_FEATURE_HOOKS: Record<string, FeatureHookConfig> = {
     moduleName: 'orchestration',
     phases: { onHandoff: true, onBeforeTask: true },
     priority: 25,
+  },
+
+  // R22-R24 Features
+  modelRouting: {
+    moduleName: 'model-routing',
+    phases: { onBeforeBuild: true, onBeforeTask: true },
+    priority: 42,
+  },
+  perplexity: {
+    moduleName: 'perplexity',
+    phases: { onBeforeTask: true, onAfterTask: true },
+    priority: 65,
+  },
+  workflowEngine: {
+    moduleName: 'workflow-engine',
+    phases: { onBeforeBuild: true, onAfterTask: true, onBuildComplete: true },
+    priority: 38,
+  },
+  infiniteMemory: {
+    moduleName: 'infinite-memory',
+    phases: { onAfterTask: true, onBuildComplete: true },
+    priority: 48,
+  },
+  cinematicObservability: {
+    moduleName: 'cinematic-observability',
+    phases: { onBeforeBuild: true, onBeforeTask: true, onAfterTask: true, onTaskError: true, onHandoff: true, onBuildComplete: true },
+    priority: 8,
+  },
+  aiModelDatabase: {
+    moduleName: 'ai-model-database',
+    phases: { onBeforeBuild: true, onBeforeTask: true },
+    priority: 44,
+  },
+  crdtCollaboration: {
+    moduleName: 'crdt-collaboration',
+    phases: { onBeforeBuild: true, onAfterTask: true, onBuildComplete: true },
+    priority: 52,
   },
 };
 
@@ -190,8 +247,12 @@ export function wireFeatureHooks(
   // Map options to features
   const featureFlags: Record<string, boolean | undefined> = {
     portfolio: options.portfolioEnabled,
+    agentMemory: options.agentMemoryEnabled,
     generativeUI: options.generativeUIEnabled,
     autonomousTesting: options.autonomousTestingEnabled,
+    wellbeing: options.wellbeingEnabled,
+    advancedRecovery: options.advancedRecoveryEnabled,
+    advancedInit: options.advancedInitEnabled,
     codeReview: options.codeReviewEnabled,
     migration: options.migrationEnabled,
     debug: options.debugEngineEnabled,
@@ -202,6 +263,14 @@ export function wireFeatureHooks(
     health: options.healthDashboardEnabled,
     environment: options.envManagementEnabled,
     orchestration: options.orchestrationOptimizationEnabled,
+    // R22-R24 Features
+    modelRouting: options.modelRoutingEnabled,
+    perplexity: options.perplexityEnabled,
+    workflowEngine: options.workflowEngineEnabled,
+    infiniteMemory: options.infiniteMemoryEnabled,
+    cinematicObservability: options.cinematicObservabilityEnabled,
+    aiModelDatabase: options.aiModelDatabaseEnabled,
+    crdtCollaboration: options.crdtCollaborationEnabled,
   };
 
   for (const [featureName, enabled] of Object.entries(featureFlags)) {
@@ -269,8 +338,12 @@ export function getWiringSummary(options: RalphLoopOptions): {
 
   const featureFlags: Record<string, boolean | undefined> = {
     portfolio: options.portfolioEnabled,
+    agentMemory: options.agentMemoryEnabled,
     generativeUI: options.generativeUIEnabled,
     autonomousTesting: options.autonomousTestingEnabled,
+    wellbeing: options.wellbeingEnabled,
+    advancedRecovery: options.advancedRecoveryEnabled,
+    advancedInit: options.advancedInitEnabled,
     codeReview: options.codeReviewEnabled,
     migration: options.migrationEnabled,
     debug: options.debugEngineEnabled,
@@ -281,6 +354,14 @@ export function getWiringSummary(options: RalphLoopOptions): {
     health: options.healthDashboardEnabled,
     environment: options.envManagementEnabled,
     orchestration: options.orchestrationOptimizationEnabled,
+    // R22-R24 Features
+    modelRouting: options.modelRoutingEnabled,
+    perplexity: options.perplexityEnabled,
+    workflowEngine: options.workflowEngineEnabled,
+    infiniteMemory: options.infiniteMemoryEnabled,
+    cinematicObservability: options.cinematicObservabilityEnabled,
+    aiModelDatabase: options.aiModelDatabaseEnabled,
+    crdtCollaboration: options.crdtCollaborationEnabled,
   };
 
   for (const [featureName, enabled] of Object.entries(featureFlags)) {

@@ -1,8 +1,14 @@
 // KIMI-AUTO-01: Unified Autonomy Level System for NOVA26
 // Maps autonomy levels 1-5 to concrete RalphLoopOptions + SwarmOptions
 
-import type { RalphLoopOptions } from '../orchestrator/ralph-loop.js';
-import type { SwarmOptions } from '../swarm/swarm-mode.js';
+import type { RalphLoopOptions } from '../orchestrator/ralph-loop-types.js';
+
+// SwarmOptions was previously in src/swarm/swarm-mode.ts (module deleted with CUT R23-04)
+export interface SwarmOptions {
+  maxConcurrency: number;
+  timeoutPerAgent: number;
+  continueOnFailure: boolean;
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Type Definitions

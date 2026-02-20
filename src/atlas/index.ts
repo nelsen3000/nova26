@@ -28,6 +28,74 @@ export { SemanticDiffer, createSemanticDiffer } from './semantic-differ.js';
 export { ContextCompactor, createContextCompactor } from './context-compactor.js';
 export { GraphMemory, createGraphMemory } from './graph-memory.js';
 
+// R23-03: Infinite Hierarchical Memory exports
+export type {
+  MemoryLevel,
+  HierarchicalMemoryNode,
+  MemoryEdge,
+  InfiniteMemoryGraph,
+  QueryOptions,
+  MigrationResult,
+  PruneResult,
+} from './infinite-memory-core.js';
+
+export {
+  ATLASInfiniteMemory,
+  getInfiniteMemory,
+  resetInfiniteMemory,
+  createInfiniteMemory,
+} from './infinite-memory-core.js';
+
+// Mem0 Adapter exports
+export type {
+  Mem0Config,
+  Mem0Memory,
+  Mem0SearchResult,
+  Mem0StoreOptions,
+  Mem0SearchOptions,
+  Mem0HealthStatus,
+  Mem0SyncResult,
+} from './mem0-adapter.js';
+
+export {
+  Mem0Adapter,
+  Mem0ApiError,
+  Mem0NotFoundError,
+  createMem0Adapter,
+} from './mem0-adapter.js';
+
+// Letta Soul Manager exports
+export type {
+  LettaConfig,
+  LettaSoul,
+  LettaSoulCreateInput,
+  LettaSoulUpdateInput,
+  LettaMemoryAddInput,
+  LettaInteractionRecord,
+  LettaHealthStatus,
+} from './letta-soul-manager.js';
+
+export {
+  LettaSoulManager,
+  LettaApiError,
+  LettaNotFoundError,
+  createLettaSoulManager,
+} from './letta-soul-manager.js';
+
+// Memory Taste Scorer exports
+export type {
+  TasteProfile,
+  TasteScorerConfig,
+  ScoredMemory,
+  TasteAnalysis,
+} from './memory-taste-scorer.js';
+
+export {
+  MemoryTasteScorer,
+  createMemoryTasteScorer,
+  createFromTasteVault,
+} from './memory-taste-scorer.js';
+
 const ATLAS_DIR = join(process.cwd(), '.nova', 'atlas');
 const BUILDS_FILE = join(ATLAS_DIR, 'builds.json');
 

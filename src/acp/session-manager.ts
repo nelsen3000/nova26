@@ -72,9 +72,9 @@ export class ACPSessionManager {
    */
   constructor(options: ACPSessionManagerOptions = {}) {
     this.options = {
-      idleTimeout: 3600000, // 1 hour default
-      maxSessions: 100,
-      debug: false,
+      idleTimeout: options.idleTimeout ?? 3600000, // 1 hour default
+      maxSessions: options.maxSessions ?? 100,
+      debug: options.debug ?? false,
       tasteVaultHashFn: options.tasteVaultHashFn,
     };
   }
