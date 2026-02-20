@@ -89,6 +89,33 @@ Each module needs slash commands so developers can interact with it from the CLI
 
 - [ ] `KMS-10` Error boundary wrappers for all 7 lifecycle adapters — create `src/orchestrator/adapter-error-boundary.ts` that wraps adapter calls with try/catch, logging, and graceful degradation. If an adapter throws, the build continues (adapter errors are non-fatal). Write `src/orchestrator/__tests__/adapter-error-boundary.test.ts` (30 tests)
 
+### Sprint KIMI-MS-02: API Clients + Agent System + Dashboard Data (10 tasks, 250+ tests)
+
+**Phase 5: Mock API Clients for External Services**
+Each external service needs a typed client with mock implementation so we can test without real network calls.
+
+- [ ] `KMS-11` Braintrust client — `src/integrations/braintrust-client.ts` with typed API: `createExperiment()`, `logResult()`, `getScores()`, `listExperiments()`. Mock implementation returns realistic data. Write `src/integrations/__tests__/braintrust-client.test.ts` (20 tests)
+- [ ] `KMS-12` LangSmith client — `src/integrations/langsmith-client.ts` with typed API: `createRun()`, `updateRun()`, `endRun()`, `listRuns()`, `getFeedback()`. Mock implementation. Write `src/integrations/__tests__/langsmith-client.test.ts` (20 tests)
+- [ ] `KMS-13` Mem0/Letta client — `src/integrations/memory-providers-client.ts` with typed API: `store()`, `query()`, `update()`, `delete()`, `listCollections()` for both Mem0 and Letta backends. Write `src/integrations/__tests__/memory-providers-client.test.ts` (25 tests)
+
+**Phase 6: Agent System Enhancements**
+The 21 agents need better selection, tracking, and capability awareness.
+
+- [ ] `KMS-14` Agent capability matrix — `src/agents/capability-matrix.ts` mapping each of the 21 agents to their capabilities (code, design, test, deploy, review, etc.), preferred models, max concurrency, average task duration. Write `src/agents/__tests__/capability-matrix.test.ts` (20 tests)
+- [ ] `KMS-15` Task complexity estimator — `src/agents/complexity-estimator.ts` that analyzes task descriptions and estimates complexity (simple/medium/complex/epic) based on keywords, dependency count, estimated tokens, and historical data. Write `src/agents/__tests__/complexity-estimator.test.ts` (25 tests)
+- [ ] `KMS-16` Agent performance tracker — `src/agents/performance-tracker.ts` that records per-agent metrics: success rate, avg duration, task count, error rate, quality scores. Provides rankings and trend analysis. Write `src/agents/__tests__/performance-tracker.test.ts` (25 tests)
+
+**Phase 7: Dashboard Data Layer**
+Backend data aggregation for the future dashboard UI.
+
+- [ ] `KMS-17` Build metrics aggregator — `src/analytics/build-metrics.ts` that computes per-build stats: total duration, task count, pass rate, agent utilization, cost, tokens used. Write `src/analytics/__tests__/build-metrics.test.ts` (25 tests)
+- [ ] `KMS-18` Real-time build status — `src/analytics/build-status.ts` with a `BuildStatusEmitter` that emits typed status events: `build:started`, `task:progress`, `build:completed`. Consumers can subscribe for live updates. Write `src/analytics/__tests__/build-status.test.ts` (20 tests)
+- [ ] `KMS-19` Historical build comparison — `src/analytics/build-comparison.ts` that compares two builds: diff in duration, pass rate, cost, agent usage. Identifies regressions and improvements. Write `src/analytics/__tests__/build-comparison.test.ts` (20 tests)
+
+**Phase 8: Notification System**
+
+- [ ] `KMS-20` Notification dispatcher — `src/notifications/dispatcher.ts` with typed notification types (`build:complete`, `task:failed`, `budget:exceeded`, `security:alert`), priority levels, and pluggable handlers (console, file, webhook). Write `src/notifications/__tests__/dispatcher.test.ts` (25 tests)
+
 ---
 
 ## MINIMAX (Green) — Integrator Mega Sprint
@@ -121,6 +148,18 @@ Nova26 has 21 agents that hand off work to each other. The handoff needs to carr
 
 - [ ] `MX-07` Config resolver — `src/config/config-resolver.ts` that merges configs from 3 sources: environment variables → config file (`.nova/config.json`) → RalphLoopOptions defaults. Type-safe, with Zod validation at each layer. Write `src/config/__tests__/config-resolver.test.ts` (25 tests)
 - [ ] `MX-08` Module health check system — `src/orchestrator/module-health.ts` that pings each enabled module's adapter to verify it's operational. Returns a health report with status per module. Wire into `/health` CLI command. Write `src/orchestrator/__tests__/module-health.test.ts` (20 tests)
+
+### Sprint MX-02: Feature Flags + DI + Lazy Loading (4 tasks, 100+ tests)
+
+**Phase 5: Feature Flag System**
+
+- [ ] `MX-09` Feature flag registry — `src/config/feature-flags.ts` with a typed `FeatureFlagRegistry` that manages boolean and variant flags. Flags can be set from env vars (`NOVA26_FF_MODEL_ROUTING=true`), config file (`.nova/flags.json`), or programmatically. Write `src/config/__tests__/feature-flags.test.ts` (25 tests)
+- [ ] `MX-10` Flag-controlled module loading — update `wireFeatureHooks()` in `lifecycle-wiring.ts` to check feature flags BEFORE loading adapters. If a flag is off, skip the adapter entirely (don't even import it). Write `src/orchestrator/__tests__/flag-controlled-loading.test.ts` (25 tests)
+
+**Phase 6: Dependency Injection**
+
+- [ ] `MX-11` DI container — `src/orchestrator/di-container.ts` with a simple typed DI container. Modules register themselves with `container.register('modelRouting', factory)`. Other modules resolve dependencies with `container.resolve('modelRouting')`. Supports singletons and transient instances. Write `src/orchestrator/__tests__/di-container.test.ts` (30 tests)
+- [ ] `MX-12` Lazy module initialization — update adapters to use lazy initialization. Modules don't initialize until their first lifecycle hook fires. Reduces startup time for builds that don't use all modules. Write `src/orchestrator/__tests__/lazy-init.test.ts` (25 tests)
 
 ---
 
@@ -184,9 +223,30 @@ Test the full Ralph Loop pipeline — from PRD input to build completion — ver
 
 - [ ] `SN-08` Dead code elimination — find and remove unused exports, unreachable functions, orphaned test helpers across the entire codebase. Use `npx tsc --noEmit` + grep for unexported functions. Report what was removed. Write `src/__tests__/no-dead-code.test.ts` (15 tests verifying key exports exist)
 
+### Sprint SN-02: Stress Tests + Contract Tests + Coverage (8 tasks, 200+ tests)
+
+**Phase 5: Stress & Load Testing**
+Verify the system handles extreme conditions gracefully.
+
+- [ ] `SN-09` Concurrent build stress test — `src/orchestrator/__tests__/stress-concurrent-builds.test.ts`. Simulate 10 builds running simultaneously. Verify no shared state corruption, each build gets isolated lifecycle hooks, memory doesn't leak between builds. (25 tests)
+- [ ] `SN-10` Large PRD stress test — `src/orchestrator/__tests__/stress-large-prd.test.ts`. Feed a PRD with 50 tasks to the Ralph Loop. Verify all tasks execute, workflow graph handles large graphs, memory hierarchy stays valid, observability doesn't drop spans. (20 tests)
+- [ ] `SN-11` Rapid task failure stress test — `src/orchestrator/__tests__/stress-rapid-failures.test.ts`. Simulate 20 consecutive task failures. Verify circuit breaker activates, recovery hooks fire correctly, error counts are accurate, build terminates gracefully. (20 tests)
+
+**Phase 6: Module Contract Tests**
+Verify every module's public API matches its documented interface.
+
+- [ ] `SN-12` Lifecycle adapter contract tests — `src/orchestrator/__tests__/contract-lifecycle-adapters.test.ts`. For each of the 7 adapters: verify createXxxLifecycleHooks() returns correct handler shape, all registered phases have implementations, handlers accept correct context types, handlers don't throw on empty/null inputs. (35 tests)
+- [ ] `SN-13` Event payload contract tests — `src/orchestrator/__tests__/contract-event-payloads.test.ts`. Once MiniMax creates the event bus (MX-03), verify all event types have correct payload shapes, payloads serialize/deserialize correctly, invalid payloads are rejected. (20 tests)
+- [ ] `SN-14` Config schema contract tests — `src/config/__tests__/contract-config-schemas.test.ts`. Once Kimi creates module schemas (KMS-08), verify all RalphLoopOptions fields have matching Zod schemas, defaults are applied correctly, invalid configs throw descriptive errors. (25 tests)
+
+**Phase 7: Test Infrastructure**
+
+- [ ] `SN-15` Test coverage configuration — add vitest coverage config (`vitest.config.ts` → `coverage` section), set thresholds (statements 70%, branches 60%, functions 70%, lines 70%). Create `npm run test:coverage` script. Write `src/__tests__/coverage-thresholds.test.ts` that verifies critical modules meet thresholds. (15 tests)
+- [ ] `SN-16` Test timing reporter — `src/test/timing-reporter.ts`, a vitest reporter plugin that logs slow tests (>500ms), identifies flaky tests (different results on re-run), and generates a timing report. Wire into vitest config. Write `src/test/__tests__/timing-reporter.test.ts` (15 tests)
+
 ---
 
-## CLAUDE (Red) — Coordinator
+## CLAUDE — Coordinator
 
 > Domain: Evaluation, prompt writing, conflict resolution, architectural decisions
 > Does NOT write features (Kimi), wiring (MiniMax), or refactoring (GLM-5)

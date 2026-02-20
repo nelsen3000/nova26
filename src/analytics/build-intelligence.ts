@@ -127,6 +127,11 @@ class BuildIntelligence {
     }
 
     // Count builds and calculate avg duration
+    interface BuildRow {
+      build_count: number;
+      avg_duration: number;
+      total_duration: number;
+    }
     const buildRow = db.prepare(`
       SELECT 
         COUNT(DISTINCT build_id) as build_count,
@@ -134,7 +139,7 @@ class BuildIntelligence {
         SUM(duration) as total_duration
       FROM agent_results
       WHERE ${dateFilter} AND build_id IS NOT NULL
-    `).get() as any;
+    `).get() as BuildRow | undefined;
 
     const buildCount = buildRow?.build_count || 0;
     const avgBuildDurationMs = buildRow?.avg_duration || 0;

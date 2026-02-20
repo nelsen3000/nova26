@@ -1,6 +1,7 @@
 // NOVA26 CLI - Main entry point
 // Integrates slash commands, swarm mode, model routing, and agent explanations
 
+import type { Task } from '../types/index.js';
 import { extendedSlashCommands } from './slash-commands-extended.js';
 import { selectTier, selectModel, showModelComparison, getCurrentModel, getCurrentTier, AVAILABLE_MODELS } from '../llm/model-router.js';
 import { getAgentExplanation, formatExplanation, formatReasoning } from '../orchestrator/agent-explanations.js';
@@ -66,14 +67,20 @@ const allCommands = {
       const showReasoning = args.includes('--reasoning');
       
       // Mock task for demonstration
-      const mockTask = {
+      const mockTask: Task = {
         id: 'demo-001',
         title: 'Sample Feature Implementation',
         agent: agentName === 'current' ? 'VENUS' : agentName.toUpperCase(),
-        context: { taskCount: 5 }
+        context: { taskCount: 5 },
+        description: 'Demonstration task for agent explanation',
+        status: 'ready',
+        dependencies: [],
+        phase: 0,
+        attempts: 0,
+        createdAt: new Date().toISOString(),
       };
       
-      const explanation = getAgentExplanation(mockTask as any);
+      const explanation = getAgentExplanation(mockTask);
       console.log(formatExplanation(explanation, true, showReasoning));
     }
   },
@@ -84,14 +91,20 @@ const allCommands = {
     usage: '/reasoning [agent-name]',
     handler: async (args: string[]) => {
       const agentName = args[0] || 'VENUS';
-      const mockTask = {
+      const mockTask: Task = {
         id: 'demo-001',
         title: 'Sample Feature',
         agent: agentName.toUpperCase(),
-        context: {}
+        context: {},
+        description: 'Demonstration task for agent reasoning',
+        status: 'ready',
+        dependencies: [],
+        phase: 0,
+        attempts: 0,
+        createdAt: new Date().toISOString(),
       };
       
-      const explanation = getAgentExplanation(mockTask as any);
+      const explanation = getAgentExplanation(mockTask);
       if (explanation.reasoning) {
         console.log(formatReasoning(explanation.reasoning));
       } else {
