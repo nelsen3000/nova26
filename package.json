@@ -9,7 +9,15 @@
     "build": "tsc",
     "test": "vitest",
     "test:mock": "tsx src/test/mock-run.ts",
-    "test:integration": "tsx src/test/integration-test.ts"
+    "test:integration": "tsx src/test/integration-test.ts",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test:changed": "vitest run --changed",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.ts": "bash -c 'npx tsc --noEmit'",
+    "*.test.ts": "vitest run"
   },
   "keywords": [
     "ai",
@@ -43,6 +51,8 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20.11.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "tsx": "^4.7.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
