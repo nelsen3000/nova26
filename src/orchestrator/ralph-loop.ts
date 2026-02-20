@@ -33,6 +33,12 @@ import type { RehearsalSession } from '../rehearsal/stage.js';
 import type { RalphLoopOptions } from './ralph-loop-types.js';
 export type { RalphLoopOptions };
 
+// Lifecycle hooks system (MX-02)
+import { HookRegistry } from './lifecycle-hooks.js';
+import type { BuildContext, TaskContext, TaskResult, BuildResult } from './lifecycle-hooks.js';
+import { wireFeatureHooks } from './lifecycle-wiring.js';
+import { wireAdaptersLive } from './adapter-wiring.js';
+
 // --- Planning phases (pre-execution plan approval) ---
 
 export const PLANNING_PHASES: PlanningPhase[] = [
@@ -243,6 +249,38 @@ export async function ralphLoop(
     }
   }
 
+  // --- Initialize lifecycle hooks (MX-02) ---
+  const hookRegistry = new HookRegistry();
+  const buildId = crypto.randomUUID();
+  const buildStartTime = Date.now();
+
+  if (options) {
+    // Wire R16/R17 feature stubs
+    const featureResult = wireFeatureHooks(hookRegistry, options);
+    if (featureResult.wiredCount > 0) {
+      console.log(`Lifecycle hooks: ${featureResult.wiredCount} features wired (${featureResult.totalHooks} hooks)`);
+    }
+
+    // Wire R22-R24 real adapters
+    const adapterResult = wireAdaptersLive(hookRegistry, options);
+    if (adapterResult.wiredCount > 0) {
+      console.log(`Live adapters: ${adapterResult.wiredCount} modules wired (${adapterResult.totalHooks} hooks)`);
+    }
+    for (const err of adapterResult.errors) {
+      console.error(`  Adapter wiring error [${err.module}]: ${err.error}`);
+    }
+  }
+
+  // Execute onBeforeBuild hooks
+  const buildContext: BuildContext = {
+    buildId,
+    prdId: prd.meta.name,
+    prdName: prd.meta.name,
+    startedAt: new Date().toISOString(),
+    options: (options ?? {}) as Record<string, unknown>,
+  };
+  await hookRegistry.executePhase('onBeforeBuild', buildContext);
+
   let maxIterations = prd.tasks.length * 3; // Prevent infinite loops
   let iteration = 0;
   
@@ -309,7 +347,7 @@ export async function ralphLoop(
         
         // Process tasks in parallel
         const taskResults = await parallelRunner.runPhase(independentTasks, async (task) => {
-          await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient);
+          await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient, hookRegistry);
         });
         
         // Check results and promote tasks
@@ -334,7 +372,7 @@ export async function ralphLoop(
     console.log(`\n--- Processing: ${task.id} (${task.title}) [Phase ${task.phase}] ---`);
     
     try {
-      await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient);
+      await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient, hookRegistry);
 
       // Promote pending tasks after each task completes
       promotePendingTasks(prd);
@@ -354,6 +392,18 @@ export async function ralphLoop(
 
   // Convex sync: complete build at session end (MEGA-04)
   await convexClient?.completeBuild(allDone);
+
+  // Execute onBuildComplete hooks (MX-02)
+  const buildResult: BuildResult = {
+    buildId,
+    prdId: prd.meta.name,
+    totalTasks: prd.tasks.length,
+    successfulTasks: prd.tasks.filter(t => t.status === 'done').length,
+    failedTasks: prd.tasks.filter(t => t.status === 'failed').length,
+    totalDurationMs: Date.now() - buildStartTime,
+    averageAceScore: 0,
+  };
+  await hookRegistry.executePhase('onBuildComplete', buildResult);
 
   // Git workflow: finalize (create PR if all tasks done)
   if (gitWf && allDone) {
@@ -709,16 +759,29 @@ async function processTask(
   loopOptions?: RalphLoopOptions,
   eventStore?: EventStore,
   gitWf?: ReturnType<typeof initWorkflow>,
-  convexClient?: ConvexSyncClient
+  convexClient?: ConvexSyncClient,
+  hookRegistry?: HookRegistry
 ): Promise<void> {
   const trace = tracer.startTrace(sessionId, task.id, task.agent);
+  const taskStartTime = Date.now();
 
   // Event store: task_start
   eventStore?.emit('task_start', { title: task.title, agent: task.agent, phase: task.phase }, task.id, task.agent);
   
   // Convex sync: log task as running (MEGA-04)
   await convexClient?.logTask(task, 'running');
-  
+
+  // Execute onBeforeTask lifecycle hooks (MX-02)
+  if (hookRegistry) {
+    const taskContext: TaskContext = {
+      taskId: task.id,
+      title: task.title,
+      agentName: task.agent,
+      dependencies: task.dependencies,
+    };
+    await hookRegistry.executePhase('onBeforeTask', taskContext);
+  }
+
   // Initialize todos for complex tasks
   if (shouldCreateTodos(task) && !task.todos) {
     task.todos = createInitialTodos(task);
@@ -878,6 +941,19 @@ async function processTask(
     console.log(`LLM call failed: ${llmError.message}`);
     eventStore?.emit('llm_call_fail', { error: llmError.message }, task.id, task.agent);
     if (loopOptions?.sessionMemory) learnFromFailure(task.agent, task.title, llmError.message);
+
+    // Execute onTaskError lifecycle hooks (MX-02)
+    if (hookRegistry) {
+      const errorResult: TaskResult = {
+        taskId: task.id,
+        agentName: task.agent,
+        success: false,
+        error: llmError.message,
+        durationMs: Date.now() - taskStartTime,
+      };
+      await hookRegistry.executePhase('onTaskError', errorResult);
+    }
+
     updateTaskStatus(prd, task.id, 'failed', llmError.message);
     savePRD(prd, prdPath);
     // MEGA-05: Record failed task result for analytics
@@ -975,10 +1051,22 @@ async function processTask(
     }
   }
   
+  // Execute onAfterTask lifecycle hooks (MX-02)
+  if (hookRegistry) {
+    const taskResult: TaskResult = {
+      taskId: task.id,
+      agentName: task.agent,
+      success: true,
+      output: response.content.substring(0, 500),
+      durationMs: Date.now() - taskStartTime,
+    };
+    await hookRegistry.executePhase('onAfterTask', taskResult);
+  }
+
   // Save output
   const outputPath = await saveTaskOutput(task, response);
   setTaskOutput(prd, task.id, outputPath);
-  
+
   // Mark all todos as completed
   if (task.todos) {
     for (const todo of task.todos) {
