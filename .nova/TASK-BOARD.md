@@ -2,7 +2,7 @@
 
 > **5-Agent Terminal System** — Color-coded AI agents building Nova26 in parallel.
 > **Repo**: https://github.com/nelsen3000/nova26 | **Branch**: `main`
-> **Current state**: 5,690 tests, 0 TS errors, 193 test files
+> **Current state**: 6,357 tests, 0 TS errors, 217 test files
 > **Coordinator**: Claude (Red) — evaluates output, writes prompts, resolves conflicts
 > **How it works**: Find your section below. Do every task in order. Run quality gates after each task.
 > When you finish all tasks, report your results to Jon.
@@ -116,9 +116,19 @@ Backend data aggregation for the future dashboard UI.
 
 - [x] `KMS-20` Notification dispatcher ✅ — `src/notifications/dispatcher.ts` (30 tests)
 
+### Sprint KIMI-MS-03: CLI + API + Wiring (5 tasks, 150+ tests)
+
+**Phase 9: CLI + API + Integration**
+
+- [x] `KMS-21` `/health` command ✅ (f7c5cc4) — module health check CLI
+- [x] `KMS-22` `/flags` command ✅ (551c656) — feature flag CLI
+- [x] `KMS-23` Dashboard REST API ✅ (4a37593) — `src/api/dashboard-api.ts` (31 tests)
+- [x] `KMS-24` Notification lifecycle wiring ✅ (534ddb5) — `src/notifications/lifecycle-notifier.ts`
+- [x] `KMS-25` Config file watcher ✅ (daa3a04) — `src/config/config-watcher.ts` (28 tests)
+
 ---
 
-## MINIMAX (Green) — Integrator Mega Sprint
+## MINIMAX (Green) — Integrator Mega Sprint — ALL COMPLETE (done by Claude)
 
 > **You are the integration specialist.** You wire modules together, build cross-module pipelines, and make the agent handoff system work.
 > **Your superpower**: 205K context window — you can hold the entire ralph-loop.ts + all adapters in context at once.
@@ -130,13 +140,13 @@ Backend data aggregation for the future dashboard UI.
 The lifecycle adapters exist (`src/<module>/lifecycle-adapter.ts`) but aren't called yet. Wire them into the actual ralph-loop.ts execution flow.
 
 - [x] `MX-01` Wire adapters into `wireFeatureHooks()` ✅ (c0f3c3b — `src/orchestrator/adapter-wiring.ts`)
-- [ ] `MX-02` Wire adapters into `processTask()` — in `src/orchestrator/ralph-loop.ts`, ensure the lifecycle hook execution in processTask() flows through to real adapter code when modules are enabled. Add `registry.executePhase()` calls for onBeforeTask, onAfterTask, onTaskError, onHandoff, onBuildComplete. Wire config plumbing so adapter configs reach the adapter constructors. Write `src/orchestrator/__tests__/processtask-adapters.test.ts` (25 tests)
+- [x] `MX-02` Wire adapters into `processTask()` ✅ (88b70e2) — lifecycle hooks in ralph-loop.ts, 23 tests
 
 **Phase 2: Cross-Module Event System**
 Modules need to communicate. Model routing needs to tell observability what model was selected. Memory needs to know when tasks complete. Build a lightweight event bus.
 
 - [x] `MX-03` Create event bus ✅ (c0f3c3b — `src/orchestrator/event-bus.ts`, 30 tests)
-- [ ] `MX-04` Connect modules to event bus — update lifecycle adapters to emit events at key points. Model routing emits `model:selected` after routing. Memory emits `memory:stored` after saving. Observability listens to ALL events for tracing. Write `src/orchestrator/__tests__/event-bus-integration.test.ts` (25 tests)
+- [x] `MX-04` Connect modules to event bus ✅ (d46762f) — 7 adapters emit events, 32 tests
 
 **Phase 3: Agent Handoff Protocol**
 Nova26 has 21 agents that hand off work to each other. The handoff needs to carry context (memory, model selection, workflow state).
@@ -153,13 +163,13 @@ Nova26 has 21 agents that hand off work to each other. The handoff needs to carr
 
 **Phase 5: Feature Flag System**
 
-- [ ] `MX-09` Feature flag registry — `src/config/feature-flags.ts` with a typed `FeatureFlagRegistry` that manages boolean and variant flags. Flags can be set from env vars (`NOVA26_FF_MODEL_ROUTING=true`), config file (`.nova/flags.json`), or programmatically. Write `src/config/__tests__/feature-flags.test.ts` (25 tests)
-- [ ] `MX-10` Flag-controlled module loading — update `wireFeatureHooks()` in `lifecycle-wiring.ts` to check feature flags BEFORE loading adapters. If a flag is off, skip the adapter entirely (don't even import it). Write `src/orchestrator/__tests__/flag-controlled-loading.test.ts` (25 tests)
+- [x] `MX-09` Feature flag registry ✅ (d46762f) — `src/config/feature-flags.ts`, 36 tests
+- [x] `MX-10` Flag-controlled module loading ✅ (1183414) — `src/orchestrator/lifecycle-wiring.ts`, 35 tests
 
 **Phase 6: Dependency Injection**
 
-- [ ] `MX-11` DI container — `src/orchestrator/di-container.ts` with a simple typed DI container. Modules register themselves with `container.register('modelRouting', factory)`. Other modules resolve dependencies with `container.resolve('modelRouting')`. Supports singletons and transient instances. Write `src/orchestrator/__tests__/di-container.test.ts` (30 tests)
-- [ ] `MX-12` Lazy module initialization — update adapters to use lazy initialization. Modules don't initialize until their first lifecycle hook fires. Reduces startup time for builds that don't use all modules. Write `src/orchestrator/__tests__/lazy-init.test.ts` (25 tests)
+- [x] `MX-11` DI container ✅ (d46762f) — `src/orchestrator/di-container.ts`, 31 tests
+- [x] `MX-12` Lazy module initialization ✅ (1183414) — `src/orchestrator/lazy-adapter.ts`, 29 tests
 
 ---
 
@@ -228,21 +238,30 @@ Test the full Ralph Loop pipeline — from PRD input to build completion — ver
 **Phase 5: Stress & Load Testing**
 Verify the system handles extreme conditions gracefully.
 
-- [ ] `SN-09` Concurrent build stress test — `src/orchestrator/__tests__/stress-concurrent-builds.test.ts`. Simulate 10 builds running simultaneously. Verify no shared state corruption, each build gets isolated lifecycle hooks, memory doesn't leak between builds. (25 tests)
-- [ ] `SN-10` Large PRD stress test — `src/orchestrator/__tests__/stress-large-prd.test.ts`. Feed a PRD with 50 tasks to the Ralph Loop. Verify all tasks execute, workflow graph handles large graphs, memory hierarchy stays valid, observability doesn't drop spans. (20 tests)
-- [ ] `SN-11` Rapid task failure stress test — `src/orchestrator/__tests__/stress-rapid-failures.test.ts`. Simulate 20 consecutive task failures. Verify circuit breaker activates, recovery hooks fire correctly, error counts are accurate, build terminates gracefully. (20 tests)
+- [x] `SN-09` Concurrent build stress test ✅ (188eb3c — 25 tests)
+- [x] `SN-10` Large PRD stress test ✅ (3d76cb5 — 20 tests)
+- [x] `SN-11` Rapid task failure stress test ✅ (c2aa59a — 20 tests)
 
 **Phase 6: Module Contract Tests**
-Verify every module's public API matches its documented interface.
 
-- [ ] `SN-12` Lifecycle adapter contract tests — `src/orchestrator/__tests__/contract-lifecycle-adapters.test.ts`. For each of the 7 adapters: verify createXxxLifecycleHooks() returns correct handler shape, all registered phases have implementations, handlers accept correct context types, handlers don't throw on empty/null inputs. (35 tests)
-- [ ] `SN-13` Event payload contract tests — `src/orchestrator/__tests__/contract-event-payloads.test.ts`. Once MiniMax creates the event bus (MX-03), verify all event types have correct payload shapes, payloads serialize/deserialize correctly, invalid payloads are rejected. (20 tests)
-- [ ] `SN-14` Config schema contract tests — `src/config/__tests__/contract-config-schemas.test.ts`. Once Kimi creates module schemas (KMS-08), verify all RalphLoopOptions fields have matching Zod schemas, defaults are applied correctly, invalid configs throw descriptive errors. (25 tests)
+- [x] `SN-12` Lifecycle adapter contract tests ✅ (fad7c7c — 61 tests)
+- [x] `SN-13` Event payload contract tests ✅ (fce0313 — 25 tests)
+- [x] `SN-14` Config schema contract tests ✅ (ea2a156 — 31 tests)
 
 **Phase 7: Test Infrastructure**
 
-- [ ] `SN-15` Test coverage configuration — add vitest coverage config (`vitest.config.ts` → `coverage` section), set thresholds (statements 70%, branches 60%, functions 70%, lines 70%). Create `npm run test:coverage` script. Write `src/__tests__/coverage-thresholds.test.ts` that verifies critical modules meet thresholds. (15 tests)
-- [ ] `SN-16` Test timing reporter — `src/test/timing-reporter.ts`, a vitest reporter plugin that logs slow tests (>500ms), identifies flaky tests (different results on re-run), and generates a timing report. Wire into vitest config. Write `src/test/__tests__/timing-reporter.test.ts` (15 tests)
+- [x] `SN-15` Test coverage configuration ✅ (a878695 — 16 tests)
+- [x] `SN-16` Test timing reporter ✅ (511f8df — 22 tests)
+
+### Sprint SN-03: E2E Integration Tests (5 tasks, 135 tests)
+
+**Phase 8: Cross-Module E2E Tests**
+
+- [x] `SN-17` Lifecycle hook E2E test ✅ (a8060a6 — 35 tests)
+- [x] `SN-18` Cross-module event flow E2E test ✅ (9479a57 — 25 tests)
+- [x] `SN-19` Config cascade integration test ✅ (d5149f5 — 30 tests)
+- [x] `SN-20` Handoff pipeline E2E test ✅ (b6b578d — 25 tests)
+- [x] `SN-21` Module health + diagnostics E2E test ✅ (733e5db — 20 tests)
 
 ---
 
@@ -287,21 +306,29 @@ Verify every module's public API matches its documented interface.
 ## Completed Work (Archive)
 
 <details>
-<summary>Click to expand — 90+ completed tasks across all agents</summary>
+<summary>Click to expand — 120+ completed tasks across all agents</summary>
 
-### Kimi (55+ tasks)
+### Kimi (60+ tasks)
 - R16-01→R16-05, R17-01→R17-12, R19→R21, R22-R24 (7 KEEP modules)
 - R25 testing (538 tests), R26 lifecycle adapters (268 tests)
 - M-01→M-15 CLI tasks, mega-wiring (W-01→W-05)
+- KMS-01→25: CLI commands, config validation, API clients, agent system, dashboard, notifications, API layer, config watcher
 
-### Sonnet (13 tasks)
-- S-01-01→06 Integration sprint (RalphLoopOptions dedup, 4 module wiring, sandbox cleanup, failure handler, 45 tests)
-- CL-50→56 Hardening sprint (CUT deletion, R22-R24 evaluation, wiring, barrel exports, 51 integration tests)
+### MiniMax/Claude (12 tasks — all complete)
+- MX-01→12: Adapter wiring, processTask lifecycle, event bus, handoff, config cascade, health checks, feature flags, flag-controlled loading, DI container, lazy initialization
+
+### Sonnet (21 tasks — all complete)
+- SN-01→08: E2E tests, CI, docs, dead code
+- SN-09→16: Stress tests, contract tests, coverage, timing reporter
+- SN-17→21: Lifecycle E2E, event flow E2E, config cascade E2E, handoff E2E, diagnostics E2E
 
 ### Claude (80+ tasks)
 - CL-20→CL-56 evaluation + coordination
 - C-01→C-10 core engine, R16-05/R17-01/R17-02 implementation (319 tests)
 - All agent template conversions, all prompt writing
+
+### GLM-5 (1 task)
+- GLM-01: Task executor extraction (35 tests)
 
 ### Grok (80+ specs)
 - R7→R24 feature specs, R18 dashboard/deployment, Shannon research, Perplexity spec
@@ -319,18 +346,13 @@ Verify every module's public API matches its documented interface.
 ## Dependency Map
 
 ```
-✅ KIMI KMS-08 ──→ ✅ MINIMAX MX-07 (both done)
-✅ MINIMAX MX-01 ──→ MINIMAX MX-02 (MX-01 done, MX-02 ready)
-✅ MINIMAX MX-03 ──→ MINIMAX MX-04 (MX-03 done, MX-04 ready)
-✅ MINIMAX MX-05 ──→ ✅ MINIMAX MX-06 (both done)
-✅ GLM-5 GLM-01 ──→ GLM-5 GLM-02 (GLM-01 done, GLM-02 ready)
-✅ SONNET SN-01→SN-08 all complete
+ALL KIMI tasks complete (KMS-01→25)
+ALL MINIMAX tasks complete (MX-01→12, done by Claude)
+ALL SONNET tasks complete (SN-01→21)
 
-Remaining blockers:
-  SONNET SN-13 (event payloads) blocked on MX-03 ── UNBLOCKED (MX-03 done)
-  SONNET SN-14 (config schemas) blocked on KMS-08 ── UNBLOCKED (KMS-08 done)
-
-Everything else is independent — agents can work in parallel.
+Remaining: GLM-5 GLM-02→07 (6 tasks)
+  ✅ GLM-01 ──→ GLM-02 (GLM-01 done, GLM-02 ready)
+  GLM-03→07 are independent — can work in parallel after GLM-02
 ```
 
 ---
