@@ -1,359 +1,292 @@
+// MX-09/KMS-22: Feature Flag Registry tests
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
-  FeatureFlagStore,
-  getFeatureFlagStore,
-  resetFeatureFlagStore,
+  FeatureFlagRegistry,
+  getGlobalRegistry,
+  resetGlobalRegistry,
+  setGlobalRegistry,
+  registerDefaultFlags,
 } from '../feature-flags.js';
 
-// Mock fs module for file-loading tests
-vi.mock('fs', () => ({
-  readFileSync: vi.fn(),
-}));
+describe('FeatureFlagRegistry', () => {
+  let registry: FeatureFlagRegistry;
 
-import { readFileSync } from 'fs';
-
-const mockedReadFileSync = vi.mocked(readFileSync);
-
-describe('FeatureFlagStore', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    resetFeatureFlagStore();
+    registry = new FeatureFlagRegistry();
   });
 
-  // ==========================================================================
-  // Boolean Flag Get/Set
-  // ==========================================================================
-
-  describe('boolean flag get/set', () => {
-    it('should return false for a default flag that is disabled', () => {
-      const store = new FeatureFlagStore();
-      expect(store.get('modelRouting')).toBe(false);
-    });
-
-    it('should return true after setting a boolean flag to true', () => {
-      const store = new FeatureFlagStore();
-      store.set('modelRouting', true);
-      expect(store.get('modelRouting')).toBe(true);
-    });
-
-    it('should return false after setting a boolean flag to false', () => {
-      const store = new FeatureFlagStore();
-      store.set('modelRouting', true);
-      store.set('modelRouting', false);
-      expect(store.get('modelRouting')).toBe(false);
-    });
-
-    it('should support setting a new flag not in defaults', () => {
-      const store = new FeatureFlagStore();
-      store.set('customFlag', true);
-      expect(store.get('customFlag')).toBe(true);
-    });
-  });
-
-  // ==========================================================================
-  // Variant Flag Get/Set
-  // ==========================================================================
-
-  describe('variant flag get/set', () => {
-    it('should return variant string via getVariant', () => {
-      const store = new FeatureFlagStore();
-      store.set('experimentTheme', 'dark');
-      expect(store.getVariant('experimentTheme')).toBe('dark');
-    });
-
-    it('should return null for a boolean flag via getVariant', () => {
-      const store = new FeatureFlagStore();
-      store.set('modelRouting', true);
-      expect(store.getVariant('modelRouting')).toBeNull();
-    });
-
-    it('should treat variant flag as enabled via get()', () => {
-      const store = new FeatureFlagStore();
-      store.set('abTest', 'variant_a');
-      expect(store.get('abTest')).toBe(true);
-    });
-
-    it('should treat empty string variant as disabled via get()', () => {
-      const store = new FeatureFlagStore();
-      store.set('abTest', '');
-      expect(store.get('abTest')).toBe(false);
-    });
-  });
-
-  // ==========================================================================
-  // Environment Variable Loading
-  // ==========================================================================
-
-  describe('env var loading', () => {
-    it('should load NOVA26_FF_MODEL_ROUTING=true as boolean true', () => {
-      const store = new FeatureFlagStore();
-      store.loadFromEnv({ NOVA26_FF_MODEL_ROUTING: 'true' });
-      expect(store.get('modelRouting')).toBe(true);
-    });
-
-    it('should load NOVA26_FF_MODEL_ROUTING=false as boolean false', () => {
-      const store = new FeatureFlagStore();
-      store.loadFromEnv({ NOVA26_FF_MODEL_ROUTING: 'false' });
-      expect(store.get('modelRouting')).toBe(false);
-    });
-
-    it('should load NOVA26_FF_MODEL_ROUTING=1 as boolean true', () => {
-      const store = new FeatureFlagStore();
-      store.loadFromEnv({ NOVA26_FF_MODEL_ROUTING: '1' });
-      expect(store.get('modelRouting')).toBe(true);
-    });
-
-    it('should load NOVA26_FF_MODEL_ROUTING=0 as boolean false', () => {
-      const store = new FeatureFlagStore();
-      store.loadFromEnv({ NOVA26_FF_MODEL_ROUTING: '0' });
-      expect(store.get('modelRouting')).toBe(false);
-    });
-
-    it('should load variant values from env', () => {
-      const store = new FeatureFlagStore();
-      store.loadFromEnv({ NOVA26_FF_EXPERIMENT: 'variant_b' });
-      expect(store.getVariant('experiment')).toBe('variant_b');
-    });
-
-    it('should return the count of loaded flags', () => {
-      const store = new FeatureFlagStore();
-      const count = store.loadFromEnv({
-        NOVA26_FF_MODEL_ROUTING: 'true',
-        NOVA26_FF_PERPLEXITY: 'false',
-        UNRELATED_VAR: 'ignored',
-      });
-      expect(count).toBe(2);
-    });
-
-    it('should ignore undefined env values', () => {
-      const store = new FeatureFlagStore();
-      const count = store.loadFromEnv({
-        NOVA26_FF_MODEL_ROUTING: undefined,
-      });
-      expect(count).toBe(0);
-    });
-  });
-
-  // ==========================================================================
-  // File Loading
-  // ==========================================================================
-
-  describe('file loading', () => {
-    it('should load boolean flags from a JSON file', () => {
-      mockedReadFileSync.mockReturnValue(JSON.stringify({
-        modelRouting: true,
-        perplexity: false,
-      }));
-
-      const store = new FeatureFlagStore();
-      const count = store.loadFromFile('/fake/flags.json');
-      expect(count).toBe(2);
-      expect(store.get('modelRouting')).toBe(true);
-      expect(store.get('perplexity')).toBe(false);
-    });
-
-    it('should load variant flags from a JSON file', () => {
-      mockedReadFileSync.mockReturnValue(JSON.stringify({
-        theme: 'dark',
-      }));
-
-      const store = new FeatureFlagStore();
-      store.loadFromFile('/fake/flags.json');
-      expect(store.getVariant('theme')).toBe('dark');
-    });
-
-    it('should return 0 and not throw when file does not exist', () => {
-      mockedReadFileSync.mockImplementation(() => {
-        throw new Error('ENOENT');
+  describe('registration', () => {
+    it('should register a boolean flag', () => {
+      registry.register({
+        name: 'test-flag',
+        description: 'A test flag',
+        defaultValue: true,
+        type: 'boolean',
       });
 
-      const store = new FeatureFlagStore();
-      const count = store.loadFromFile('/nonexistent/flags.json');
-      expect(count).toBe(0);
+      expect(registry.has('test-flag')).toBe(true);
+      expect(registry.getBoolean('test-flag')).toBe(true);
     });
 
-    it('should return 0 when file contains invalid JSON', () => {
-      mockedReadFileSync.mockReturnValue('not valid json{{{');
+    it('should register a string flag', () => {
+      registry.register({
+        name: 'env-flag',
+        description: 'Environment',
+        defaultValue: 'development',
+        type: 'string',
+      });
 
-      const store = new FeatureFlagStore();
-      const count = store.loadFromFile('/fake/flags.json');
-      expect(count).toBe(0);
+      expect(registry.getString('env-flag')).toBe('development');
     });
 
-    it('should skip non-boolean and non-string values from file', () => {
-      mockedReadFileSync.mockReturnValue(JSON.stringify({
-        validFlag: true,
-        numericFlag: 42,
-        arrayFlag: [1, 2, 3],
-      }));
+    it('should register a number flag', () => {
+      registry.register({
+        name: 'timeout',
+        description: 'Timeout value',
+        defaultValue: 5000,
+        type: 'number',
+      });
 
-      const store = new FeatureFlagStore();
-      const count = store.loadFromFile('/fake/flags.json');
-      expect(count).toBe(1);
-    });
-  });
-
-  // ==========================================================================
-  // Priority: env > file > default
-  // ==========================================================================
-
-  describe('priority resolution', () => {
-    it('env should override file values', () => {
-      mockedReadFileSync.mockReturnValue(JSON.stringify({
-        modelRouting: false,
-      }));
-
-      const store = new FeatureFlagStore();
-      store.loadFromEnv({ NOVA26_FF_MODEL_ROUTING: 'true' });
-      store.loadFromFile('/fake/flags.json');
-      expect(store.get('modelRouting')).toBe(true);
+      expect(registry.get('timeout')).toBe(5000);
     });
 
-    it('file should override default values', () => {
-      mockedReadFileSync.mockReturnValue(JSON.stringify({
-        modelRouting: true,
-      }));
-
-      const store = new FeatureFlagStore();
-      store.loadFromFile('/fake/flags.json');
-      expect(store.get('modelRouting')).toBe(true);
-    });
-
-    it('programmatic set should not override env values', () => {
-      const store = new FeatureFlagStore();
-      store.loadFromEnv({ NOVA26_FF_MODEL_ROUTING: 'true' });
-      store.set('modelRouting', false);
-      expect(store.get('modelRouting')).toBe(true);
-    });
-
-    it('programmatic set should not override file values', () => {
-      mockedReadFileSync.mockReturnValue(JSON.stringify({
-        perplexity: true,
-      }));
-
-      const store = new FeatureFlagStore();
-      store.loadFromFile('/fake/flags.json');
-      store.set('perplexity', false);
-      expect(store.get('perplexity')).toBe(true);
+    it('should return undefined for unknown flags', () => {
+      expect(registry.get('unknown')).toBeUndefined();
+      expect(registry.has('unknown')).toBe(false);
     });
   });
 
-  // ==========================================================================
-  // listFlags
-  // ==========================================================================
-
-  describe('listFlags', () => {
-    it('should return all default flags with source "default"', () => {
-      const store = new FeatureFlagStore();
-      const flags = store.listFlags();
-      const defaultFlags = flags.filter(f => f.source === 'default');
-      expect(defaultFlags.length).toBe(7);
-      expect(defaultFlags.every(f => f.source === 'default')).toBe(true);
+  describe('setting values', () => {
+    beforeEach(() => {
+      registry.register({
+        name: 'feature-a',
+        description: 'Feature A',
+        defaultValue: false,
+        type: 'boolean',
+      });
     });
 
-    it('should mark env-loaded flags with source "env"', () => {
-      const store = new FeatureFlagStore();
-      store.loadFromEnv({ NOVA26_FF_MODEL_ROUTING: 'true' });
-      const flags = store.listFlags();
-      const envFlag = flags.find(f => f.name === 'modelRouting');
-      expect(envFlag?.source).toBe('env');
-      expect(envFlag?.value).toBe(true);
+    it('should set a flag value', () => {
+      const success = registry.set('feature-a', true);
+      expect(success).toBe(true);
+      expect(registry.getBoolean('feature-a')).toBe(true);
     });
 
-    it('should mark file-loaded flags with source "file"', () => {
-      mockedReadFileSync.mockReturnValue(JSON.stringify({
-        perplexity: true,
-      }));
-
-      const store = new FeatureFlagStore();
-      store.loadFromFile('/fake/flags.json');
-      const flags = store.listFlags();
-      const fileFlag = flags.find(f => f.name === 'perplexity');
-      expect(fileFlag?.source).toBe('file');
-      expect(fileFlag?.value).toBe(true);
+    it('should return false for unknown flags', () => {
+      const success = registry.set('unknown-flag', true);
+      expect(success).toBe(false);
     });
 
-    it('should return flags sorted alphabetically by name', () => {
-      const store = new FeatureFlagStore();
-      const flags = store.listFlags();
-      const names = flags.map(f => f.name);
-      const sorted = [...names].sort();
-      expect(names).toEqual(sorted);
+    it('should track source as programmatic', () => {
+      registry.set('feature-a', true);
+      expect(registry.getSource('feature-a')).toBe('programmatic');
     });
   });
-
-  // ==========================================================================
-  // Unknown Flags
-  // ==========================================================================
-
-  describe('unknown flags', () => {
-    it('should return false for an unknown boolean flag', () => {
-      const store = new FeatureFlagStore();
-      expect(store.get('nonExistentFlag')).toBe(false);
-    });
-
-    it('should return null for an unknown variant flag', () => {
-      const store = new FeatureFlagStore();
-      expect(store.getVariant('nonExistentFlag')).toBeNull();
-    });
-
-    it('should return false for isEnabled on an unknown flag', () => {
-      const store = new FeatureFlagStore();
-      expect(store.isEnabled('nonExistentFlag')).toBe(false);
-    });
-  });
-
-  // ==========================================================================
-  // Reset
-  // ==========================================================================
 
   describe('reset', () => {
-    it('should clear all flags and restore defaults', () => {
-      const store = new FeatureFlagStore();
-      store.set('modelRouting', true);
-      store.set('customFlag', true);
-      store.reset();
-
-      expect(store.get('modelRouting')).toBe(false);
-      expect(store.get('customFlag')).toBe(false);
+    beforeEach(() => {
+      registry.register({
+        name: 'resettable',
+        description: 'Reset me',
+        defaultValue: 'default',
+        type: 'string',
+      });
+      registry.set('resettable', 'changed');
     });
 
-    it('should clear env-loaded flags on reset', () => {
-      const store = new FeatureFlagStore();
-      store.loadFromEnv({ NOVA26_FF_MODEL_ROUTING: 'true' });
-      expect(store.get('modelRouting')).toBe(true);
+    it('should reset a single flag to default', () => {
+      expect(registry.get('resettable')).toBe('changed');
+      
+      registry.reset('resettable');
+      
+      expect(registry.get('resettable')).toBe('default');
+      expect(registry.getSource('resettable')).toBe('default');
+    });
 
-      store.reset();
-      expect(store.get('modelRouting')).toBe(false);
+    it('should reset all flags', () => {
+      registry.register({
+        name: 'another',
+        description: 'Another flag',
+        defaultValue: 100,
+        type: 'number',
+      });
+      registry.set('another', 200);
+
+      registry.resetAll();
+
+      expect(registry.get('resettable')).toBe('default');
+      expect(registry.get('another')).toBe(100);
+    });
+
+    it('should return false for resetting unknown flag', () => {
+      expect(registry.reset('unknown')).toBe(false);
     });
   });
 
-  // ==========================================================================
-  // Singleton Behavior
-  // ==========================================================================
+  describe('environment variables', () => {
+    beforeEach(() => {
+      registry.register({
+        name: 'env-test',
+        description: 'From env',
+        defaultValue: false,
+        type: 'boolean',
+      });
+    });
+
+    it('should load boolean from env', () => {
+      process.env.NOVA26_FF_ENV_TEST = 'true';
+      registry.loadFromEnv();
+      
+      expect(registry.getBoolean('env-test')).toBe(true);
+      expect(registry.getSource('env-test')).toBe('env');
+      
+      delete process.env.NOVA26_FF_ENV_TEST;
+    });
+
+    it('should load string from env', () => {
+      registry.register({
+        name: 'env-string',
+        description: 'String from env',
+        defaultValue: 'default',
+        type: 'string',
+      });
+      
+      process.env.NOVA26_FF_ENV_STRING = 'from-env';
+      registry.loadFromEnv();
+      
+      expect(registry.getString('env-string')).toBe('from-env');
+      
+      delete process.env.NOVA26_FF_ENV_STRING;
+    });
+
+    it('should handle numeric env values', () => {
+      registry.register({
+        name: 'env-num',
+        description: 'Number from env',
+        defaultValue: 0,
+        type: 'number',
+      });
+      
+      process.env.NOVA26_FF_ENV_NUM = '42';
+      registry.loadFromEnv();
+      
+      expect(registry.get('env-num')).toBe(42);
+      
+      delete process.env.NOVA26_FF_ENV_NUM;
+    });
+  });
+
+  describe('getAllStates', () => {
+    it('should return all flag states', () => {
+      registry.register({
+        name: 'flag-1',
+        description: 'First',
+        defaultValue: true,
+        type: 'boolean',
+      });
+      registry.register({
+        name: 'flag-2',
+        description: 'Second',
+        defaultValue: 'value',
+        type: 'string',
+      });
+
+      const states = registry.getAllStates();
+
+      expect(states).toHaveLength(2);
+      expect(states.map(s => s.name)).toContain('flag-1');
+      expect(states.map(s => s.name)).toContain('flag-2');
+    });
+
+    it('should include descriptions', () => {
+      registry.register({
+        name: 'described',
+        description: 'This is described',
+        defaultValue: true,
+        type: 'boolean',
+      });
+
+      const states = registry.getAllStates();
+
+      expect(states[0].description).toBe('This is described');
+    });
+  });
+
+  describe('default Nova26 flags', () => {
+    it('should register default flags', () => {
+      registerDefaultFlags(registry);
+
+      expect(registry.has('model-routing')).toBe(true);
+      expect(registry.has('perplexity')).toBe(true);
+      expect(registry.has('workflow-engine')).toBe(true);
+      expect(registry.has('infinite-memory')).toBe(true);
+      expect(registry.has('cinematic-observability')).toBe(true);
+      expect(registry.has('ai-model-database')).toBe(true);
+      expect(registry.has('crdt-collaboration')).toBe(true);
+      expect(registry.has('experimental-features')).toBe(true);
+    });
+
+    it('should have correct defaults', () => {
+      registerDefaultFlags(registry);
+
+      expect(registry.getBoolean('model-routing')).toBe(true);
+      expect(registry.getBoolean('perplexity')).toBe(false);
+      expect(registry.getBoolean('workflow-engine')).toBe(true);
+      expect(registry.getBoolean('infinite-memory')).toBe(false);
+    });
+  });
 
   describe('singleton', () => {
-    it('should return the same instance on repeated calls', () => {
-      const a = getFeatureFlagStore();
-      const b = getFeatureFlagStore();
-      expect(a).toBe(b);
+    it('should return same global registry', () => {
+      const r1 = getGlobalRegistry();
+      const r2 = getGlobalRegistry();
+      expect(r1).toBe(r2);
     });
 
-    it('should return a new instance after resetFeatureFlagStore', () => {
-      const a = getFeatureFlagStore();
-      resetFeatureFlagStore();
-      const b = getFeatureFlagStore();
-      expect(a).not.toBe(b);
+    it('should reset global registry', () => {
+      const r1 = getGlobalRegistry();
+      resetGlobalRegistry();
+      const r2 = getGlobalRegistry();
+      expect(r1).not.toBe(r2);
     });
 
-    it('should not share state after reset', () => {
-      const a = getFeatureFlagStore();
-      a.set('modelRouting', true);
-      expect(a.get('modelRouting')).toBe(true);
+    it('should set global registry', () => {
+      const custom = new FeatureFlagRegistry();
+      setGlobalRegistry(custom);
+      expect(getGlobalRegistry()).toBe(custom);
+    });
+  });
 
-      resetFeatureFlagStore();
-      const b = getFeatureFlagStore();
-      expect(b.get('modelRouting')).toBe(false);
+  describe('edge cases', () => {
+    it('should handle empty registry', () => {
+      expect(registry.getAllNames()).toEqual([]);
+      expect(registry.getAllStates()).toEqual([]);
+    });
+
+    it('should clear all flags', () => {
+      registry.register({
+        name: 'to-clear',
+        description: 'Will be cleared',
+        defaultValue: true,
+        type: 'boolean',
+      });
+
+      registry.clear();
+
+      expect(registry.has('to-clear')).toBe(false);
+    });
+
+    it('should get string representation of non-string values', () => {
+      registry.register({
+        name: 'bool-as-string',
+        description: 'Bool',
+        defaultValue: true,
+        type: 'boolean',
+      });
+
+      expect(registry.getString('bool-as-string')).toBe('true');
     });
   });
 });
