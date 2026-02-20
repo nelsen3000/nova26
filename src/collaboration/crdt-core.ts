@@ -166,6 +166,23 @@ export class RealTimeCRDTOrchestrator {
   }
 
   /**
+   * Create a new document with a specific ID
+   */
+  createDocumentWithId(id: string, type: CRDTDocument['type']): CRDTDocument {
+    const doc: CRDTDocument = {
+      id,
+      type,
+      content: new Uint8Array(),
+      version: 1,
+      participants: [],
+      lastModified: new Date().toISOString(),
+      conflictCount: 0,
+    };
+    this.documents.set(id, doc);
+    return doc;
+  }
+
+  /**
    * Get document
    */
   getDocument(id: string): CRDTDocument | undefined {

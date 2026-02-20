@@ -119,7 +119,7 @@ export class ATLASInfiniteMemory {
       id,
       metadata: {
         ...node.metadata,
-        lastAccessed: now,
+        lastAccessed: node.metadata.lastAccessed ?? now,
       },
     };
 
@@ -182,7 +182,7 @@ export class ATLASInfiniteMemory {
     const candidates: Array<{ node: HierarchicalMemoryNode; score: number }> = [];
 
     // Iterate through nodes (O(n) but with early termination for performance)
-    for (const node of this.nodes.values()) {
+    for (const node of Array.from(this.nodes.values())) {
       // Level filter
       if (level && node.level !== level) {
         continue;
@@ -350,7 +350,7 @@ export class ATLASInfiniteMemory {
     let prunedCount = 0;
     const nodesToRemove: string[] = [];
 
-    for (const [id, node] of this.nodes.entries()) {
+    for (const [id, node] of Array.from(this.nodes.entries())) {
       // Don't prune lifetime memories
       if (node.level === 'lifetime') {
         continue;
@@ -462,7 +462,7 @@ export class ATLASInfiniteMemory {
 
     let totalTasteScore = 0;
 
-    for (const node of this.nodes.values()) {
+    for (const node of Array.from(this.nodes.values())) {
       byLevel[node.level]++;
       totalTasteScore += node.metadata.tasteScore;
     }
@@ -563,7 +563,7 @@ export class ATLASInfiniteMemory {
   private calculateMaxDepth(): number {
     let maxDepth = 0;
 
-    for (const node of this.nodes.values()) {
+    for (const node of Array.from(this.nodes.values())) {
       if (!node.parentId) {
         // Root node, calculate depth
         const depth = this.calculateNodeDepth(node.id);

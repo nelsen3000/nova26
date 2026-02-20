@@ -261,10 +261,13 @@ export class ModelRouter {
       return chain;
     }
 
-    // If a fallback is selected, include remaining fallbacks
+    // If a fallback is selected, include primary first, then remaining fallbacks
     const selectedIndex = mapping.fallback.findIndex(f => f.name === selectedModel.name);
     if (selectedIndex >= 0) {
-      chain.push(...mapping.fallback.slice(selectedIndex + 1, selectedIndex + 1 + this.config.maxFallbackDepth));
+      // Primary is always the first fallback option
+      chain.push(mapping.primary);
+      // Then include remaining fallbacks after the selected one
+      chain.push(...mapping.fallback.slice(selectedIndex + 1, selectedIndex + 1 + this.config.maxFallbackDepth - 1));
     }
 
     return chain;
