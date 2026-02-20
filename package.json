@@ -13,6 +13,7 @@
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test:changed": "vitest run --changed",
+    "test:coverage": "vitest run --coverage",
     "prepare": "husky"
   },
   "lint-staged": {
