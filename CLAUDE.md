@@ -62,13 +62,19 @@
   GEMINI-04: Monetization ($12/$25/$45 tiers), GEMINI-05: EU AI Act compliance,
   GEMINI-06: Local SLM optimization (Qwen 3.5 king)
 - [x] Created 5 Gemini prompts (GEMINI-07→11), 5 Grok prompts (R20-03→R22-02)
+- [x] Sonnet S-01 Sprint (6 tasks): deduplicated RalphLoopOptions, wired 4 missing modules, deleted CUT sandbox, extracted handleTaskFailure(), 45 integration tests, evaluated Kimi deliveries
+- [x] Deleted 4 CUT module artifacts (CL-50): sandbox, swarm, engine, multimodal — 40 TS errors → 0
+- [x] Evaluated + committed 7 Kimi R22-R24 KEEP modules (CL-51): perplexity, model-routing, workflow-engine, atlas extensions, observability, models, collaboration
+- [x] Wired 7 new modules into RalphLoopOptions (CL-52): 14 new fields (7 enabled + 7 config)
+- [x] Wired 7 new modules into lifecycle hooks (CL-53): 24 total features in DEFAULT_FEATURE_HOOKS
+- [x] Verified barrel exports for all new modules (CL-54): 6 index.ts files already correct
+- [x] Cross-module integration tests (CL-55): 51 tests in r22-r24-integration.test.ts
+- [x] Updated TASK-BOARD.md + CLAUDE.md (CL-56)
+- [x] Current state: 0 TS errors, 4,603 tests passing, 159 test files
 
 ## In Progress
 
-- [ ] Wire 13 unwired R16/R17 modules into ralph-loop.ts (R16-01, R16-03, R16-04, R17-03→R17-12)
-  NOTE: Kimi overnight hardening produced docs + integration tests but did NOT wire ralph-loop.ts.
-  Kimi mega-wiring sprint (KIMI-W-01) assigned to handle this.
-- [ ] CL-20→CL-30 downtime evaluation tasks (see .nova/TASK-BOARD.md)
+(none)
 
 ## Queued
 

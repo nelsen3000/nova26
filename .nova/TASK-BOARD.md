@@ -5,7 +5,7 @@
 > that sends you back here. Find your section, pick the next unchecked task, do it.
 > **Coordinator**: Claude Code (assigns tasks, evaluates output, resolves conflicts)
 > **Repo**: https://github.com/nelsen3000/nova26
-> **Current state**: 4,552 tests, 0 TS errors, 158 test files
+> **Current state**: 4,603 tests, 0 TS errors, 159 test files
 > **Vision**: Eternal Engine — self-evolving Rust core + ZeroClaw/TinyClaw/NanoClaw patterns
 
 ---
@@ -15,7 +15,7 @@
 | Agent | Domain | Status | Current Sprint |
 |-------|--------|--------|----------------|
 | **Claude Code** | Coordinator + Core Engine + Convex | Active | Evaluation + prompt writing |
-| **Sonnet** | Integration + Hardening + Wiring | Active | S-01 (6 tasks) + CL-50 hardening sprint (7 tasks) |
+| **Sonnet** | Integration + Hardening + Wiring | Active | S-01 (6 tasks, DONE) + CL-50 hardening sprint (7 tasks, DONE) |
 | **Kimi** | Implementation (TypeScript + Tests) | Active | R22-R24 done, R25 tests done (538), R26 lifecycle adapters ready |
 | **Grok** | Research + Deep Specs | Active | R23+R24 delivered, awaiting R25 |
 | **Kiro** | Knowledge Extraction + Quality Audits | Active | KIRO-06 + KIRO-07 done (by Claude), awaiting KIRO-08 |
@@ -30,14 +30,25 @@
 > Domain: ralph-loop.ts wiring, lifecycle system, module integration, TS error fixing, codebase hardening
 > Constraint: Do NOT create new feature modules (that's Kimi's job). Focus on wiring, fixing, deduplicating, testing integration.
 
-### Sprint S-01: Integration & Hardening
+### Sprint S-01: Integration & Hardening (COMPLETE)
 
-- [ ] `S-01-01` Fix P0: Deduplicate RalphLoopOptions (ralph-loop.ts line 85 vs ralph-loop-types.ts) — keep ralph-loop-types.ts as single source of truth, re-export from ralph-loop.ts
-- [ ] `S-01-02` Wire 4 missing modules into lifecycle-wiring.ts — agentMemory (R16-02), wellbeing (R16-05), advancedRecovery (R17-01), advancedInit (R17-02) — add to DEFAULT_FEATURE_HOOKS + featureFlags map
-- [ ] `S-01-03` Delete cut R23-02 sandbox artifacts — remove src/sandbox/ files (Kimi started before we cut this task). Files: firecracker-adapter.ts, index.ts, opa-policy-engine.ts, security/, types.ts, ultra-sandbox-manager.ts, wasi-bridge.ts
-- [ ] `S-01-04` Extract shared failure handler from processTask() — 3 near-identical failure paths at ralph-loop.ts lines ~1037, ~1066, ~1112 share Taste Vault recording + ACE outcome recording + analytics. Extract into `handleTaskFailure()` helper
-- [ ] `S-01-05` Add integration tests for lifecycle wiring — test that wireFeatureHooks() registers correct hooks for all 17 features (13 existing + 4 new), test priority ordering, test getWiringSummary() accuracy
-- [ ] `S-01-06` Evaluate + integrate Kimi R22-R24 deliveries as they arrive — run `npx tsc --noEmit`, fix TS errors, run `npx vitest run`, commit passing code
+- [x] `S-01-01` Fix P0: Deduplicate RalphLoopOptions — kept ralph-loop-types.ts as single source of truth, re-export from ralph-loop.ts
+- [x] `S-01-02` Wire 4 missing modules into lifecycle-wiring.ts — agentMemory, wellbeing, advancedRecovery, advancedInit added to DEFAULT_FEATURE_HOOKS + featureFlags maps
+- [x] `S-01-03` Delete cut R23-02 sandbox artifacts — removed src/sandbox/ files
+- [x] `S-01-04` Extract shared failure handler from processTask() — 4 failure paths → handleTaskFailure() helper
+- [x] `S-01-05` Add 45 integration tests for lifecycle wiring — all 17 features, priority ordering, error isolation, singleton registry
+- [x] `S-01-06` Evaluate + integrate Kimi R22-R24 deliveries — deleted CUT artifacts (engine, multimodal)
+
+### Sprint CL-50: R22-R24 Hardening & Integration (COMPLETE)
+> Sprint file: `.prompts/claude-cl50-hardening-sprint.md`
+
+- [x] `CL-50` Delete 4 CUT module artifacts (sandbox, swarm, engine, multimodal) — 40 TS errors → 0
+- [x] `CL-51` Evaluate + commit all 7 Kimi R22-R24 KEEP modules (source + tests)
+- [x] `CL-52` Wire 7 new modules into RalphLoopOptions (14 new fields in ralph-loop-types.ts)
+- [x] `CL-53` Wire 7 new modules into lifecycle hooks (24 total features in lifecycle-wiring.ts)
+- [x] `CL-54` Create/verify barrel exports for all new modules (6 index.ts files verified)
+- [x] `CL-55` Cross-module integration tests (r22-r24-integration.test.ts, 51 tests)
+- [x] `CL-56` Update TASK-BOARD.md + CLAUDE.md with completed tasks and new test counts
 
 ---
 
@@ -258,11 +269,11 @@
 - [x] `CL-49` ~~KIRO-07 pattern extraction~~ DONE — 7 new patterns, 2 audit reports, INDEX 51→58
 - [x] `CL-50` ~~Delete CUT module artifacts~~ DONE — deleted src/sandbox/, src/swarm/, src/engine/, src/multimodal/ + cleaned swarm imports from CLI
 - [x] `CL-51` ~~Evaluate + commit Kimi R22-R24 source~~ DONE — 35 files (18K lines), 7 modules committed, 0 `any`, ESM .js imports correct, 2 test bugs fixed
-- [ ] `CL-52` Wire R22-R24 modules into RalphLoopOptions — assigned to Sonnet
-- [ ] `CL-53` Wire R22-R24 into lifecycle hooks — assigned to Sonnet
-- [ ] `CL-54` Create barrel exports for new modules — assigned to Sonnet
-- [ ] `CL-55` Cross-module R22-R24 integration tests (40+ tests) — assigned to Sonnet
-- [ ] `CL-56` Update TASK-BOARD + CLAUDE.md — assigned to Sonnet
+- [x] `CL-52` ~~Wire R22-R24 modules into RalphLoopOptions~~ DONE — 14 new fields (7 enabled + 7 config), 4 type imports + 3 placeholder configs
+- [x] `CL-53` ~~Wire R22-R24 into lifecycle hooks~~ DONE — 24 total features in DEFAULT_FEATURE_HOOKS, wireFeatureHooks(), getWiringSummary()
+- [x] `CL-54` ~~Create barrel exports for new modules~~ DONE — all 6 index.ts files verified (Kimi set them up correctly)
+- [x] `CL-55` ~~Cross-module R22-R24 integration tests~~ DONE — 51 tests in r22-r24-integration.test.ts
+- [x] `CL-56` ~~Update TASK-BOARD + CLAUDE.md~~ DONE
 
 ### Completed (recent)
 
@@ -297,9 +308,9 @@
 
 | Agent | Active Tasks | Completed | Next Up |
 |-------|-------------|-----------|---------|
-| Claude Code | CL-52→56, coordination | 80+ | Wire R22-R24 into RalphLoopOptions + lifecycle, integration tests |
-| Sonnet | S-01-01→05 | S-01-03/06 done by Claude | P0 dedup → wire 4 modules → failure handler → integration tests |
-| Kimi | R25 testing sprint (7 tasks) | 55+ | T-01→T-07 (445+ tests for 7 KEEP modules) |
+| Claude Code | Coordination | 85+ | CL-50 sprint complete, awaiting next assignments |
+| Sonnet | — | S-01 (6) + CL-50 (7) = 13 tasks | Both sprints complete, awaiting next sprint |
+| Kimi | R26 lifecycle adapters | 55+ | R26-01→R26-07 (165+ tests for 7 lifecycle adapters) |
 | Grok | GROK-R22-02 (Shannon) | 80+ | R23+R24 done, Shannon adaptation pending |
 | Kiro | — | 31+ | KIRO-07 complete, 58 total patterns, awaiting KIRO-08 |
 | Gemini | GEMINI-07→15 | 7 | 07-11 current → 13-15 frontier research |
