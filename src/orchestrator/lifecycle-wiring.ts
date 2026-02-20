@@ -3,6 +3,7 @@
 
 import type { HookRegistry } from './lifecycle-hooks.js';
 import type { RalphLoopOptions } from './ralph-loop-types.js';
+import { getFeatureFlagStore } from '../config/feature-flags.js';
 
 // ============================================================================
 // Feature Module Hook Configurations
@@ -240,9 +241,15 @@ export function wireFeatureHooks(
   skippedCount: number;
   totalHooks: number;
   featuresWired: string[];
+  flagOverrides: number;
 } {
   const featuresWired: string[] = [];
   let totalHooks = 0;
+  let flagOverrides = 0;
+
+  // Get the feature flag store for additional flag checks
+  const flagStore = getFeatureFlagStore();
+  const storeFlagNames = new Set(flagStore.listFlags().map(f => f.name));
 
   // Map options to features
   const featureFlags: Record<string, boolean | undefined> = {
@@ -283,6 +290,14 @@ export function wireFeatureHooks(
       continue;
     }
 
+    // Check the feature flag store using the module name (kebab-case)
+    // If the store explicitly has this flag and it's disabled, skip the feature
+    const flagKey = config.moduleName;
+    if (storeFlagNames.has(flagKey) && !flagStore.isEnabled(flagKey)) {
+      flagOverrides++;
+      continue;
+    }
+
     // Wire each enabled phase
     for (const [phase, phaseEnabled] of Object.entries(config.phases)) {
       if (!phaseEnabled) {
@@ -315,6 +330,7 @@ export function wireFeatureHooks(
     skippedCount,
     totalHooks,
     featuresWired,
+    flagOverrides,
   };
 }
 
