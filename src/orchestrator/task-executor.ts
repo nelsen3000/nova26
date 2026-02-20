@@ -60,7 +60,7 @@ export interface ProcessTaskParams {
   sessionId: string | null;
   loopOptions?: RalphLoopOptions;
   eventStore?: EventStore;
-  gitWf?: ReturnType<typeof import('./ralph-loop.js').ralphLoop extends (...args: any[]) => any ? never : import('../git/workflow.js').Workflow>;
+  gitWf?: { commitPhase: (taskId: string, title: string, agent: string, phase: number) => boolean; finalize: (taskSummary: string[]) => string | null; branch: string };
   convexClient?: import('../convex/sync.js').ConvexSyncClient;
 }
 
@@ -701,6 +701,7 @@ export class TaskExecutor {
             sessionId, recordVaultFailure: false,
             updateTaskStatus: this.config.updateTaskStatus,
             savePRD: this.config.savePRD,
+            setTaskOutput: this.config.setTaskOutput,
           });
         }
         
@@ -718,6 +719,7 @@ export class TaskExecutor {
             sessionId,
             updateTaskStatus: this.config.updateTaskStatus,
             savePRD: this.config.savePRD,
+            setTaskOutput: this.config.setTaskOutput,
           });
         }
       } else {
@@ -727,6 +729,7 @@ export class TaskExecutor {
           sessionId,
           updateTaskStatus: this.config.updateTaskStatus,
           savePRD: this.config.savePRD,
+          setTaskOutput: this.config.setTaskOutput,
         });
       }
     }
@@ -752,6 +755,7 @@ export class TaskExecutor {
           sessionId,
           updateTaskStatus: this.config.updateTaskStatus,
           savePRD: this.config.savePRD,
+          setTaskOutput: this.config.setTaskOutput,
         });
       }
     }
