@@ -1,6 +1,6 @@
 # NOVA26 TASK BOARD — February 20, 2026
 
-> **4-Agent Terminal System** — Color-coded AI agents building Nova26 in parallel.
+> **5-Agent Terminal System** — Color-coded AI agents building Nova26 in parallel.
 > **Repo**: https://github.com/nelsen3000/nova26 | **Branch**: `main`
 > **Current state**: 4,871 tests, 0 TS errors, 433 source files, 155K lines
 > **Coordinator**: Claude (Red) — evaluates output, writes prompts, resolves conflicts
@@ -16,6 +16,7 @@
 | Red | **Claude** | claude-opus-4-6 | Reasoning, evaluation, architecture | Coordinator — evaluates all output, writes prompts, critical decisions |
 | Blue | **Kimi** | kimi-k2 | Fast implementation, bulk output, FREE | Workhorse — new features, CLI commands, tests, high-volume implementation |
 | Green | **MiniMax** | minimax-m2.5 | Agent workflows, integration, 205K context | Integrator — wiring modules together, cross-module pipelines, handoff logic |
+| White | **Sonnet** | claude-sonnet-4-6 | Integration testing, hardening, validation | Hardener — end-to-end tests, CI pipeline, documentation, quality sweeps |
 | Black | **GLM-5** | z-ai/glm-5 | Complex systems, 745B MoE, deep backend | Architect — refactoring, performance, security, persistence, decomposition |
 
 ### Research Agents (on-demand, not terminal)
@@ -154,6 +155,37 @@ Several modules do repeated lookups. Add a proper caching layer.
 
 ---
 
+## SONNET (White) — Hardener Mega Sprint
+
+> **You are the quality hardener.** You write end-to-end tests, set up CI, write docs, and sweep for quality issues.
+> **Your superpower**: Fast, precise, thorough — you catch what others miss.
+> **Do NOT**: Create new feature modules (Kimi does that), wire modules (MiniMax does that), or refactor architecture (GLM-5 does that).
+
+### Sprint SN-01: E2E Tests + CI + Docs (8 tasks, 200+ tests)
+
+**Phase 1: End-to-End Build Simulation Tests**
+Test the full Ralph Loop pipeline — from PRD input to build completion — verifying all modules participate.
+
+- [ ] `SN-01` Full build simulation test — `src/orchestrator/__tests__/e2e-build-simulation.test.ts`. Mock a complete build with 5 tasks, verify lifecycle hooks fire in order, all adapters get called, workflow graph updates, memory stores results, observability traces complete. (40 tests)
+- [ ] `SN-02` Error recovery E2E test — `src/orchestrator/__tests__/e2e-error-recovery.test.ts`. Simulate builds where tasks fail at different stages. Verify recovery hooks fire, circuit breakers activate, error paths in all adapters handle gracefully, build completes with partial results. (30 tests)
+- [ ] `SN-03` Multi-agent handoff E2E test — `src/orchestrator/__tests__/e2e-handoff.test.ts`. Simulate SUN → EARTH → MARS → VENUS agent chain. Verify context passes between agents, model routing adjusts per agent, memory accumulates across handoffs. (25 tests)
+
+**Phase 2: CI/CD Pipeline**
+
+- [ ] `SN-04` GitHub Actions CI — `.github/workflows/ci.yml`. Matrix: Node 20/22, runs `tsc --noEmit` + `vitest run` + coverage report. Cache node_modules. Fail on any TS error or test failure. Add status badge to README. (no test file — verify by pushing)
+- [ ] `SN-05` Pre-commit hooks — `.husky/pre-commit` with lint-staged. Run `tsc --noEmit` on changed `.ts` files. Run vitest on changed test files only (fast feedback). Create `package.json` scripts: `lint`, `typecheck`, `test:changed`. (no test file — verify by committing)
+
+**Phase 3: Documentation**
+
+- [ ] `SN-06` CONTRIBUTING.md — how to add a new module (create src/module/, types.ts, index.ts, lifecycle-adapter.ts, __tests__/), how to wire it (RalphLoopOptions, lifecycle-wiring.ts, event bus), coding standards, commit format, quality gates.
+- [ ] `SN-07` ARCHITECTURE.md — system overview diagram (ASCII), module dependency graph, Ralph Loop execution flow, lifecycle hook phases, agent roster, key file paths. Keep it under 200 lines.
+
+**Phase 4: Quality Sweep**
+
+- [ ] `SN-08` Dead code elimination — find and remove unused exports, unreachable functions, orphaned test helpers across the entire codebase. Use `npx tsc --noEmit` + grep for unexported functions. Report what was removed. Write `src/__tests__/no-dead-code.test.ts` (15 tests verifying key exports exist)
+
+---
+
 ## CLAUDE (Red) — Coordinator
 
 > Domain: Evaluation, prompt writing, conflict resolution, architectural decisions
@@ -161,7 +193,7 @@ Several modules do repeated lookups. Add a proper caching layer.
 
 ### Active Responsibilities
 
-- [ ] Evaluate all output from Kimi, MiniMax, and GLM-5 as it arrives
+- [ ] Evaluate all output from Kimi, MiniMax, GLM-5, and Sonnet as it arrives
 - [ ] Fix TS errors in delivered code
 - [ ] Resolve merge conflicts between agents
 - [ ] Write follow-up sprint prompts as needed
@@ -234,6 +266,9 @@ MINIMAX MX-05 (handoff builder) ──→ MINIMAX MX-06 (handoff receiver)
 GLM-5 GLM-01 (extract task-executor) ──→ GLM-5 GLM-02 (extract build-lifecycle)
 GLM-5 GLM-03 (LRU cache) ──→ independent, no blockers
 
+SONNET SN-01/02/03 depend on MiniMax MX-01/02 (adapters must be wired first)
+SONNET SN-04/05/06/07/08 are independent — can start immediately
+
 Everything else is independent — agents can work in parallel.
 ```
 
@@ -245,9 +280,10 @@ Everything else is independent — agents can work in parallel.
 2. **Quality gates after every task** — `npx tsc --noEmit` = 0 errors, `npx vitest run` = 0 failures
 3. **Report to Jon when done** — Jon routes output to Claude for evaluation
 4. **No overlapping files** — each agent owns their domain:
-   - Kimi: `src/cli/`, `src/config/module-schemas.ts`, `src/__tests__/`
-   - MiniMax: `src/orchestrator/` (wiring, event-bus, handoff), `src/config/config-resolver.ts`
-   - GLM-5: `src/orchestrator/task-executor.ts`, `src/orchestrator/build-lifecycle.ts`, `src/cache/`, `src/security/`, `src/persistence/`
+   - Kimi: `src/cli/`, `src/config/module-schemas.ts`, `src/__tests__/type-safety-audit*`, `src/orchestrator/adapter-error-boundary*`
+   - MiniMax: `src/orchestrator/event-bus*`, `src/orchestrator/handoff-*`, `src/orchestrator/module-health*`, `src/config/config-resolver*`, adapter wiring in `lifecycle-wiring.ts`
+   - GLM-5: `src/orchestrator/task-executor*`, `src/orchestrator/build-lifecycle*`, `src/cache/`, `src/security/`, `src/persistence/`
+   - Sonnet: `src/orchestrator/__tests__/e2e-*`, `.github/`, `.husky/`, `CONTRIBUTING.md`, `ARCHITECTURE.md`, `src/__tests__/no-dead-code*`
    - Claude: `.nova/`, `.prompts/`, evaluation only
 5. **If you hit a file owned by another agent** — skip that task and move to the next one
 6. **Commit after every task** — small, focused commits with descriptive messages
