@@ -73,7 +73,7 @@ Each module needs slash commands so developers can interact with it from the CLI
 - [x] `KMS-02` `/workflow` command ✅ (df62f46)
 - [x] `KMS-03` `/memory` command ✅ (df62f46)
 - [x] `KMS-04` `/observe` command ✅ (df62f46)
-- [ ] `KMS-05` `/collaborate` command — start session, show participants, show changes, resolve conflicts. Uses `src/collaboration/crdt-core.ts`. Write `src/cli/__tests__/collaborate-commands.test.ts` (20 tests)
+- [x] `KMS-05` `/collaborate` command ✅ — start session, show participants, show changes, resolve conflicts. Uses `src/collaboration/crdt-core.ts`. `src/cli/__tests__/collaborate-commands.test.ts` (25 tests)
 - [x] `KMS-06` `/research` command ✅ (df62f46)
 - [x] `KMS-07` `/route` command ✅ (df62f46)
 
@@ -83,11 +83,11 @@ Each module needs slash commands so developers can interact with it from the CLI
 
 **Phase 3: Codebase `any` Cleanup**
 
-- [ ] `KMS-09` Fix 80+ `any` types in `src/memory/`, `src/cli/`, `src/analytics/`, `src/persistence/`, `src/agents/` — replace with `unknown` + type guards or proper types. Currently 144 `any` across 43 files. Target: reduce to < 30 (keep only justified `as any` in test mocks). Write `src/__tests__/type-safety-audit.test.ts` (15 tests verifying type guard functions work)
+- [x] `KMS-09` Fix `any` types ✅ — replaced with `unknown` + type guards. `src/__tests__/type-safety-audit.test.ts` (15 tests)
 
 **Phase 4: Error Boundaries**
 
-- [ ] `KMS-10` Error boundary wrappers for all 7 lifecycle adapters — create `src/orchestrator/adapter-error-boundary.ts` that wraps adapter calls with try/catch, logging, and graceful degradation. If an adapter throws, the build continues (adapter errors are non-fatal). Write `src/orchestrator/__tests__/adapter-error-boundary.test.ts` (30 tests)
+- [x] `KMS-10` Error boundary wrappers ✅ — `src/orchestrator/adapter-error-boundary.ts` with graceful degradation. `src/orchestrator/__tests__/adapter-error-boundary.test.ts` (38 tests)
 
 ### Sprint KIMI-MS-02: API Clients + Agent System + Dashboard Data (10 tasks, 250+ tests)
 
@@ -95,26 +95,26 @@ Each module needs slash commands so developers can interact with it from the CLI
 Each external service needs a typed client with mock implementation so we can test without real network calls.
 
 - [x] `KMS-11` Braintrust client ✅ (525364d)
-- [ ] `KMS-12` LangSmith client — files exist, NEEDS COMMIT + PUSH. `src/integrations/langsmith-client.ts`
-- [ ] `KMS-13` Mem0/Letta client — files exist, NEEDS COMMIT + PUSH. `src/integrations/memory-providers-client.ts`
+- [x] `KMS-12` LangSmith client ✅ — `src/integrations/langsmith-client.ts` (37 tests)
+- [x] `KMS-13` Mem0/Letta client ✅ — `src/integrations/memory-providers-client.ts` (36 tests)
 
 **Phase 6: Agent System Enhancements**
 The 21 agents need better selection, tracking, and capability awareness.
 
-- [ ] `KMS-14` Agent capability matrix — files exist, NEEDS COMMIT + PUSH. `src/agents/capability-matrix.ts`
-- [ ] `KMS-15` Task complexity estimator — files exist, NEEDS COMMIT + PUSH. `src/agents/complexity-estimator.ts`
-- [ ] `KMS-16` Agent performance tracker — files exist, NEEDS COMMIT + PUSH. `src/agents/performance-tracker.ts`
+- [x] `KMS-14` Agent capability matrix ✅ — `src/agents/capability-matrix.ts` (73 tests)
+- [x] `KMS-15` Task complexity estimator ✅ — `src/agents/complexity-estimator.ts` (48 tests)
+- [x] `KMS-16` Agent performance tracker ✅ — `src/agents/performance-tracker.ts` (30 tests)
 
 **Phase 7: Dashboard Data Layer**
 Backend data aggregation for the future dashboard UI.
 
-- [ ] `KMS-17` Build metrics aggregator — files exist, NEEDS COMMIT + PUSH. `src/analytics/build-metrics.ts`
-- [ ] `KMS-18` Real-time build status — files exist, NEEDS COMMIT + PUSH. `src/analytics/build-status.ts`
-- [ ] `KMS-19` Historical build comparison — files exist, NEEDS COMMIT + PUSH. `src/analytics/build-comparison.ts`
+- [x] `KMS-17` Build metrics aggregator ✅ — `src/analytics/build-metrics.ts` (28 tests)
+- [x] `KMS-18` Real-time build status ✅ — `src/analytics/build-status.ts` (36 tests)
+- [x] `KMS-19` Historical build comparison ✅ — `src/analytics/build-comparison.ts` (29 tests)
 
 **Phase 8: Notification System**
 
-- [ ] `KMS-20` Notification dispatcher — files exist, NEEDS COMMIT + PUSH. `src/notifications/dispatcher.ts`
+- [x] `KMS-20` Notification dispatcher ✅ — `src/notifications/dispatcher.ts` (30 tests)
 
 ---
 
