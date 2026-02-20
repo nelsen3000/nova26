@@ -13,3 +13,13 @@ export {
   RealTimeCRDTOrchestrator,
   createCRDTOrchestrator,
 } from './crdt-core.js';
+
+export {
+  createCRDTLifecycleHooks,
+  getCurrentBuildState,
+  getCRDTDocument,
+  resetBuildState,
+  getBuildParticipants,
+  getTaskChangeCount,
+  type CRDTLifecycleConfig,
+} from './lifecycle-adapter.js';

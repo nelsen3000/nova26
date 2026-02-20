@@ -5,6 +5,7 @@ import { execSync } from 'child_process';
 import { join } from 'path';
 import { analyzeDependencies } from '../dependency-analysis/analyzer.js';
 import { handleMarketplaceCommand } from '../skills/skill-marketplace.js';
+import { handleModelsCommand } from './models-commands.js';
 import type { } from '../orchestrator/task-decomposer.js';
 
 export const extendedSlashCommands = {
@@ -493,6 +494,16 @@ export const extendedSlashCommands = {
       console.log('  p     - Pause/resume build');
       console.log('  q     - Quit');
       console.log('  Ctrl+C - Cancel current task');
+    }
+  },
+
+  // KMS-01: AI Model Database Commands
+  '/models': {
+    name: '/models',
+    description: 'AI Model Database — list, show, compare, debate',
+    usage: '/models <list|show|compare|debate> [args]',
+    handler: async (args: string[]) => {
+      await handleModelsCommand(args);
     }
   }
 };
