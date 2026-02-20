@@ -15,6 +15,7 @@ import type {
   ModelRouteResult,
   HardwareTier,
 } from './types.js';
+import { getGlobalEventBus } from '../orchestrator/event-bus.js';
 
 // ============================================================================
 // Configuration Types
@@ -236,6 +237,21 @@ export function createModelRoutingLifecycleHooks(
             currentModel: routeResult.selectedModel.name,
             confidence: confidence.toFixed(2),
           });
+        }
+
+        // Emit model:selected event to event bus
+        try {
+          const routeStartTime = Date.now();
+          getGlobalEventBus().emit('model:selected', {
+            agentName: context.agentName,
+            taskId: context.taskId,
+            modelId: routeResult.selectedModel.name,
+            modelName: routeResult.selectedModel.name,
+            routingReason: `confidence=${routeResult.confidence.toFixed(2)}, speculative=${routeResult.useSpeculativeDecoding}`,
+            latencyMs: Date.now() - routeStartTime,
+          }).catch(() => { /* event bus emission fire-and-forget */ });
+        } catch (_eventBusError: unknown) {
+          // Event bus failure must not crash the adapter
         }
       } catch (error) {
         // Handle routing errors gracefully - use fallback

@@ -12,6 +12,7 @@ import {
   createCRDTOrchestrator,
 } from './crdt-core.js';
 import type { CRDTDocument, MergeResult, SemanticCRDTNode } from './types.js';
+import { getGlobalEventBus } from '../orchestrator/event-bus.js';
 
 // ============================================================================
 // Configuration Types
@@ -254,6 +255,18 @@ export function createCRDTLifecycleHooks(
             documentId: document.id,
             participantCount: participants.size,
           });
+        }
+
+        // Emit collaboration:changed event to event bus
+        try {
+          getGlobalEventBus().emit('collaboration:changed', {
+            sessionId: document.id,
+            changeType: 'merge',
+            participantCount: participants.size,
+            documentVersion: document.version,
+          }).catch(() => { /* event bus emission fire-and-forget */ });
+        } catch (_eventBusError: unknown) {
+          // Event bus failure must not crash the adapter
         }
       } catch (error) {
         console.error('[CRDTAdapter] Failed to apply task change', {

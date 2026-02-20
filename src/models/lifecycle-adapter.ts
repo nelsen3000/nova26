@@ -17,6 +17,7 @@ import {
   getAIModelVault,
 } from './ai-model-vault.js';
 import { ModelRouter } from './model-router.js';
+import { getGlobalEventBus } from '../orchestrator/event-bus.js';
 
 // ============================================================================
 // Configuration Types
@@ -311,6 +312,19 @@ export function createAIModelDatabaseLifecycleHooks(
       // Log selection reasoning
       if (config.verboseLogging ?? true) {
         logSelectionReasoning(route, context, usedFallback, config.verboseLogging ?? false);
+      }
+
+      // Emit model:selected event to event bus
+      try {
+        getGlobalEventBus().emit('model:selected', {
+          agentName: context.agentName,
+          taskId: context.taskId,
+          modelId: route.selectedModel.id,
+          modelName: route.selectedModel.name,
+          routingReason: route.reasoning,
+        }).catch(() => { /* event bus emission fire-and-forget */ });
+      } catch (_eventBusError: unknown) {
+        // Event bus failure must not crash the adapter
       }
     },
   };

@@ -10,6 +10,7 @@ import {
   ATLASInfiniteMemory,
   type MemoryLevel,
 } from './infinite-memory-core.js';
+import { getGlobalEventBus } from '../orchestrator/event-bus.js';
 
 // ============================================================================
 // Configuration Types
@@ -230,6 +231,20 @@ export function createInfiniteMemoryLifecycleHooks(
           level,
           tasteScore: tasteScore.toFixed(2),
         });
+
+        // Emit memory:stored event to event bus
+        try {
+          const eventLevel = (level === 'lifetime' ? 'portfolio' : level) as 'scene' | 'episode' | 'project' | 'portfolio';
+          getGlobalEventBus().emit('memory:stored', {
+            nodeId,
+            level: eventLevel,
+            taskId: context.taskId,
+            agentName: context.agentName,
+            tasteScore,
+          }).catch(() => { /* event bus emission fire-and-forget */ });
+        } catch (_eventBusError: unknown) {
+          // Event bus failure must not crash the adapter
+        }
       } catch (error) {
         console.error('[InfiniteMemoryAdapter] Failed to store task memory', {
           taskId: context.taskId,

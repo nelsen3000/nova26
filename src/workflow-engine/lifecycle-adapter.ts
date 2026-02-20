@@ -21,6 +21,7 @@ import type {
   WorkflowStats,
   VisualNodeStatus,
 } from './types.js';
+import { getGlobalEventBus } from '../orchestrator/event-bus.js';
 
 // ============================================================================
 // Types and Interfaces
@@ -551,6 +552,21 @@ async function handleAfterTask(taskResult: TaskResult): Promise<void> {
     if (adapterConfig.checkpointPerTask) {
       currentBuildState.workflowEngine.createCheckpoint(`task-complete-${taskResult.taskId}`);
     }
+  }
+
+  // Emit workflow:transitioned event to event bus
+  try {
+    const fromStatus = existingStats?.status ?? 'pending';
+    const toStatus = taskResult.success ? 'completed' : 'failed';
+    getGlobalEventBus().emit('workflow:transitioned', {
+      nodeId: taskResult.taskId,
+      fromStatus,
+      toStatus,
+      taskId: taskResult.taskId,
+      triggeredDownstream: currentBuildState.downstreamBlocked,
+    }).catch(() => { /* event bus emission fire-and-forget */ });
+  } catch (_eventBusError: unknown) {
+    // Event bus failure must not crash the adapter
   }
 }
 

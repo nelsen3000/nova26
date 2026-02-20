@@ -11,6 +11,7 @@ import type {
   PerplexityResearchBrief,
   PerplexityToolConfig,
 } from './types.js';
+import { getGlobalEventBus } from '../../orchestrator/event-bus.js';
 
 // ============================================================================
 // Configuration Types
@@ -327,6 +328,20 @@ export function createPerplexityLifecycleHooks(
               timestamp: Date.now(),
             });
           }
+        }
+      }
+
+      // Emit research:completed event to event bus if research was done
+      if (researchContext.wasResearched && researchContext.brief) {
+        try {
+          getGlobalEventBus().emit('research:completed', {
+            taskId: context.taskId,
+            queryCount: researchContext.queries.length,
+            relevanceScore: researchContext.relevanceScore,
+            cachedResults: currentBuildState.researchCache.size,
+          }).catch(() => { /* event bus emission fire-and-forget */ });
+        } catch (_eventBusError: unknown) {
+          // Event bus failure must not crash the adapter
         }
       }
 

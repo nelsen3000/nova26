@@ -25,6 +25,7 @@ import {
   resetLangSmithBridge,
 } from './langsmith-bridge.js';
 import type { CinematicConfig } from './types.js';
+import { getGlobalEventBus } from '../orchestrator/event-bus.js';
 
 // ============================================================================
 // Configuration Types
@@ -259,6 +260,18 @@ export function createCinematicObservabilityLifecycleHooks(
 
       // Store task span mapping
       currentBuildState.taskSpanMap.set(context.taskId, taskSpanId);
+
+      // Emit span:created event to event bus
+      try {
+        getGlobalEventBus().emit('span:created', {
+          spanId: taskSpanId,
+          parentSpanId: currentBuildState.rootSpanId,
+          operationName: context.title,
+          moduleName: 'observability',
+        }).catch(() => { /* event bus emission fire-and-forget */ });
+      } catch (_eventBusError: unknown) {
+        // Event bus failure must not crash the adapter
+      }
 
       // Export to LangSmith if configured
       if (currentBuildState.langsmith) {
