@@ -124,19 +124,58 @@ export const getOverviewStats = query({
   },
 });
 
+// Internal helper to log activity
+async function logActivityInternal(
+  ctx: any,
+  agentName: string,
+  action: string,
+  details: string,
+  taskId?: string
+) {
+  try {
+    await ctx.db.insert('agentActivityFeed', {
+      userId: 'system',
+      agentName,
+      eventType: action as any,
+      taskId,
+      details,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    // Log errors but don't throw
+    console.error('Failed to log activity:', error);
+  }
+}
+
 // Create a new build
 export const createBuild = mutation({
   args: {
     prdId: v.string(),
     prdName: v.string(),
+    config: v.optional(v.object({
+      timeout: v.optional(v.number()),
+      retries: v.optional(v.number()),
+      parallelism: v.optional(v.number()),
+    })),
+    agentIds: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
+    const now = new Date().toISOString();
     const buildId = await ctx.db.insert('builds', {
       prdId: args.prdId,
       prdName: args.prdName,
-      status: 'running',
-      startedAt: new Date().toISOString(),
+      status: 'pending',
+      startedAt: now,
     });
+
+    // Log activity
+    await logActivityInternal(
+      ctx,
+      'ATLAS',
+      'task_started',
+      `Created new build: ${args.prdName}`,
+      undefined
+    );
 
     return buildId;
   },
@@ -168,6 +207,21 @@ export const updateBuildStatus = mutation({
     }
 
     await ctx.db.patch(args.buildId, patch);
+
+    // Log activity
+    const action =
+      args.status === 'completed'
+        ? 'task_completed'
+        : args.status === 'failed'
+          ? 'task_failed'
+          : 'task_started';
+
+    const details = args.error
+      ? `Build ${args.status}: ${args.error}`
+      : `Build ${args.status}`;
+
+    await logActivityInternal(ctx, 'ATLAS', action, details);
+
     return args.buildId;
   },
 });
@@ -179,10 +233,27 @@ export const createTask = mutation({
     taskId: v.string(),
     title: v.string(),
     agent: v.string(),
+    agentId: v.optional(v.id('agents')),
     phase: v.number(),
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Validate build exists
+    const build = await ctx.db.get(args.buildId);
+    if (!build) throw new Error('Build not found');
+
+    // Validate phase is positive
+    if (args.phase < 1) throw new Error('Phase must be >= 1');
+
+    // Validate task ID uniqueness (within build)
+    const existingTask = await ctx.db
+      .query('tasks')
+      .withIndex('by_build', (q) => q.eq('buildId', args.buildId))
+      .filter((q) => q.eq(q.field('taskId'), args.taskId))
+      .first();
+
+    if (existingTask) throw new Error('Task with this ID already exists in build');
+
     const taskDocId = await ctx.db.insert('tasks', {
       buildId: args.buildId,
       taskId: args.taskId,
@@ -194,6 +265,15 @@ export const createTask = mutation({
       attempts: 0,
       createdAt: new Date().toISOString(),
     });
+
+    // Log activity
+    await logActivityInternal(
+      ctx,
+      args.agent,
+      'task_started',
+      `Created task: ${args.title}`,
+      args.taskId
+    );
 
     return taskDocId;
   },
@@ -219,12 +299,49 @@ export const updateTaskStatus = mutation({
     const task = await ctx.db.get(args.taskId);
     if (!task) throw new Error('Task not found');
 
+    // Validate status transitions
+    const validTransitions: Record<string, string[]> = {
+      'pending': ['ready', 'running', 'blocked', 'failed'],
+      'ready': ['running', 'failed', 'blocked'],
+      'running': ['done', 'failed'],
+      'done': [],
+      'failed': [],
+      'blocked': ['pending', 'ready', 'failed'],
+    };
+
+    if (!validTransitions[task.status]?.includes(args.status)) {
+      throw new Error(
+        `Invalid status transition from ${task.status} to ${args.status}`
+      );
+    }
+
     const patch: any = { status: args.status };
 
     if (args.output) patch.output = args.output;
     if (args.error) patch.error = args.error;
 
     await ctx.db.patch(args.taskId, patch);
+
+    // Log activity
+    const action =
+      args.status === 'done'
+        ? 'task_completed'
+        : args.status === 'failed'
+          ? 'task_failed'
+          : 'task_started';
+
+    const details = args.error
+      ? `Task ${args.status}: ${args.error}`
+      : `Task ${args.status}`;
+
+    await logActivityInternal(
+      ctx,
+      task.agent,
+      action,
+      details,
+      task.taskId
+    );
+
     return args.taskId;
   },
 });
@@ -234,13 +351,25 @@ export const logExecution = mutation({
   args: {
     taskId: v.id('tasks'),
     agent: v.string(),
+    agentId: v.optional(v.id('agents')),
     model: v.string(),
     prompt: v.string(),
     response: v.string(),
     gatesPassed: v.boolean(),
     duration: v.number(),
+    input: v.optional(v.string()),
+    output: v.optional(v.string()),
+    tokensUsed: v.optional(v.number()),
+    error: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Validate task exists
+    const task = await ctx.db.get(args.taskId);
+    if (!task) throw new Error('Task not found');
+
+    // Validate duration is non-negative
+    if (args.duration < 0) throw new Error('Duration must be >= 0');
+
     const executionId = await ctx.db.insert('executions', {
       taskId: args.taskId,
       agent: args.agent,
@@ -250,7 +379,20 @@ export const logExecution = mutation({
       gatesPassed: args.gatesPassed,
       duration: args.duration,
       timestamp: new Date().toISOString(),
+      error: args.error,
     });
+
+    // Log activity based on gates passed
+    const action = args.gatesPassed ? 'task_completed' : 'task_failed';
+    const details = `Execution ${args.gatesPassed ? 'passed' : 'failed'} gates (${args.duration}ms)`;
+
+    await logActivityInternal(
+      ctx,
+      args.agent,
+      action,
+      details,
+      task.taskId
+    );
 
     return executionId;
   },
@@ -260,14 +402,28 @@ export const logExecution = mutation({
 export const updateAgentStatus = mutation({
   args: {
     agentId: v.id('agents'),
-    status: v.optional(v.string()),
+    status: v.optional(
+      v.union(v.literal('active'), v.literal('idle'), v.literal('suspended'))
+    ),
+    currentTask: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const agent = await ctx.db.get(args.agentId);
     if (!agent) throw new Error('Agent not found');
 
+    const patch: any = {};
+
     if (args.status) {
-      await ctx.db.patch(args.agentId, { lastUpdated: new Date().toISOString() });
+      patch.status = args.status;
+    }
+
+    if (args.currentTask !== undefined) {
+      patch.currentTask = args.currentTask;
+    }
+
+    if (Object.keys(patch).length > 0) {
+      patch.lastUpdated = new Date().toISOString();
+      await ctx.db.patch(args.agentId, patch);
     }
 
     return args.agentId;

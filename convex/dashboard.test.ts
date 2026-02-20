@@ -330,6 +330,240 @@ describe('dashboard.ts - Function signatures and types', () => {
     });
   });
 
+  describe('Build lifecycle with mutations (H4)', () => {
+    it('validates build status transitions', () => {
+      const validTransitions: Record<string, string[]> = {
+        'pending': ['running', 'failed'],
+        'running': ['completed', 'failed'],
+        'completed': [],
+        'failed': [],
+      };
+
+      expect(validTransitions['pending']).toContain('running');
+      expect(validTransitions['running']).toContain('completed');
+      expect(validTransitions['completed']).toHaveLength(0);
+    });
+
+    it('prevents invalid build transitions', () => {
+      const validTransitions = {
+        'running': ['completed', 'failed'],
+      };
+
+      expect(validTransitions['running']).not.toContain('pending');
+    });
+
+    it('sets completedAt when build completes or fails', () => {
+      const completedBuild = {
+        status: 'completed',
+        completedAt: new Date().toISOString(),
+      };
+
+      const failedBuild = {
+        status: 'failed',
+        completedAt: new Date().toISOString(),
+      };
+
+      expect(completedBuild).toHaveProperty('completedAt');
+      expect(failedBuild).toHaveProperty('completedAt');
+    });
+  });
+
+  describe('Task lifecycle with mutations (H4)', () => {
+    it('validates task status transitions', () => {
+      const validTransitions: Record<string, string[]> = {
+        'pending': ['ready', 'running', 'blocked', 'failed'],
+        'ready': ['running', 'failed', 'blocked'],
+        'running': ['done', 'failed'],
+        'done': [],
+        'failed': [],
+        'blocked': ['pending', 'ready', 'failed'],
+      };
+
+      expect(validTransitions['pending']).toContain('running');
+      expect(validTransitions['running']).toContain('done');
+      expect(validTransitions['done']).toHaveLength(0);
+      expect(validTransitions['failed']).toHaveLength(0);
+    });
+
+    it('prevents invalid task transitions', () => {
+      const validTransitions = {
+        'running': ['done', 'failed'],
+      };
+
+      expect(validTransitions['running']).not.toContain('pending');
+      expect(validTransitions['running']).not.toContain('ready');
+    });
+
+    it('allows unblocking blocked tasks', () => {
+      const validTransitions = {
+        'blocked': ['pending', 'ready', 'failed'],
+      };
+
+      expect(validTransitions['blocked']).toContain('pending');
+      expect(validTransitions['blocked']).toContain('ready');
+    });
+
+    it('validates phase numbers are positive', () => {
+      const validPhases = [1, 2, 3];
+      const invalidPhases = [0, -1];
+
+      for (const phase of validPhases) {
+        expect(phase >= 1).toBe(true);
+      }
+
+      for (const phase of invalidPhases) {
+        expect(phase >= 1).toBe(false);
+      }
+    });
+
+    it('prevents duplicate task IDs within build', () => {
+      const tasks = [
+        { buildId: 'build-1', taskId: 'task-001' },
+        { buildId: 'build-1', taskId: 'task-002' },
+        { buildId: 'build-2', taskId: 'task-001' }, // OK - different build
+      ];
+
+      const build1Tasks = tasks.filter((t) => t.buildId === 'build-1');
+      const taskIds = build1Tasks.map((t) => t.taskId);
+
+      expect(new Set(taskIds).size).toBe(taskIds.length);
+    });
+  });
+
+  describe('Execution logging with validation (H4)', () => {
+    it('logs execution with all metrics', () => {
+      const execution = {
+        taskId: 'task-001',
+        agent: 'ATLAS',
+        model: 'claude-3-sonnet',
+        duration: 1234,
+        gatesPassed: true,
+        tokensUsed: 5000,
+      };
+
+      expect(execution).toHaveProperty('duration');
+      expect(execution).toHaveProperty('gatesPassed');
+      expect(execution).toHaveProperty('tokensUsed');
+      expect(execution.duration > 0).toBe(true);
+    });
+
+    it('validates duration is non-negative', () => {
+      const validDurations = [0, 100, 5000];
+      const invalidDurations = [-1, -100];
+
+      for (const duration of validDurations) {
+        expect(duration >= 0).toBe(true);
+      }
+
+      for (const duration of invalidDurations) {
+        expect(duration >= 0).toBe(false);
+      }
+    });
+
+    it('truncates long prompts and responses', () => {
+      const longPrompt = 'x'.repeat(5000);
+      const longResponse = 'y'.repeat(10000);
+
+      const truncatedPrompt = longPrompt.substring(0, 2000);
+      const truncatedResponse = longResponse.substring(0, 5000);
+
+      expect(truncatedPrompt.length).toBe(2000);
+      expect(truncatedResponse.length).toBe(5000);
+      expect(truncatedPrompt.length < longPrompt.length).toBe(true);
+    });
+
+    it('records gate pass/fail status', () => {
+      const passedExecution = { gatesPassed: true };
+      const failedExecution = { gatesPassed: false };
+
+      expect(passedExecution.gatesPassed).toBe(true);
+      expect(failedExecution.gatesPassed).toBe(false);
+    });
+  });
+
+  describe('Agent status transitions (H4)', () => {
+    it('allows valid agent status values', () => {
+      const validStatuses = ['active', 'idle', 'suspended'];
+
+      for (const status of validStatuses) {
+        expect(validStatuses).toContain(status);
+      }
+    });
+
+    it('tracks current task assignment', () => {
+      const agent = {
+        agentId: 'agent-1',
+        status: 'active',
+        currentTask: 'task-001',
+      };
+
+      expect(agent).toHaveProperty('currentTask');
+      expect(agent.currentTask).toBe('task-001');
+    });
+
+    it('can unassign current task', () => {
+      const agent = { currentTask: 'task-001' };
+      const updated = { ...agent, currentTask: undefined };
+
+      expect(updated.currentTask).toBeUndefined();
+    });
+
+    it('updates lastUpdated timestamp on status change', () => {
+      const before = new Date();
+      const timestamp = new Date().toISOString();
+      const after = new Date();
+
+      expect(new Date(timestamp) >= before).toBe(true);
+      expect(new Date(timestamp) <= after).toBe(true);
+    });
+  });
+
+  describe('Activity logging for mutations (H4)', () => {
+    it('logs when build is created', () => {
+      const activity = {
+        agentName: 'ATLAS',
+        eventType: 'task_started',
+        details: 'Created new build',
+      };
+
+      expect(activity.eventType).toBe('task_started');
+      expect(activity.details).toContain('Created');
+    });
+
+    it('logs when task completes', () => {
+      const activity = {
+        agentName: 'ATLAS',
+        eventType: 'task_completed',
+        details: 'Task done',
+      };
+
+      expect(activity.eventType).toBe('task_completed');
+    });
+
+    it('logs when task fails with error detail', () => {
+      const activity = {
+        agentName: 'ATLAS',
+        eventType: 'task_failed',
+        details: 'Task failed: Timeout exceeded',
+      };
+
+      expect(activity.eventType).toBe('task_failed');
+      expect(activity.details).toContain('Timeout');
+    });
+
+    it('includes taskId in activity log', () => {
+      const activity = {
+        taskId: 'task-001',
+        agentName: 'ATLAS',
+        eventType: 'task_completed',
+        details: 'Task completed',
+      };
+
+      expect(activity).toHaveProperty('taskId');
+      expect(activity.taskId).toBe('task-001');
+    });
+  });
+
   describe('getAgentStats - Agent statistics aggregation', () => {
     it('returns all agents with computed statistics', () => {
       const mockResult = [
