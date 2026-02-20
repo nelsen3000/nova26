@@ -2,7 +2,7 @@
 
 > **5-Agent Terminal System** — Color-coded AI agents building Nova26 in parallel.
 > **Repo**: https://github.com/nelsen3000/nova26 | **Branch**: `main`
-> **Current state**: 4,871 tests, 0 TS errors, 433 source files, 155K lines
+> **Current state**: 5,690 tests, 0 TS errors, 193 test files
 > **Coordinator**: Claude (Red) — evaluates output, writes prompts, resolves conflicts
 > **How it works**: Find your section below. Do every task in order. Run quality gates after each task.
 > When you finish all tasks, report your results to Jon.
@@ -69,17 +69,17 @@ Types: `feat`, `fix`, `refactor`, `test`, `docs`
 **Phase 1: CLI Slash Commands for New Modules**
 Each module needs slash commands so developers can interact with it from the CLI. Add commands to `src/cli/slash-commands-extended.ts` or create new command files.
 
-- [ ] `KMS-01` `/models` command — list models, show model details, compare models, run ensemble debate. Uses `src/models/ai-model-vault.ts` and `src/models/ensemble-engine.ts`. Write `src/cli/__tests__/models-commands.test.ts` (25 tests)
-- [ ] `KMS-02` `/workflow` command — show workflow graph, list nodes, show critical path, export as JSON. Uses `src/workflow-engine/ralph-visual-engine.ts`. Write `src/cli/__tests__/workflow-commands.test.ts` (25 tests)
-- [ ] `KMS-03` `/memory` command — query memory, show hierarchy, show stats, prune stale nodes. Uses `src/atlas/infinite-memory-core.ts`. Write `src/cli/__tests__/memory-commands-v2.test.ts` (25 tests)
-- [ ] `KMS-04` `/observe` command — show active traces, list spans, show build report, configure backends. Uses `src/observability/cinematic-core.ts`. Write `src/cli/__tests__/observe-commands.test.ts` (20 tests)
+- [x] `KMS-01` `/models` command ✅ (138d1f6)
+- [x] `KMS-02` `/workflow` command ✅ (df62f46)
+- [x] `KMS-03` `/memory` command ✅ (df62f46)
+- [x] `KMS-04` `/observe` command ✅ (df62f46)
 - [ ] `KMS-05` `/collaborate` command — start session, show participants, show changes, resolve conflicts. Uses `src/collaboration/crdt-core.ts`. Write `src/cli/__tests__/collaborate-commands.test.ts` (20 tests)
-- [ ] `KMS-06` `/research` command — search, deep research, show cache, clear cache. Uses `src/tools/perplexity/perplexity-agent.ts`. Write `src/cli/__tests__/research-commands.test.ts` (20 tests)
-- [ ] `KMS-07` `/route` command — route task to model, show routing table, show hardware, show affinity scores. Uses `src/model-routing/router.ts`. Write `src/cli/__tests__/route-commands.test.ts` (20 tests)
+- [x] `KMS-06` `/research` command ✅ (df62f46)
+- [x] `KMS-07` `/route` command ✅ (df62f46)
 
 **Phase 2: Config Validation**
 
-- [ ] `KMS-08` Zod schemas for all 7 new module configs — create `src/config/module-schemas.ts` with Zod validators for `ModelRoutingConfig`, `PerplexityToolConfig`, `WorkflowEngineOptions`, `InfiniteMemoryModuleConfig`, `CinematicConfig`, `AIModelDatabaseModuleConfig`, `CRDTCollaborationModuleConfig`. Write `src/config/__tests__/module-schemas.test.ts` (40 tests — valid configs, invalid configs, edge cases, defaults)
+- [x] `KMS-08` Zod schemas for all 7 module configs ✅ (df62f46)
 
 **Phase 3: Codebase `any` Cleanup**
 
@@ -94,27 +94,27 @@ Each module needs slash commands so developers can interact with it from the CLI
 **Phase 5: Mock API Clients for External Services**
 Each external service needs a typed client with mock implementation so we can test without real network calls.
 
-- [ ] `KMS-11` Braintrust client — `src/integrations/braintrust-client.ts` with typed API: `createExperiment()`, `logResult()`, `getScores()`, `listExperiments()`. Mock implementation returns realistic data. Write `src/integrations/__tests__/braintrust-client.test.ts` (20 tests)
-- [ ] `KMS-12` LangSmith client — `src/integrations/langsmith-client.ts` with typed API: `createRun()`, `updateRun()`, `endRun()`, `listRuns()`, `getFeedback()`. Mock implementation. Write `src/integrations/__tests__/langsmith-client.test.ts` (20 tests)
-- [ ] `KMS-13` Mem0/Letta client — `src/integrations/memory-providers-client.ts` with typed API: `store()`, `query()`, `update()`, `delete()`, `listCollections()` for both Mem0 and Letta backends. Write `src/integrations/__tests__/memory-providers-client.test.ts` (25 tests)
+- [x] `KMS-11` Braintrust client ✅ (525364d)
+- [ ] `KMS-12` LangSmith client — files exist, NEEDS COMMIT + PUSH. `src/integrations/langsmith-client.ts`
+- [ ] `KMS-13` Mem0/Letta client — files exist, NEEDS COMMIT + PUSH. `src/integrations/memory-providers-client.ts`
 
 **Phase 6: Agent System Enhancements**
 The 21 agents need better selection, tracking, and capability awareness.
 
-- [ ] `KMS-14` Agent capability matrix — `src/agents/capability-matrix.ts` mapping each of the 21 agents to their capabilities (code, design, test, deploy, review, etc.), preferred models, max concurrency, average task duration. Write `src/agents/__tests__/capability-matrix.test.ts` (20 tests)
-- [ ] `KMS-15` Task complexity estimator — `src/agents/complexity-estimator.ts` that analyzes task descriptions and estimates complexity (simple/medium/complex/epic) based on keywords, dependency count, estimated tokens, and historical data. Write `src/agents/__tests__/complexity-estimator.test.ts` (25 tests)
-- [ ] `KMS-16` Agent performance tracker — `src/agents/performance-tracker.ts` that records per-agent metrics: success rate, avg duration, task count, error rate, quality scores. Provides rankings and trend analysis. Write `src/agents/__tests__/performance-tracker.test.ts` (25 tests)
+- [ ] `KMS-14` Agent capability matrix — files exist, NEEDS COMMIT + PUSH. `src/agents/capability-matrix.ts`
+- [ ] `KMS-15` Task complexity estimator — files exist, NEEDS COMMIT + PUSH. `src/agents/complexity-estimator.ts`
+- [ ] `KMS-16` Agent performance tracker — files exist, NEEDS COMMIT + PUSH. `src/agents/performance-tracker.ts`
 
 **Phase 7: Dashboard Data Layer**
 Backend data aggregation for the future dashboard UI.
 
-- [ ] `KMS-17` Build metrics aggregator — `src/analytics/build-metrics.ts` that computes per-build stats: total duration, task count, pass rate, agent utilization, cost, tokens used. Write `src/analytics/__tests__/build-metrics.test.ts` (25 tests)
-- [ ] `KMS-18` Real-time build status — `src/analytics/build-status.ts` with a `BuildStatusEmitter` that emits typed status events: `build:started`, `task:progress`, `build:completed`. Consumers can subscribe for live updates. Write `src/analytics/__tests__/build-status.test.ts` (20 tests)
-- [ ] `KMS-19` Historical build comparison — `src/analytics/build-comparison.ts` that compares two builds: diff in duration, pass rate, cost, agent usage. Identifies regressions and improvements. Write `src/analytics/__tests__/build-comparison.test.ts` (20 tests)
+- [ ] `KMS-17` Build metrics aggregator — files exist, NEEDS COMMIT + PUSH. `src/analytics/build-metrics.ts`
+- [ ] `KMS-18` Real-time build status — files exist, NEEDS COMMIT + PUSH. `src/analytics/build-status.ts`
+- [ ] `KMS-19` Historical build comparison — files exist, NEEDS COMMIT + PUSH. `src/analytics/build-comparison.ts`
 
 **Phase 8: Notification System**
 
-- [ ] `KMS-20` Notification dispatcher — `src/notifications/dispatcher.ts` with typed notification types (`build:complete`, `task:failed`, `budget:exceeded`, `security:alert`), priority levels, and pluggable handlers (console, file, webhook). Write `src/notifications/__tests__/dispatcher.test.ts` (25 tests)
+- [ ] `KMS-20` Notification dispatcher — files exist, NEEDS COMMIT + PUSH. `src/notifications/dispatcher.ts`
 
 ---
 
@@ -129,25 +129,25 @@ Backend data aggregation for the future dashboard UI.
 **Phase 1: Wire Lifecycle Adapters into Ralph Loop**
 The lifecycle adapters exist (`src/<module>/lifecycle-adapter.ts`) but aren't called yet. Wire them into the actual ralph-loop.ts execution flow.
 
-- [ ] `MX-01` Wire adapters into `wireFeatureHooks()` — in `src/orchestrator/lifecycle-wiring.ts`, replace the stub/no-op handlers with actual calls to `createXxxLifecycleHooks()` from each adapter file. Import all 7 adapters, call them with their config from RalphLoopOptions, register the returned handlers. Write `src/orchestrator/__tests__/adapter-wiring-live.test.ts` (30 tests)
-- [ ] `MX-02` Wire adapters into `processTask()` — in `src/orchestrator/ralph-loop.ts`, ensure the lifecycle hook execution in processTask() flows through to real adapter code when modules are enabled. Add config plumbing so adapter configs reach the adapter constructors. Write `src/orchestrator/__tests__/processtask-adapters.test.ts` (25 tests)
+- [x] `MX-01` Wire adapters into `wireFeatureHooks()` ✅ (c0f3c3b — `src/orchestrator/adapter-wiring.ts`)
+- [ ] `MX-02` Wire adapters into `processTask()` — in `src/orchestrator/ralph-loop.ts`, ensure the lifecycle hook execution in processTask() flows through to real adapter code when modules are enabled. Add `registry.executePhase()` calls for onBeforeTask, onAfterTask, onTaskError, onHandoff, onBuildComplete. Wire config plumbing so adapter configs reach the adapter constructors. Write `src/orchestrator/__tests__/processtask-adapters.test.ts` (25 tests)
 
 **Phase 2: Cross-Module Event System**
 Modules need to communicate. Model routing needs to tell observability what model was selected. Memory needs to know when tasks complete. Build a lightweight event bus.
 
-- [ ] `MX-03` Create event bus — `src/orchestrator/event-bus.ts` with typed events: `model:selected`, `task:started`, `task:completed`, `task:failed`, `memory:stored`, `workflow:transitioned`, `collaboration:changed`. Pub/sub with type-safe payloads. Write `src/orchestrator/__tests__/event-bus.test.ts` (30 tests)
+- [x] `MX-03` Create event bus ✅ (c0f3c3b — `src/orchestrator/event-bus.ts`, 30 tests)
 - [ ] `MX-04` Connect modules to event bus — update lifecycle adapters to emit events at key points. Model routing emits `model:selected` after routing. Memory emits `memory:stored` after saving. Observability listens to ALL events for tracing. Write `src/orchestrator/__tests__/event-bus-integration.test.ts` (25 tests)
 
 **Phase 3: Agent Handoff Protocol**
 Nova26 has 21 agents that hand off work to each other. The handoff needs to carry context (memory, model selection, workflow state).
 
-- [ ] `MX-05` Handoff context builder — `src/orchestrator/handoff-context.ts` that assembles a `HandoffPayload` from all active modules: current workflow node, memory context, model routing state, active collaboration session. Write `src/orchestrator/__tests__/handoff-context.test.ts` (25 tests)
-- [ ] `MX-06` Handoff receiver — `src/orchestrator/handoff-receiver.ts` that unpacks a `HandoffPayload` and initializes the receiving agent's module state: restore memory context, apply model routing preferences, sync collaboration state. Write `src/orchestrator/__tests__/handoff-receiver.test.ts` (25 tests)
+- [x] `MX-05` Handoff context builder ✅ (525364d — `src/orchestrator/handoff-context.ts`, 18 tests)
+- [x] `MX-06` Handoff receiver ✅ (525364d — `src/orchestrator/handoff-receiver.ts`, 15 tests)
 
 **Phase 4: Configuration Cascade**
 
-- [ ] `MX-07` Config resolver — `src/config/config-resolver.ts` that merges configs from 3 sources: environment variables → config file (`.nova/config.json`) → RalphLoopOptions defaults. Type-safe, with Zod validation at each layer. Write `src/config/__tests__/config-resolver.test.ts` (25 tests)
-- [ ] `MX-08` Module health check system — `src/orchestrator/module-health.ts` that pings each enabled module's adapter to verify it's operational. Returns a health report with status per module. Wire into `/health` CLI command. Write `src/orchestrator/__tests__/module-health.test.ts` (20 tests)
+- [x] `MX-07` Config resolver ✅ (c0f3c3b — `src/config/config-resolver.ts`, 25 tests)
+- [x] `MX-08` Module health check system ✅ (525364d — `src/orchestrator/module-health.ts`, 21 tests)
 
 ### Sprint MX-02: Feature Flags + DI + Lazy Loading (4 tasks, 100+ tests)
 
@@ -174,7 +174,7 @@ Nova26 has 21 agents that hand off work to each other. The handoff needs to carr
 **Phase 1: Decompose ralph-loop.ts**
 `src/orchestrator/ralph-loop.ts` is 1,074 lines — too large. Split it into focused modules.
 
-- [ ] `GLM-01` Extract task execution — move `processTask()` and its helpers to `src/orchestrator/task-executor.ts`. Keep the main loop in ralph-loop.ts, but delegate task execution. Preserve all existing behavior. Write `src/orchestrator/__tests__/task-executor.test.ts` (35 tests)
+- [x] `GLM-01` Extract task execution ✅ (27b669a — `src/orchestrator/task-executor.ts`, 35 tests)
 - [ ] `GLM-02` Extract build lifecycle — move `startBuild()`, `completeBuild()`, and build-level logic to `src/orchestrator/build-lifecycle.ts`. ralph-loop.ts becomes a thin coordinator that delegates to task-executor and build-lifecycle. Write `src/orchestrator/__tests__/build-lifecycle.test.ts` (25 tests)
 
 **Phase 2: Caching Layer**
@@ -205,23 +205,23 @@ Several modules do repeated lookups. Add a proper caching layer.
 **Phase 1: End-to-End Build Simulation Tests**
 Test the full Ralph Loop pipeline — from PRD input to build completion — verifying all modules participate.
 
-- [ ] `SN-01` Full build simulation test — `src/orchestrator/__tests__/e2e-build-simulation.test.ts`. Mock a complete build with 5 tasks, verify lifecycle hooks fire in order, all adapters get called, workflow graph updates, memory stores results, observability traces complete. (40 tests)
-- [ ] `SN-02` Error recovery E2E test — `src/orchestrator/__tests__/e2e-error-recovery.test.ts`. Simulate builds where tasks fail at different stages. Verify recovery hooks fire, circuit breakers activate, error paths in all adapters handle gracefully, build completes with partial results. (30 tests)
-- [ ] `SN-03` Multi-agent handoff E2E test — `src/orchestrator/__tests__/e2e-handoff.test.ts`. Simulate SUN → EARTH → MARS → VENUS agent chain. Verify context passes between agents, model routing adjusts per agent, memory accumulates across handoffs. (25 tests)
+- [x] `SN-01` Full build simulation test ✅ (e3ddc44 — 40 tests)
+- [x] `SN-02` Error recovery E2E test ✅ (b7ccb86 — 30 tests)
+- [x] `SN-03` Multi-agent handoff E2E test ✅ (2da4f6e — 25 tests)
 
 **Phase 2: CI/CD Pipeline**
 
-- [ ] `SN-04` GitHub Actions CI — `.github/workflows/ci.yml`. Matrix: Node 20/22, runs `tsc --noEmit` + `vitest run` + coverage report. Cache node_modules. Fail on any TS error or test failure. Add status badge to README. (no test file — verify by pushing)
-- [ ] `SN-05` Pre-commit hooks — `.husky/pre-commit` with lint-staged. Run `tsc --noEmit` on changed `.ts` files. Run vitest on changed test files only (fast feedback). Create `package.json` scripts: `lint`, `typecheck`, `test:changed`. (no test file — verify by committing)
+- [x] `SN-04` GitHub Actions CI ✅ (cc71cd8)
+- [x] `SN-05` Pre-commit hooks ✅ (7ec58ae)
 
 **Phase 3: Documentation**
 
-- [ ] `SN-06` CONTRIBUTING.md — how to add a new module (create src/module/, types.ts, index.ts, lifecycle-adapter.ts, __tests__/), how to wire it (RalphLoopOptions, lifecycle-wiring.ts, event bus), coding standards, commit format, quality gates.
-- [ ] `SN-07` ARCHITECTURE.md — system overview diagram (ASCII), module dependency graph, Ralph Loop execution flow, lifecycle hook phases, agent roster, key file paths. Keep it under 200 lines.
+- [x] `SN-06` CONTRIBUTING.md ✅ (4ac3d1a)
+- [x] `SN-07` ARCHITECTURE.md ✅ (9842a26)
 
 **Phase 4: Quality Sweep**
 
-- [ ] `SN-08` Dead code elimination — find and remove unused exports, unreachable functions, orphaned test helpers across the entire codebase. Use `npx tsc --noEmit` + grep for unexported functions. Report what was removed. Write `src/__tests__/no-dead-code.test.ts` (15 tests verifying key exports exist)
+- [x] `SN-08` Dead code elimination ✅ (24dbdf4 — 15 tests)
 
 ### Sprint SN-02: Stress Tests + Contract Tests + Coverage (8 tasks, 200+ tests)
 
@@ -319,15 +319,16 @@ Verify every module's public API matches its documented interface.
 ## Dependency Map
 
 ```
-KIMI KMS-08 (config schemas) ──→ MINIMAX MX-07 (config resolver uses schemas)
-MINIMAX MX-01 (wire adapters) ──→ MINIMAX MX-02 (processTask needs wired adapters)
-MINIMAX MX-03 (event bus) ──→ MINIMAX MX-04 (modules connect to bus)
-MINIMAX MX-05 (handoff builder) ──→ MINIMAX MX-06 (handoff receiver)
-GLM-5 GLM-01 (extract task-executor) ──→ GLM-5 GLM-02 (extract build-lifecycle)
-GLM-5 GLM-03 (LRU cache) ──→ independent, no blockers
+✅ KIMI KMS-08 ──→ ✅ MINIMAX MX-07 (both done)
+✅ MINIMAX MX-01 ──→ MINIMAX MX-02 (MX-01 done, MX-02 ready)
+✅ MINIMAX MX-03 ──→ MINIMAX MX-04 (MX-03 done, MX-04 ready)
+✅ MINIMAX MX-05 ──→ ✅ MINIMAX MX-06 (both done)
+✅ GLM-5 GLM-01 ──→ GLM-5 GLM-02 (GLM-01 done, GLM-02 ready)
+✅ SONNET SN-01→SN-08 all complete
 
-SONNET SN-01/02/03 depend on MiniMax MX-01/02 (adapters must be wired first)
-SONNET SN-04/05/06/07/08 are independent — can start immediately
+Remaining blockers:
+  SONNET SN-13 (event payloads) blocked on MX-03 ── UNBLOCKED (MX-03 done)
+  SONNET SN-14 (config schemas) blocked on KMS-08 ── UNBLOCKED (KMS-08 done)
 
 Everything else is independent — agents can work in parallel.
 ```
