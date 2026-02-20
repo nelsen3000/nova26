@@ -14,7 +14,8 @@ export default defineSchema({
     completedAt: v.optional(v.string()),
     error: v.optional(v.string()),
   }).index('by_prd', ['prdId'])
-    .index('by_status', ['status']),
+    .index('by_status', ['status'])
+    .index('by_timestamp', ['startedAt']),  // H6: time-based queries
 
   patterns: defineTable({
     name: v.string(),
@@ -75,6 +76,22 @@ export default defineSchema({
     createdAt: v.string(),
   }).index('by_build', ['buildId'])
     .index('by_task', ['taskId']),
+
+  // Agent stats cache — updated by cron job every 5 minutes (H6, H7)
+  agentStatsCache: defineTable({
+    agentId: v.id('agents'),
+    agentName: v.string(),
+    role: v.string(),
+    totalTasks: v.number(),
+    completedTasks: v.number(),
+    failedTasks: v.number(),
+    successRate: v.number(),
+    avgDuration: v.number(),
+    lastActive: v.string(),
+    currentStatus: v.string(),
+    cachedAt: v.string(),
+  }).index('by_agent_id', ['agentId'])
+    .index('by_last_active', ['lastActive']),
 
   // =====================
   // UA Dashboard Tables (4)
@@ -145,12 +162,18 @@ export default defineSchema({
   userProfiles: defineTable({
     userId: v.string(),
     email: v.optional(v.string()),
-    tier: v.union(v.literal('free'), v.literal('premium')),
+    tier: v.union(
+      v.literal('free'),
+      v.literal('pro'),
+      v.literal('team'),
+      v.literal('enterprise')
+    ),
     globalWisdomOptIn: v.boolean(),
     createdAt: v.string(),
     lastActiveAt: v.string(),
   }).index('by_user_id', ['userId'])
-    .index('by_tier', ['tier']),
+    .index('by_tier', ['tier'])
+    .index('by_email', ['email']),  // H6: enables fast email lookups
 
   // Wisdom updates feed for real-time subscriptions
   wisdomUpdates: defineTable({
