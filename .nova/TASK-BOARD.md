@@ -1,328 +1,253 @@
-# NOVA26 TASK BOARD — February 19, 2026
+# NOVA26 TASK BOARD — February 20, 2026
 
-> **Coordination Hub** — All AI agents reference this file for their next assignment.
-> **How it works**: When you finish a task, report output to Jon. Jon gives you a prompt
-> that sends you back here. Find your section, pick the next unchecked task, do it.
-> **Coordinator**: Claude Code (assigns tasks, evaluates output, resolves conflicts)
-> **Repo**: https://github.com/nelsen3000/nova26
-> **Current state**: 4,603 tests, 0 TS errors, 159 test files
-> **Vision**: Eternal Engine — self-evolving Rust core + ZeroClaw/TinyClaw/NanoClaw patterns
-
----
-
-## Agent Roster
-
-| Agent | Domain | Status | Current Sprint |
-|-------|--------|--------|----------------|
-| **Claude Code** | Coordinator + Core Engine + Convex | Active | Evaluation + prompt writing |
-| **Sonnet** | Integration + Hardening + Wiring | Active | S-01 (6 tasks, DONE) + CL-50 hardening sprint (7 tasks, DONE) |
-| **Kimi** | Implementation (TypeScript + Tests) | Active | R22-R24 done, R25 tests done (538), R26 lifecycle adapters ready |
-| **Grok** | Research + Deep Specs | Active | R23+R24 delivered, awaiting R25 |
-| **Kiro** | Knowledge Extraction + Quality Audits | Active | KIRO-06 + KIRO-07 done (by Claude), awaiting KIRO-08 |
-| **Gemini** | Deep Research + Competitive Intel | Active | GEMINI-12 delivered, GEMINI-07→11 + 13→15 pending |
+> **4-Agent Terminal System** — Color-coded AI agents building Nova26 in parallel.
+> **Repo**: https://github.com/nelsen3000/nova26 | **Branch**: `main`
+> **Current state**: 4,871 tests, 0 TS errors, 433 source files, 155K lines
+> **Coordinator**: Claude (Red) — evaluates output, writes prompts, resolves conflicts
+> **How it works**: Find your section below. Do every task in order. Run quality gates after each task.
+> When you finish all tasks, report your results to Jon.
 
 ---
 
-## SONNET — Integration & Hardening Engine
+## Terminal Agents
 
-> Sprint file: `.prompts/sonnet-s01-integration-sprint.md`
-> Rules: TypeScript strict, ESM `.js` imports, vitest, no `any`, mock all I/O
-> Domain: ralph-loop.ts wiring, lifecycle system, module integration, TS error fixing, codebase hardening
-> Constraint: Do NOT create new feature modules (that's Kimi's job). Focus on wiring, fixing, deduplicating, testing integration.
+| Color | Agent | Model | Strength | Role |
+|-------|-------|-------|----------|------|
+| Red | **Claude** | claude-opus-4-6 | Reasoning, evaluation, architecture | Coordinator — evaluates all output, writes prompts, critical decisions |
+| Blue | **Kimi** | kimi-k2 | Fast implementation, bulk output, FREE | Workhorse — new features, CLI commands, tests, high-volume implementation |
+| Green | **MiniMax** | minimax-m2.5 | Agent workflows, integration, 205K context | Integrator — wiring modules together, cross-module pipelines, handoff logic |
+| Black | **GLM-5** | z-ai/glm-5 | Complex systems, 745B MoE, deep backend | Architect — refactoring, performance, security, persistence, decomposition |
 
-### Sprint S-01: Integration & Hardening (COMPLETE)
+### Research Agents (on-demand, not terminal)
 
-- [x] `S-01-01` Fix P0: Deduplicate RalphLoopOptions — kept ralph-loop-types.ts as single source of truth, re-export from ralph-loop.ts
-- [x] `S-01-02` Wire 4 missing modules into lifecycle-wiring.ts — agentMemory, wellbeing, advancedRecovery, advancedInit added to DEFAULT_FEATURE_HOOKS + featureFlags maps
-- [x] `S-01-03` Delete cut R23-02 sandbox artifacts — removed src/sandbox/ files
-- [x] `S-01-04` Extract shared failure handler from processTask() — 4 failure paths → handleTaskFailure() helper
-- [x] `S-01-05` Add 45 integration tests for lifecycle wiring — all 17 features, priority ordering, error isolation, singleton registry
-- [x] `S-01-06` Evaluate + integrate Kimi R22-R24 deliveries — deleted CUT artifacts (engine, multimodal)
-
-### Sprint CL-50: R22-R24 Hardening & Integration (COMPLETE)
-> Sprint file: `.prompts/claude-cl50-hardening-sprint.md`
-
-- [x] `CL-50` Delete 4 CUT module artifacts (sandbox, swarm, engine, multimodal) — 40 TS errors → 0
-- [x] `CL-51` Evaluate + commit all 7 Kimi R22-R24 KEEP modules (source + tests)
-- [x] `CL-52` Wire 7 new modules into RalphLoopOptions (14 new fields in ralph-loop-types.ts)
-- [x] `CL-53` Wire 7 new modules into lifecycle hooks (24 total features in lifecycle-wiring.ts)
-- [x] `CL-54` Create/verify barrel exports for all new modules (6 index.ts files verified)
-- [x] `CL-55` Cross-module integration tests (r22-r24-integration.test.ts, 51 tests)
-- [x] `CL-56` Update TASK-BOARD.md + CLAUDE.md with completed tasks and new test counts
+| Agent | Model | Used For |
+|-------|-------|----------|
+| **Grok** | grok-4 | Deep TypeScript specs with interfaces + test strategies |
+| **Gemini** | gemini-3 | Competitive intelligence, tool audits, ecosystem research |
 
 ---
 
-## KIMI — Implementation Engine
+## Rules (ALL agents)
 
-> Sprint file: `.prompts/kimi-mega-wiring-sprint.md`
-> Rules: TypeScript strict, ESM `.js` imports, vitest, no `any`, mock all I/O
+```
+TypeScript strict mode         — no implicit any, strict null checks
+ESM .js imports everywhere     — import from './foo.js' not './foo' or './foo.ts'
+vitest for tests               — describe/it/expect, vi.mock for I/O
+No `any` type                  — use `unknown` + type guards instead
+Mock all I/O                   — no real network calls, file system, or database in tests
+vi.clearAllMocks()             — in every beforeEach block
+```
 
-### Completed: Mega Wiring + Lifecycle Hooks + Hardening
+### Quality Gates (run after EVERY task)
 
-- [x] `KIMI-W-01` Wire all 13 unwired R16/R17 modules into ralph-loop.ts (26 fields, 8 imports, 5 inline interfaces)
-- [x] `KIMI-W-02` Lifecycle hooks system (HookRegistry, 6 phases, Zod schemas, 50 tests)
-- [x] `KIMI-W-03` Behavior system (5 built-ins: retry, circuit-breaker, timeout, validate, backoff, 59 tests)
-- [x] `KIMI-W-04` Edge case tests for 10 R17 modules (80 tests, API mismatches fixed by Claude)
-- [x] `KIMI-W-05` Cross-module integration tests (25 tests across 5 integration categories)
+```bash
+npx tsc --noEmit        # Must be 0 errors
+npx vitest run           # Must be 0 failures
+```
 
-### Next Sprint: R19 Feature Implementation
-> Sprint file: `.prompts/kimi-r19-sprint.md` — READY
+### Commit Format
 
-- [x] `KIMI-R19-01` Implement Mobile Launch Stage (spec: .nova/specs/grok-r19-01-mobile-launch.md, 42 tests) — DELIVERED, 12 files, 109 tests
-- [x] `KIMI-R19-02` Implement Deep Semantic Model (spec: .nova/specs/grok-r19-02-semantic-model.md, 68 tests) — DELIVERED, 7 files, types.ts overwrite fixed by Claude
-- [x] `KIMI-R19-03` Implement Studio Rules + Prompt Optimization (spec: .nova/specs/grok-r19-03-studio-rules.md, 94 tests) — DELIVERED, 9 files, 124 tests, evaluate bug fixed by Claude
+```
+<type>(<scope>): <description>
 
-### Queued: R20 Feature Implementation
-> Sprint file: `.prompts/kimi-r20-sprint.md` — READY
+Co-Authored-By: <your model name> <noreply@provider.com>
+```
 
-- [x] `KIMI-R20-01` Implement L0/L1/L2/L3 orchestrator hierarchy (spec: .nova/specs/grok-r20-01-orchestrator-hierarchy.md, 112 tests) — DELIVERED, 11 files, 214 tests, 8 TS errors fixed by Claude
-- [x] `KIMI-R20-02` Implement Tauri desktop wrapper (spec: .nova/specs/grok-r20-02-tauri-desktop.md, 87 tests) — DELIVERED, 11 files + 4 Rust files, 110 tests, detectTauri bug fixed by Claude
-- [x] `KIMI-R20-03` Implement AI design pipeline (spec: .nova/specs/grok-r20-03-design-pipeline.md, 82 tests) — DELIVERED (source + tests), 10 files, 10 TS errors fixed by Claude
-- [x] `KIMI-R21-01` Implement MCP integration (spec: .nova/specs/grok-r21-01-mcp-integration.md, 78 tests) — DELIVERED, 5 files, 2 TS errors fixed by Claude
-- [x] `KIMI-R21-02` Implement ACP integration (spec: .nova/specs/grok-r21-02-acp-integration.md, 67 tests) — DELIVERED, 6 files
-- [x] `KIMI-R21-03` Implement Compliance & Audit Trail (spec: .nova/specs/grok-r21-03-compliance-audit.md, 84 tests) — DELIVERED, 5 files, 1 TS error fixed by Claude
-- [x] `KIMI-PERP-01` Implement Perplexity research integration — DELIVERED, committed (perplexity-agent.ts, types.ts, index.ts + 30 tests)
-- [x] `KIMI-R22-01` Implement Agent Model Routing — DELIVERED, committed (router.ts, model-registry.ts, hardware-detector.ts, speculative-decoder.ts, inference-queue.ts + 80 tests), 1 TS error fixed by Claude
-- [x] `KIMI-R23-01` Implement Persistent Visual Workflow Engine — DELIVERED, committed (ralph-visual-engine.ts, ralph-loop-visual-adapter.ts + 70 tests)
-- [x] ~~`KIMI-R23-02` Implement MicroVM / WASI Ultra-Sandbox~~ **CUT** (Firecracker requires Linux KVM, no macOS)
-- [x] `KIMI-R23-03` Implement Infinite Hierarchical Memory — DELIVERED, committed (infinite-memory-core.ts, letta-soul-manager.ts, mem0-adapter.ts, memory-taste-scorer.ts + 115 tests), 2 off-by-one test bugs fixed by Claude
-- [x] ~~`KIMI-R23-04` Implement Agent Debate & Swarm Layer~~ **CUT** (over-engineered, expensive multi-model debate before product exists)
-- [x] `KIMI-R23-05` Implement Cinematic Observability & Eval Suite — DELIVERED, committed (cinematic-core.ts, braintrust-adapter.ts, langsmith-bridge.ts + 60 tests)
-- [x] `KIMI-R24-01` Implement AI Model Database — DELIVERED, committed (ai-model-vault.ts, ensemble-engine.ts, model-router.ts + 70 tests), 9 TS errors fixed by Claude
-- [x] ~~`KIMI-R24-02` Implement Eternal Engine Rust Core~~ **CUT** (no Rust crate exists yet)
-- [x] `KIMI-R24-03` Implement Real-time CRDT Collaboration — DELIVERED, committed (crdt-core.ts, types.ts, index.ts + 65 tests)
-- [x] ~~`KIMI-R24-04` Implement Voice & Multimodal Interface~~ **CUT** (premature without working UI)
-
-### Queued: R25 Testing Mega-Sprint
-> Sprint file: `.prompts/kimi-r25-testing-mega-sprint.md` — READY
-
-- [x] `KIMI-T-01` Write Perplexity Research tests — DONE (32 tests, delivered with source)
-- [x] `KIMI-T-02` Write Model Routing tests — DONE (90 tests, delivered with source)
-- [x] `KIMI-T-03` Write Workflow Engine tests — DONE (82 tests, delivered with source)
-- [x] `KIMI-T-04` Write Infinite Memory tests — DONE (115 tests, delivered with source, 2 off-by-one fixes by Claude)
-- [x] `KIMI-T-05` Write Cinematic Observability tests — DONE (73 tests, delivered with source)
-- [x] `KIMI-T-06` Write AI Model Database tests — DONE (81 tests, delivered with source)
-- [x] `KIMI-T-07` Write CRDT Collaboration tests — DONE (65 tests, delivered with source)
-
-### Queued: R26 Lifecycle Adapters Sprint
-> Sprint file: `.prompts/kimi-r26-lifecycle-adapters-sprint.md` — READY
-
-- [ ] `KIMI-R26-01` Model Routing lifecycle adapter (25 tests)
-- [ ] `KIMI-R26-02` Perplexity Research lifecycle adapter (20 tests)
-- [ ] `KIMI-R26-03` Workflow Engine lifecycle adapter (25 tests)
-- [ ] `KIMI-R26-04` Infinite Memory lifecycle adapter (25 tests)
-- [ ] `KIMI-R26-05` Cinematic Observability lifecycle adapter (30 tests)
-- [ ] `KIMI-R26-06` AI Model Database lifecycle adapter (20 tests)
-- [ ] `KIMI-R26-07` CRDT Collaboration lifecycle adapter (20 tests)
-
-### Completed (recent)
-
-- [x] R16-01→R16-04 implementation (portfolio, memory, generative-ui, testing)
-- [x] R17-03→R17-12 mega-sprint (10 modules)
-- [x] Overnight hardening (integration tests, 4 docs, monitoring script)
-- [x] All 15 original M-01→M-15 CLI + agent tasks
+Types: `feat`, `fix`, `refactor`, `test`, `docs`
 
 ---
 
-## GROK — Research Architect
+## KIMI (Blue) — Workhorse Mega Sprint
 
-> Deliverable format: Deep TypeScript interfaces + integration points + open questions
-> Style: Analogy opener → concrete interfaces → file paths → test strategy
+> **You are the high-volume implementation engine.** You write new features, CLI commands, config validation, and tests.
+> **Your superpower**: You're free and fast. You do MORE tasks than anyone else.
+> **Do NOT**: Refactor ralph-loop.ts (GLM-5 does that) or wire modules together (MiniMax does that).
 
-### Current: R23 Gap Enhancement Specs
+### Sprint KIMI-MS-01: CLI + Config + Cleanup (10 tasks, 300+ tests)
 
-### Sprint: R23 Gap Enhancements + Shannon Adaptation
+**Phase 1: CLI Slash Commands for New Modules**
+Each module needs slash commands so developers can interact with it from the CLI. Add commands to `src/cli/slash-commands-extended.ts` or create new command files.
 
-- [x] `GROK-R23-01` Persistent Visual Workflow Engine spec (Temporal + LangGraph) — DELIVERED
-- [x] `GROK-R23-02` MicroVM / WASI Ultra-Sandbox spec (Firecracker + OPA) — DELIVERED
-- [x] `GROK-R23-03` Infinite Hierarchical Memory spec (Mem0 + Letta) — DELIVERED
-- [x] `GROK-R23-04` Agent Debate & Swarm Layer spec (CrewAI + AutoGen) — DELIVERED
-- [x] `GROK-R23-05` Cinematic Observability & Eval Suite spec (Braintrust + LangSmith) — DELIVERED
-- [x] `GROK-R24-01` AI Model Database spec (Gemini-12 research) — DELIVERED
-- [x] `GROK-R24-02` Eternal Engine Rust Core Architecture spec (ZeroClaw/TinyClaw/NanoClaw) — DELIVERED
-- [x] `GROK-R24-03` Real-time CRDT Collaboration spec (Gemini-15 research) — DELIVERED
-- [x] `GROK-R24-04` Voice & Multimodal Interface spec (Gemini-13 research) — DELIVERED
-- [ ] `GROK-R22-02` Shannon Patterns Adaptation Spec (Temporal replay + UCB router + WASI sandbox)
+- [ ] `KMS-01` `/models` command — list models, show model details, compare models, run ensemble debate. Uses `src/models/ai-model-vault.ts` and `src/models/ensemble-engine.ts`. Write `src/cli/__tests__/models-commands.test.ts` (25 tests)
+- [ ] `KMS-02` `/workflow` command — show workflow graph, list nodes, show critical path, export as JSON. Uses `src/workflow-engine/ralph-visual-engine.ts`. Write `src/cli/__tests__/workflow-commands.test.ts` (25 tests)
+- [ ] `KMS-03` `/memory` command — query memory, show hierarchy, show stats, prune stale nodes. Uses `src/atlas/infinite-memory-core.ts`. Write `src/cli/__tests__/memory-commands-v2.test.ts` (25 tests)
+- [ ] `KMS-04` `/observe` command — show active traces, list spans, show build report, configure backends. Uses `src/observability/cinematic-core.ts`. Write `src/cli/__tests__/observe-commands.test.ts` (20 tests)
+- [ ] `KMS-05` `/collaborate` command — start session, show participants, show changes, resolve conflicts. Uses `src/collaboration/crdt-core.ts`. Write `src/cli/__tests__/collaborate-commands.test.ts` (20 tests)
+- [ ] `KMS-06` `/research` command — search, deep research, show cache, clear cache. Uses `src/tools/perplexity/perplexity-agent.ts`. Write `src/cli/__tests__/research-commands.test.ts` (20 tests)
+- [ ] `KMS-07` `/route` command — route task to model, show routing table, show hardware, show affinity scores. Uses `src/model-routing/router.ts`. Write `src/cli/__tests__/route-commands.test.ts` (20 tests)
 
-### Completed
+**Phase 2: Config Validation**
 
-- [x] R7→R17 (11 research rounds, 55+ feature specs)
-- [x] R18 (5 specs: Dashboard, Deployment, VS Code, Integration Layer, Observability)
-- [x] Claude skills analysis, JetBrains analysis, Rork/mobile analysis, exhaustive tools sweep
-- [x] Perplexity Intelligence Division spec (accepted)
-- [x] R19-01: Mobile Launch Stage spec (42 tests)
-- [x] R19-02: Deep Project Semantic Model spec (68 tests)
-- [x] R19-03: Studio Rules + DSPy Prompt Optimization spec (94 tests)
-- [x] R20-01: Orchestrator-Worker L0/L1/L2/L3 Hierarchy spec (112 tests)
-- [x] R20-02: Tauri Native Desktop Application spec (87 tests)
-- [x] R20-03: AI-Native Design Pipeline spec (82 tests)
-- [x] R21-01: MCP Integration spec (78 tests)
-- [x] R21-02: ACP Integration spec (67 tests)
-- [x] R21-03: Compliance & Audit Trail spec (84 tests)
-- [x] R22-01: Agent Model Routing & Speculative Decoding spec (79 tests)
-- [x] Shannon Patterns research (Kocoro-lab + KeygraphHQ reference architectures)
+- [ ] `KMS-08` Zod schemas for all 7 new module configs — create `src/config/module-schemas.ts` with Zod validators for `ModelRoutingConfig`, `PerplexityToolConfig`, `WorkflowEngineOptions`, `InfiniteMemoryModuleConfig`, `CinematicConfig`, `AIModelDatabaseModuleConfig`, `CRDTCollaborationModuleConfig`. Write `src/config/__tests__/module-schemas.test.ts` (40 tests — valid configs, invalid configs, edge cases, defaults)
+
+**Phase 3: Codebase `any` Cleanup**
+
+- [ ] `KMS-09` Fix 80+ `any` types in `src/memory/`, `src/cli/`, `src/analytics/`, `src/persistence/`, `src/agents/` — replace with `unknown` + type guards or proper types. Currently 144 `any` across 43 files. Target: reduce to < 30 (keep only justified `as any` in test mocks). Write `src/__tests__/type-safety-audit.test.ts` (15 tests verifying type guard functions work)
+
+**Phase 4: Error Boundaries**
+
+- [ ] `KMS-10` Error boundary wrappers for all 7 lifecycle adapters — create `src/orchestrator/adapter-error-boundary.ts` that wraps adapter calls with try/catch, logging, and graceful degradation. If an adapter throws, the build continues (adapter errors are non-fatal). Write `src/orchestrator/__tests__/adapter-error-boundary.test.ts` (30 tests)
 
 ---
 
-## KIRO — Knowledge Extraction + Quality Audits
+## MINIMAX (Green) — Integrator Mega Sprint
 
-> Constraint: NO TypeScript modifications. Outputs only: .md, .json under .nova/
-> Commit format: `docs(knowledge): KIRO-XX-YY <description>`
+> **You are the integration specialist.** You wire modules together, build cross-module pipelines, and make the agent handoff system work.
+> **Your superpower**: 205K context window — you can hold the entire ralph-loop.ts + all adapters in context at once.
+> **Do NOT**: Create new feature modules (Kimi does that) or refactor core architecture (GLM-5 does that).
 
-### Current Sprint: Audit Remediation + Agent Template Extraction
+### Sprint MX-01: Adapter Wiring + Agent Pipeline (8 tasks, 200+ tests)
 
-- [x] `KIRO-06-01` Fix Nova26 INDEX.md — verified: 51/51 patterns already present (by Claude)
-- [x] `KIRO-06-02` Fix 7 intelligence patterns — verified: all sections present (by Claude)
-- [x] `KIRO-06-03` Fix 11 BistroLens hook filenames — camelCase → kebab-case + cross-ref updates (by Claude)
-- [x] `KIRO-06-04` Fix stale reference in AI_COORDINATION.md — sun-prd-generator now exists (by Claude)
-- [x] `KIRO-06-05` Extract patterns from 21 EARTH XML agent templates — 21 files, 35-42 lines each (by Claude)
-- [x] `KIRO-06-06` Build agent interaction graph — 21 nodes, 89 edges, 6 clusters, JSON + ASCII (by Claude)
-- [x] `KIRO-06-07` Re-run structural audit — 0 failures (down from 95), 18 files fixed (by Claude)
+**Phase 1: Wire Lifecycle Adapters into Ralph Loop**
+The lifecycle adapters exist (`src/<module>/lifecycle-adapter.ts`) but aren't called yet. Wire them into the actual ralph-loop.ts execution flow.
 
-### Queued (all unblocked)
+- [ ] `MX-01` Wire adapters into `wireFeatureHooks()` — in `src/orchestrator/lifecycle-wiring.ts`, replace the stub/no-op handlers with actual calls to `createXxxLifecycleHooks()` from each adapter file. Import all 7 adapters, call them with their config from RalphLoopOptions, register the returned handlers. Write `src/orchestrator/__tests__/adapter-wiring-live.test.ts` (30 tests)
+- [ ] `MX-02` Wire adapters into `processTask()` — in `src/orchestrator/ralph-loop.ts`, ensure the lifecycle hook execution in processTask() flows through to real adapter code when modules are enabled. Add config plumbing so adapter configs reach the adapter constructors. Write `src/orchestrator/__tests__/processtask-adapters.test.ts` (25 tests)
 
-- [x] `KIRO-07-01` Extract patterns from Kimi lifecycle hooks + behaviors — DONE (2 patterns: lifecycle-hook-registry, feature-lifecycle-wiring)
-- [x] `KIRO-07-02` Validate Kimi's mega-wiring sprint output — DONE (audit report: 46 imports, 38 config fields, 13 wired modules, 4 missing, P0 duplication found)
-- [x] `KIRO-07-03` Extract patterns from Grok R19/R20 specs — DONE (5 patterns: multi-layer-hierarchy, semantic-model-graph, studio-rules-engine, mobile-launch-pipeline, tauri-desktop-bridge)
-- [x] `KIRO-07-04` Extract patterns from Gemini research — DONE (synthesis report: 10 cross-report patterns, priority matrix, model-to-agent mapping)
+**Phase 2: Cross-Module Event System**
+Modules need to communicate. Model routing needs to tell observability what model was selected. Memory needs to know when tasks complete. Build a lightweight event bus.
 
-### Completed
+- [ ] `MX-03` Create event bus — `src/orchestrator/event-bus.ts` with typed events: `model:selected`, `task:started`, `task:completed`, `task:failed`, `memory:stored`, `workflow:transitioned`, `collaboration:changed`. Pub/sub with type-safe payloads. Write `src/orchestrator/__tests__/event-bus.test.ts` (30 tests)
+- [ ] `MX-04` Connect modules to event bus — update lifecycle adapters to emit events at key points. Model routing emits `model:selected` after routing. Memory emits `memory:stored` after saving. Observability listens to ALL events for tracing. Write `src/orchestrator/__tests__/event-bus-integration.test.ts` (25 tests)
 
-- [x] KIRO-01: 79 BistroLens patterns extracted
-- [x] KIRO-02: Quality audit + cross-reference mapping + Nova26 extraction
-- [x] KIRO-03: 104 pattern nodes + 93 edges, unified manifest
-- [x] KIRO-04: Audit spec created, 4 scripts written, 140 patterns validated with fast-check
-- [x] KIRO-05: ESM bug fixed, all 4 audit scripts ran clean, 99.6% doc accuracy, 140-node dependency map
+**Phase 3: Agent Handoff Protocol**
+Nova26 has 21 agents that hand off work to each other. The handoff needs to carry context (memory, model selection, workflow state).
 
----
+- [ ] `MX-05` Handoff context builder — `src/orchestrator/handoff-context.ts` that assembles a `HandoffPayload` from all active modules: current workflow node, memory context, model routing state, active collaboration session. Write `src/orchestrator/__tests__/handoff-context.test.ts` (25 tests)
+- [ ] `MX-06` Handoff receiver — `src/orchestrator/handoff-receiver.ts` that unpacks a `HandoffPayload` and initializes the receiving agent's module state: restore memory context, apply model routing preferences, sync collaboration state. Write `src/orchestrator/__tests__/handoff-receiver.test.ts` (25 tests)
 
-## GEMINI — Deep Research + Competitive Intelligence
+**Phase 4: Configuration Cascade**
 
-> Output format: Structured research reports with priority matrix
-> Style: Exhaustive, every tool analyzed, priority-ranked
-
-### Current: GEMINI-07
-
-- [ ] `GEMINI-07` Agent communication protocols & multi-agent UX (MCP, ACP, A2A, orchestration patterns, marketplace)
-- [ ] `GEMINI-08` Developer productivity metrics & benchmarking (DORA, SPACE, Nova26-specific metrics, analytics dashboard)
-- [ ] `GEMINI-09` AI-native testing & quality assurance (AI code bugs, auto-fix patterns, eval frameworks, quality gates)
-- [ ] `GEMINI-10` Enterprise self-hosted deployment (Docker/K8s, SSO/RBAC, SOC 2, FedRAMP, update management)
-- [ ] `GEMINI-11` AI design systems & component generation (design tokens, shadcn, multi-screen journeys, screenshot-to-code)
-
-### Delivered: GEMINI-12 (Frontier Research)
-
-- [x] `GEMINI-12` AI Model Database — 4 categories, 21 agent-to-model mappings, JSON schema, auto-update strategy, priority matrix — DELIVERED, saved to .nova/research/gemini-12-model-intelligence.md
-- [ ] `GEMINI-13` Voice & Multimodal AI Interfaces (speech-to-intent, Whisper/Deepgram, image grounding, screen sharing for agents)
-- [ ] `GEMINI-14` Edge AI & On-Device Inference (MLX for Apple Silicon, NVIDIA NIM, TinyML, on-device fine-tuning, hybrid cloud/edge)
-- [ ] `GEMINI-15` Real-time Collaboration & CRDT Sync (multiplayer coding, CRDT libraries, Yjs/Automerge, conflict resolution for agents)
-
-### Completed
-
-- [x] GEMINI-01: 2026 AI ecosystem audit — 11 categories, 30+ tools analyzed, 4-phase roadmap
-- [x] GEMINI-02: World-class UX patterns — 20 must-steal patterns, 9 categories, implementation roadmap
-- [x] GEMINI-03: Mobile ecosystem deep dive — React Native + Expo SDK 54 recommended, Maestro for testing
-- [x] GEMINI-04: Monetization & GTM — Sovereign Tier pricing ($12/$25/$45), PLG playbook, path to $1M ARR
-- [x] GEMINI-05: EU AI Act compliance — Article 86 roadmap, OTel GenAI tracing, audit trail schema
-- [x] GEMINI-06: Local SLM optimization — Qwen 3.5 Coder king, hardware-tiered configs, agent-to-model routing
+- [ ] `MX-07` Config resolver — `src/config/config-resolver.ts` that merges configs from 3 sources: environment variables → config file (`.nova/config.json`) → RalphLoopOptions defaults. Type-safe, with Zod validation at each layer. Write `src/config/__tests__/config-resolver.test.ts` (25 tests)
+- [ ] `MX-08` Module health check system — `src/orchestrator/module-health.ts` that pings each enabled module's adapter to verify it's operational. Returns a health report with status per module. Wire into `/health` CLI command. Write `src/orchestrator/__tests__/module-health.test.ts` (20 tests)
 
 ---
 
-## CLAUDE CODE — Coordinator + Core Engine
+## GLM-5 (Black) — Architect Mega Sprint
 
-> Domain: Evaluation, prompt writing, ralph-loop.ts, convex/, .claude/, Zod schemas
-> Role: Evaluate all agent output, write sprint prompts, implement critical features
+> **You are the systems architect.** You refactor complex code, optimize performance, harden security, and build the persistence layer.
+> **Your superpower**: 745B parameters of deep reasoning — you handle the hardest engineering problems.
+> **Do NOT**: Write new feature modules (Kimi does that) or wire modules together (MiniMax does that).
 
-### Downtime Tasks (self-assigned)
+### Sprint GLM-01: Decompose + Harden + Optimize (7 tasks, 200+ tests)
 
-- [x] `CL-20` ~~Evaluate Kimi mega-wiring sprint output~~ DONE — all 13 modules wired, W-01→W-05 delivered, 243 new tests (9 edge case files had API mismatches → fixed)
-- [x] `CL-21` ~~Evaluate Grok R19 specs~~ DONE — all 3 accepted, 204 test cases, specs saved to .nova/specs/
-- [x] `CL-22` ~~Evaluate Gemini-01 research~~ DONE — 30+ tools analyzed, 4-phase roadmap, 2 new Gemini tasks added
-- [x] `CL-23` ~~Evaluate Kiro audit reports~~ DONE — 87 failures triaged, KIRO-06 sprint created (7 remediation tasks)
-- [x] `CL-24` ~~Write Kimi sprint prompts from Grok R19 specs~~ DONE — `.prompts/kimi-r19-sprint.md` (3 tasks, 204+ tests)
-- [x] `CL-25` ~~Remaining 11 agent templates to EARTH XML format~~ DONE — all 21/21 agents converted
-- [x] `CL-26` ~~Update MISSING_FEATURES.md~~ DONE — 13 features marked as implemented
-- [x] `CL-27` ~~Update TASK-BOARD.md progress summary~~ DONE — comprehensive update with new Grok/Gemini/Kimi assignments
-- [x] `CL-28` ~~Evaluate Gemini-02→06 research~~ DONE — all 5 accepted, findings integrated into MISSING_FEATURES.md
-- [x] `CL-29` ~~Write Kimi sprint prompts from Grok R20 specs~~ DONE — `.prompts/kimi-r20-sprint.md` (2 tasks, 199+ tests)
-- [x] `CL-30` ~~Evaluate Grok R20 specs~~ DONE — both accepted, 199 test cases, specs saved to .nova/specs/
+**Phase 1: Decompose ralph-loop.ts**
+`src/orchestrator/ralph-loop.ts` is 1,074 lines — too large. Split it into focused modules.
 
-### New Tasks
+- [ ] `GLM-01` Extract task execution — move `processTask()` and its helpers to `src/orchestrator/task-executor.ts`. Keep the main loop in ralph-loop.ts, but delegate task execution. Preserve all existing behavior. Write `src/orchestrator/__tests__/task-executor.test.ts` (35 tests)
+- [ ] `GLM-02` Extract build lifecycle — move `startBuild()`, `completeBuild()`, and build-level logic to `src/orchestrator/build-lifecycle.ts`. ralph-loop.ts becomes a thin coordinator that delegates to task-executor and build-lifecycle. Write `src/orchestrator/__tests__/build-lifecycle.test.ts` (25 tests)
 
-- [x] `CL-31` ~~Evaluate Kimi R19 sprint output~~ DONE — R19-01 + R19-02 delivered (22 files, 112 new tests), fixed types.ts overwrite + 20 TS errors, R19-03 pending
-- [x] `CL-32` ~~Evaluate Grok R20-03 spec~~ DONE — accepted, 82 tests, saved to .nova/specs/
-- [x] `CL-33` ~~Write Kimi sprint from Grok R21 specs~~ DONE — `.prompts/kimi-r21-sprint.md` (3 tasks, 229+ tests)
-- [x] `CL-34` ~~Evaluate Grok R21 specs~~ DONE — all 3 accepted (MCP 78, ACP 67, Compliance 84 = 229 tests)
-- [ ] `CL-35` Evaluate Gemini-07→11 research (extract actionable features)
-- [x] `CL-36` ~~Write Kimi sprint from Grok R22 spec~~ DONE — `.prompts/kimi-r22-sprint.md` (1 task, 79 tests)
-- [x] `CL-37b` ~~Save Grok spec summaries + Shannon research to .nova/~~ DONE — 5 specs + 1 research file
-- [x] `CL-38` ~~Update MISSING_FEATURES.md~~ DONE — R19 marked complete, R20-R22 updated, R23 gaps + frontier features added, 77 features tracked
-- [x] `CL-39` ~~Evaluate Kimi R19-03 output~~ DONE — 9 files, 124 tests, evaluate() bug fixed (both Claude + Kimi found it independently)
-- [x] `CL-40` ~~Evaluate Kimi R20-01 + R20-02 output~~ DONE — R20-01: 11 source + 7 test files (214 tests), R20-02: 6 source + 4 test files + 4 Rust (110 tests), 8 TS errors + 1 bug fixed
-- [x] `CL-41` ~~Write Grok R23 research prompts~~ DONE — `.prompts/grok-r23.md` (5 specs)
-- [x] `CL-42` ~~Write Gemini-12→15 research prompts~~ DONE — 4 frontier research topics
-- [x] `CL-43` ~~Write Kimi R20 continuation prompt~~ DONE — R19 complete, begin R20-01
+**Phase 2: Caching Layer**
+Several modules do repeated lookups. Add a proper caching layer.
+
+- [ ] `GLM-03` LRU cache module — `src/cache/lru-cache.ts` with generic typed LRU cache. TTL support, size limits, hit/miss stats. Replace the ad-hoc Map caches in `src/models/model-router.ts` (line 119) and `src/model-routing/router.ts` with this. Write `src/cache/__tests__/lru-cache.test.ts` (30 tests)
+
+**Phase 3: Security Hardening**
+
+- [ ] `GLM-04` Input sanitization — `src/security/input-sanitizer.ts` that validates and sanitizes all external inputs: task descriptions (XSS), file paths (path traversal), config values (injection). Wire into processTask() entry point. Write `src/security/__tests__/input-sanitizer.test.ts` (30 tests)
+- [ ] `GLM-05` Secret detection — `src/security/secret-scanner.ts` that scans task outputs and agent responses for accidentally leaked secrets (API keys, tokens, passwords). Regex patterns for common formats (AWS, GitHub, OpenAI, Anthropic keys). Wire into onAfterTask hook. Write `src/security/__tests__/secret-scanner.test.ts` (25 tests)
+
+**Phase 4: Persistence Layer Upgrade**
+
+- [ ] `GLM-06` Migration system — `src/persistence/migration-runner.ts` that manages SQLite schema migrations. Version tracking, up/down migrations, atomic transactions. Replace the raw `db.prepare()` calls in `src/persistence/checkpoint-system.ts` with proper migration-managed schemas. Write `src/persistence/__tests__/migration-runner.test.ts` (30 tests)
+- [ ] `GLM-07` Persistence abstraction — `src/persistence/store.ts` with a `Store<T>` interface that abstracts over SQLite, providing type-safe CRUD operations. Use in checkpoint-system, analytics, and memory modules. Write `src/persistence/__tests__/store.test.ts` (25 tests)
+
+---
+
+## CLAUDE (Red) — Coordinator
+
+> Domain: Evaluation, prompt writing, conflict resolution, architectural decisions
+> Does NOT write features (Kimi), wiring (MiniMax), or refactoring (GLM-5)
+
+### Active Responsibilities
+
+- [ ] Evaluate all output from Kimi, MiniMax, and GLM-5 as it arrives
+- [ ] Fix TS errors in delivered code
+- [ ] Resolve merge conflicts between agents
+- [ ] Write follow-up sprint prompts as needed
+- [ ] Commission Grok/Gemini research when agents need specs
+
+### Pending Evaluation Tasks
+
+- [ ] `CL-35` Evaluate Gemini-07→11 research (when delivered)
 - [ ] `CL-44` Evaluate Gemini-12→15 research (when delivered)
-- [ ] `CL-45` Write Grok R24 specs from Gemini frontier research (when delivered)
-- [x] `CL-46` ~~Evaluate Grok R23 specs + write Kimi R23 sprint~~ DONE — R23+R24 combined into mega-sprint `.prompts/kimi-r22-r24-mega-sprint.md` (7 tasks, 440+ tests; 4 cut as premature)
-- [x] `CL-47` ~~Evaluate Kimi R21 test files~~ DONE — 317 tests (97 MCP + 110 ACP + 110 compliance), all pass, ESM .js imports, no `any`
-- [x] `CL-48` ~~KIRO-06-07 structural audit~~ DONE — 95→0 failures, 18 files fixed (INDEX, 14 pattern files, scan-utils.ts, audit report)
-- [x] `CL-49` ~~KIRO-07 pattern extraction~~ DONE — 7 new patterns, 2 audit reports, INDEX 51→58
-- [x] `CL-50` ~~Delete CUT module artifacts~~ DONE — deleted src/sandbox/, src/swarm/, src/engine/, src/multimodal/ + cleaned swarm imports from CLI
-- [x] `CL-51` ~~Evaluate + commit Kimi R22-R24 source~~ DONE — 35 files (18K lines), 7 modules committed, 0 `any`, ESM .js imports correct, 2 test bugs fixed
-- [x] `CL-52` ~~Wire R22-R24 modules into RalphLoopOptions~~ DONE — 14 new fields (7 enabled + 7 config), 4 type imports + 3 placeholder configs
-- [x] `CL-53` ~~Wire R22-R24 into lifecycle hooks~~ DONE — 24 total features in DEFAULT_FEATURE_HOOKS, wireFeatureHooks(), getWiringSummary()
-- [x] `CL-54` ~~Create barrel exports for new modules~~ DONE — all 6 index.ts files verified (Kimi set them up correctly)
-- [x] `CL-55` ~~Cross-module R22-R24 integration tests~~ DONE — 51 tests in r22-r24-integration.test.ts
-- [x] `CL-56` ~~Update TASK-BOARD + CLAUDE.md~~ DONE
-
-### Completed (recent)
-
-- [x] C-01→C-10 core engine enhancements
-- [x] Implemented R16-05 Wellbeing, R17-01 Recovery, R17-02 Init (319 new tests)
-- [x] Wired wellbeing, recovery, init into ralph-loop.ts
-- [x] Created all sprint prompts through R20 + Gemini research prompts
-- [x] Evaluated Grok R7→R18 (all accepted)
-- [x] XML-restructured all 21 agent templates to EARTH format (CL-25)
-- [x] Updated MISSING_FEATURES.md (CL-26)
 
 ---
 
-## PERPLEXITY — Research + Documentation (Paused)
+## Research Agents (On-Demand)
 
-### Remaining
+### GROK — Spec Writer
+- [ ] `GROK-R22-02` Shannon Patterns Adaptation Spec (Temporal replay + UCB router + WASI sandbox)
+- Available for new spec requests from Claude
 
-- [ ] `P-07` Create unified documentation portal
-- [ ] `P-08` Write DEPLOYMENT.md
-- [ ] `P-09` Write CONTRIBUTING.md
-- [ ] `P-10` Create interactive tutorial
-- [ ] `P-11` Write SECURITY.md
-- [ ] `P-12` Create onboarding script documentation
-
-### Completed
-
-- [x] P-01→P-06 (competitive analysis, orchestration research, Convex, compliance, video gen, streaming)
+### GEMINI — Research Intelligence
+- [ ] `GEMINI-07` Agent communication protocols & multi-agent UX
+- [ ] `GEMINI-08` Developer productivity metrics & benchmarking
+- [ ] `GEMINI-09` AI-native testing & quality assurance
+- [ ] `GEMINI-10` Enterprise self-hosted deployment
+- [ ] `GEMINI-11` AI design systems & component generation
+- [ ] `GEMINI-13` Voice & Multimodal AI Interfaces
+- [ ] `GEMINI-14` Edge AI & On-Device Inference
+- [ ] `GEMINI-15` Real-time Collaboration & CRDT Sync
 
 ---
 
-## Progress Summary
+## Completed Work (Archive)
 
-| Agent | Active Tasks | Completed | Next Up |
-|-------|-------------|-----------|---------|
-| Claude Code | Coordination | 85+ | CL-50 sprint complete, awaiting next assignments |
-| Sonnet | — | S-01 (6) + CL-50 (7) = 13 tasks | Both sprints complete, awaiting next sprint |
-| Kimi | R26 lifecycle adapters | 55+ | R26-01→R26-07 (165+ tests for 7 lifecycle adapters) |
-| Grok | GROK-R22-02 (Shannon) | 80+ | R23+R24 done, Shannon adaptation pending |
-| Kiro | — | 31+ | KIRO-07 complete, 58 total patterns, awaiting KIRO-08 |
-| Gemini | GEMINI-07→15 | 7 | 07-11 current → 13-15 frontier research |
-| Perplexity | P-07→P-12 (paused) | 6 | Documentation portal |
+<details>
+<summary>Click to expand — 90+ completed tasks across all agents</summary>
+
+### Kimi (55+ tasks)
+- R16-01→R16-05, R17-01→R17-12, R19→R21, R22-R24 (7 KEEP modules)
+- R25 testing (538 tests), R26 lifecycle adapters (268 tests)
+- M-01→M-15 CLI tasks, mega-wiring (W-01→W-05)
+
+### Sonnet (13 tasks)
+- S-01-01→06 Integration sprint (RalphLoopOptions dedup, 4 module wiring, sandbox cleanup, failure handler, 45 tests)
+- CL-50→56 Hardening sprint (CUT deletion, R22-R24 evaluation, wiring, barrel exports, 51 integration tests)
+
+### Claude (80+ tasks)
+- CL-20→CL-56 evaluation + coordination
+- C-01→C-10 core engine, R16-05/R17-01/R17-02 implementation (319 tests)
+- All agent template conversions, all prompt writing
+
+### Grok (80+ specs)
+- R7→R24 feature specs, R18 dashboard/deployment, Shannon research, Perplexity spec
+
+### Kiro (31+ audits)
+- KIRO-01→07 pattern extraction (58 patterns), structural audits, quality gates
+
+### Gemini (7 reports)
+- GEMINI-01→06 + GEMINI-12 (ecosystem, UX, mobile, monetization, compliance, SLM, model database)
+
+</details>
+
+---
+
+## Dependency Map
+
+```
+KIMI KMS-08 (config schemas) ──→ MINIMAX MX-07 (config resolver uses schemas)
+MINIMAX MX-01 (wire adapters) ──→ MINIMAX MX-02 (processTask needs wired adapters)
+MINIMAX MX-03 (event bus) ──→ MINIMAX MX-04 (modules connect to bus)
+MINIMAX MX-05 (handoff builder) ──→ MINIMAX MX-06 (handoff receiver)
+GLM-5 GLM-01 (extract task-executor) ──→ GLM-5 GLM-02 (extract build-lifecycle)
+GLM-5 GLM-03 (LRU cache) ──→ independent, no blockers
+
+Everything else is independent — agents can work in parallel.
+```
 
 ---
 
 ## Coordination Rules
 
-1. **Task board is truth**: Every agent checks this file for its next assignment
-2. **Report to Jon**: When you finish, report output to Jon. He gives you a return prompt.
-3. **Claude evaluates**: All agent output goes through Claude for quality check before next task
-4. **Quality bar**: All code must compile (`tsc --noEmit` = 0 errors), all tests must pass
-5. **No overlapping files**: Agents only modify files in their domain
-6. **Sprint files**: Detailed instructions live in `.prompts/` — task board has the overview
+1. **Task board is truth** — every agent finds their section and works top to bottom
+2. **Quality gates after every task** — `npx tsc --noEmit` = 0 errors, `npx vitest run` = 0 failures
+3. **Report to Jon when done** — Jon routes output to Claude for evaluation
+4. **No overlapping files** — each agent owns their domain:
+   - Kimi: `src/cli/`, `src/config/module-schemas.ts`, `src/__tests__/`
+   - MiniMax: `src/orchestrator/` (wiring, event-bus, handoff), `src/config/config-resolver.ts`
+   - GLM-5: `src/orchestrator/task-executor.ts`, `src/orchestrator/build-lifecycle.ts`, `src/cache/`, `src/security/`, `src/persistence/`
+   - Claude: `.nova/`, `.prompts/`, evaluation only
+5. **If you hit a file owned by another agent** — skip that task and move to the next one
+6. **Commit after every task** — small, focused commits with descriptive messages
