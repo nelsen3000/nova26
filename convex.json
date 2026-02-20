@@ -1,0 +1,28 @@
+{
+  "authConfig": {
+    "providers": [
+      {
+        "domain": "https://your-auth-provider.example.com",
+        "applicationID": "your-app-id"
+      }
+    ]
+  },
+  "functions": {
+    "http": [
+      {
+        "path": "/webhooks/*",
+        "maxRequestBodySize": 1048576,
+        "allowedMethods": ["POST", "PUT"]
+      },
+      {
+        "path": "/health",
+        "maxRequestBodySize": 1024,
+        "allowedMethods": ["GET"]
+      }
+    ]
+  },
+  "telemetry": {
+    "enabled": true,
+    "sampleRate": 0.1
+  }
+}

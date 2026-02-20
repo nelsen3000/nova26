@@ -1,0 +1,86 @@
+{
+  "buildCommand": "npx convex deploy && npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "env": {
+    "NEXT_PUBLIC_CONVEX_URL": {
+      "description": "Convex deployment URL (public client-side)"
+    },
+    "CONVEX_URL": {
+      "description": "Convex deployment URL (server-side)"
+    },
+    "CONVEX_DEPLOY_KEY": {
+      "description": "Required for CI/CD deployment of Convex functions"
+    },
+    "ANTHROPIC_API_KEY": {
+      "description": "Claude API key for LLM features"
+    },
+    "GITHUB_CLIENT_ID": {
+      "description": "Optional: GitHub OAuth integration"
+    },
+    "GITHUB_CLIENT_SECRET": {
+      "description": "Optional: GitHub OAuth integration (secret)"
+    },
+    "OPENAI_API_KEY": {
+      "description": "Optional: OpenAI API key"
+    },
+    "LANGFUSE_PUBLIC_KEY": {
+      "description": "Optional: Langfuse observability"
+    },
+    "LANGFUSE_SECRET_KEY": {
+      "description": "Optional: Langfuse observability (secret)"
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(), microphone=(), camera=()"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/convex/:path*",
+      "destination": "https://your-project.convex.cloud/:path*"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/docs",
+      "destination": "https://github.com/anthropics/nova26",
+      "permanent": false
+    }
+  ],
+  "regions": ["sfo1"],
+  "functions": {
+    "api/**/*": {
+      "maxDuration": 60
+    }
+  }
+}
