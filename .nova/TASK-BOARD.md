@@ -13,10 +13,10 @@
 
 | Color | Agent | Model | Strength | Role |
 |-------|-------|-------|----------|------|
-| Red | **Claude** | claude-opus-4-6 | Reasoning, evaluation, architecture | Coordinator — evaluates all output, writes prompts, critical decisions |
+| — | **Claude** | claude-opus-4-6 | Reasoning, evaluation, architecture | Coordinator — evaluates all output, writes prompts, critical decisions |
 | Blue | **Kimi** | kimi-k2 | Fast implementation, bulk output, FREE | Workhorse — new features, CLI commands, tests, high-volume implementation |
 | Green | **MiniMax** | minimax-m2.5 | Agent workflows, integration, 205K context | Integrator — wiring modules together, cross-module pipelines, handoff logic |
-| White | **Sonnet** | claude-sonnet-4-6 | Integration testing, hardening, validation | Hardener — end-to-end tests, CI pipeline, documentation, quality sweeps |
+| Red | **Sonnet** | claude-sonnet-4-6 | Integration testing, hardening, validation | Hardener — end-to-end tests, CI pipeline, documentation, quality sweeps |
 | Black | **GLM-5** | z-ai/glm-5 | Complex systems, 745B MoE, deep backend | Architect — refactoring, performance, security, persistence, decomposition |
 
 ### Research Agents (on-demand, not terminal)
@@ -155,7 +155,7 @@ Several modules do repeated lookups. Add a proper caching layer.
 
 ---
 
-## SONNET (White) — Hardener Mega Sprint
+## SONNET (Red) — Hardener Mega Sprint
 
 > **You are the quality hardener.** You write end-to-end tests, set up CI, write docs, and sweep for quality issues.
 > **Your superpower**: Fast, precise, thorough — you catch what others miss.
