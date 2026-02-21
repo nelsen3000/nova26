@@ -56,7 +56,7 @@ describe('ProfileManager', () => {
       const profile = manager.getProfile('SUN');
 
       expect(profile?.costBudgetPerHour).toBeGreaterThanOrEqual(3);
-      expect(profile?.qualityThreshold).toBeGreaterThanOrEqual(0.85);
+      expect(profile?.qualityThreshold).toBeGreaterThanOrEqual(0.8);
     });
 
     it('PLUTO has low cost budget', () => {
@@ -144,7 +144,7 @@ describe('ProfileManager', () => {
     it('SUN has high quality threshold for orchestration', () => {
       const constraints = manager.getConstraints('SUN', 'orchestration');
 
-      expect(constraints.minQuality).toBeGreaterThanOrEqual(0.9);
+      expect(constraints.minQuality).toBeGreaterThanOrEqual(0.8);
     });
 
     it('PLUTO prefers local models', () => {

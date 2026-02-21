@@ -5,7 +5,7 @@
 > that sends you back here. Find your section, pick the next unchecked task, do it.
 > **Coordinator**: Claude Code (assigns tasks, evaluates output, resolves conflicts)
 > **Repo**: https://github.com/nelsen3000/nova26
-> **Current state**: 4,007 tests, 0 TS errors, 151 test files
+> **Current state**: 4,674 tests, 0 TS errors, 160 test files
 > **Vision**: Eternal Engine — self-evolving Rust core + ZeroClaw/TinyClaw/NanoClaw patterns
 
 ---
@@ -60,7 +60,7 @@
 - [x] `KIMI-R23-05` Implement Cinematic Observability & Eval Suite — DONE (by Claude) — `src/observability/cinematic-core.ts`, `braintrust-adapter.ts`, `langsmith-bridge.ts`, 47 tests passing
 - [x] `KIMI-R24-01` Implement AI Model Database — DONE (by Claude) — `src/models/ai-model-vault.ts`, `ensemble-engine.ts`, `src/atlas/model-taste-integrator.ts`, 50 tests passing
 - [x] ~~`KIMI-R24-02` Implement Eternal Engine Rust Core~~ **CUT** (no Rust crate exists yet)
-- [ ] `KIMI-R24-03` Implement Real-time CRDT Collaboration (spec: .nova/specs/grok-r24-immortal-omniverse.md, 65 tests)
+- [x] `KIMI-R24-03` Implement Real-time CRDT Collaboration — DONE (by Claude) — `src/collaboration/crdt-core.ts`, `yjs-automerge-bridge.ts`, `semantic-resolver.ts`, `src/taste-vault/crdt-taste-sync.ts`, 71 tests passing, wired into ralph-loop-types.ts
 - [x] ~~`KIMI-R24-04` Implement Voice & Multimodal Interface~~ **CUT** (premature without working UI)
 
 ### Completed (recent)

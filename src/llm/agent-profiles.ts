@@ -456,7 +456,7 @@ export class ProfileManager {
       maxCost: profile.costBudgetPerHour / 3600 * 1000, // Rough per-request estimate
       minQuality: profile.qualityThreshold,
       maxLatency: profile.latencyBudget,
-      preferLocal: profile.costBudgetPerHour < 1.0,
+      preferLocal: profile.costBudgetPerHour <= 1.0,
     };
   }
 
