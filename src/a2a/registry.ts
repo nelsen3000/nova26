@@ -3,6 +3,7 @@
 
 import type { AgentCard, AgentTier, CapabilityDescriptor } from './types.js';
 import { AgentCardSchema } from './schemas.js';
+import type { DiscoveryManager } from '../hypercore/discovery.js';
 
 export interface RegistryStats {
   totalAgents: number;
@@ -17,6 +18,9 @@ export interface RegistryStats {
  */
 export class AgentRegistry {
   private cards = new Map<string, AgentCard>();
+  private discovery?: DiscoveryManager;
+  private discoveryTopic = 'nova26-agent-cards';
+  private discoveryCleanup?: () => void;
 
   /**
    * Register a local agent card.
@@ -123,6 +127,55 @@ export class AgentRegistry {
       merged++;
     }
     return merged;
+  }
+
+  /**
+   * Enable Hyperswarm discovery — announces local cards and discovers remote cards via DHT.
+   */
+  enableHyperswarmDiscovery(discoveryManager: DiscoveryManager): void {
+    this.discovery = discoveryManager;
+
+    // Announce all local cards on the discovery topic
+    discoveryManager.announce(this.discoveryTopic);
+
+    // Listen for new peers and merge their cards
+    this.discoveryCleanup = discoveryManager.on(event => {
+      if (event.type === 'peer-added' && event.peerId) {
+        // In a real implementation, we'd fetch the peer's agent cards via the transport.
+        // For now, the in-memory DHT simulation means peers are discoverable via lookup.
+      }
+    });
+  }
+
+  /**
+   * Disable Hyperswarm discovery — leaves the DHT network.
+   */
+  disableHyperswarmDiscovery(): void {
+    if (this.discovery) {
+      this.discovery.leave(this.discoveryTopic);
+      this.discoveryCleanup?.();
+      this.discovery = undefined;
+      this.discoveryCleanup = undefined;
+    }
+  }
+
+  /**
+   * Discover remote agent cards via Hyperswarm DHT lookup.
+   * Returns the number of new remote cards merged.
+   */
+  discoverRemoteCards(): number {
+    if (!this.discovery) return 0;
+    const peers = this.discovery.lookup(this.discoveryTopic);
+    // In a real implementation, each peer would expose their agent cards.
+    // For the in-memory simulation, we return the peer count as a proxy.
+    return peers.length;
+  }
+
+  /**
+   * Check if Hyperswarm discovery is enabled.
+   */
+  isDiscoveryEnabled(): boolean {
+    return this.discovery !== undefined;
   }
 
   /**

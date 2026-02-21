@@ -6,15 +6,15 @@ Incremental implementation of the `src/a2a/` module, building from core types an
 
 ## Tasks
 
-- [ ] 1. Set up module structure, types, and schemas
-  - [ ] 1.1 Create `src/a2a/types.ts` with AgentCard, A2AEnvelope, A2AMessageType, AgentTier, CapabilityDescriptor, AgentEndpoint, ChannelStatus, RoutingResult, TaskProposal, CRDTSyncMessage, and A2ALogEvent interfaces
+- [x] 1. Set up module structure, types, and schemas
+  - [x] 1.1 Create `src/a2a/types.ts` with AgentCard, A2AEnvelope, A2AMessageType, AgentTier, CapabilityDescriptor, AgentEndpoint, ChannelStatus, RoutingResult, TaskProposal, CRDTSyncMessage, and A2ALogEvent interfaces
     - Define all TypeScript types matching the design document interfaces
     - _Requirements: 2.1, 2.5_
-  - [ ] 1.2 Create `src/a2a/schemas.ts` with Zod validation schemas for all types
+  - [x] 1.2 Create `src/a2a/schemas.ts` with Zod validation schemas for all types
     - AgentCardSchema, A2AEnvelopeSchema, A2AMessageTypeSchema, TaskProposalPayloadSchema, CRDTSyncMessageSchema, A2ALogEventSchema, RoutingResultSchema
     - Export inferred types from schemas
     - _Requirements: 1.4, 2.5, 13.6_
-  - [ ] 1.3 Create `src/a2a/tier-config.ts` with default tier assignments and tier routing rules
+  - [x] 1.3 Create `src/a2a/tier-config.ts` with default tier assignments and tier routing rules
     - DEFAULT_TIER_ASSIGNMENTS mapping all 21 agents to L0-L3
     - DEFAULT_TIER_RULES with allowed target tiers and escalation requirements
     - _Requirements: 11.1, 4.5_
@@ -24,8 +24,8 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - **Property 9: Message type validation**
     - **Validates: Requirements 1.6, 2.3, 2.5, 13.3**
 
-- [ ] 2. Implement EnvelopeFactory and AgentRegistry
-  - [ ] 2.1 Create `src/a2a/envelope.ts` with EnvelopeFactory
+- [x] 2. Implement EnvelopeFactory and AgentRegistry
+  - [x] 2.1 Create `src/a2a/envelope.ts` with EnvelopeFactory
     - createEnvelope() assigns unique ID (uuid or nanoid), sets timestamp, validates via Zod schema
     - createRequest(), createResponse(), createNotification(), createTaskProposal() convenience methods
     - _Requirements: 2.1, 2.2, 2.4_
@@ -33,7 +33,7 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - **Property 6: A2A Envelope structure and uniqueness**
     - **Property 8: Correlation threading**
     - **Validates: Requirements 2.1, 2.2, 2.4, 13.6**
-  - [ ] 2.3 Create `src/a2a/registry.ts` with AgentRegistry implementation
+  - [x] 2.3 Create `src/a2a/registry.ts` with AgentRegistry implementation
     - In-memory Map<string, AgentCard> storage
     - register() validates card via Zod, handles duplicate ID updates with revision increment
     - getById(), findByCapability(), findByTier(), listAll(), getLocalCards(), getRemoteCards()
@@ -47,11 +47,11 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - **Property 5: Remote Agent Card merge preserves origin**
     - **Validates: Requirements 1.1, 1.2, 1.3, 1.4, 1.5, 1.8**
 
-- [ ] 3. Checkpoint - Ensure all tests pass
+- [x] 3. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 4. Implement A2ARouter with tier and sandbox enforcement
-  - [ ] 4.1 Create `src/a2a/router.ts` with A2ARouter implementation
+- [x] 4. Implement A2ARouter with tier and sandbox enforcement
+  - [x] 4.1 Create `src/a2a/router.ts` with A2ARouter implementation
     - send() resolves target via AgentRegistry, checks tier rules, checks sandbox rules, delivers via handler map
     - Direct routing (by agent ID), broadcast routing (to all), capability routing (via registry lookup)
     - Tier enforcement using DEFAULT_TIER_RULES — reject violations, require escalation justification for L2/L3 → L0/L1
@@ -70,8 +70,8 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - **Property 31: Cross-tier audit logging**
     - **Validates: Requirements 4.1, 4.2, 4.3, 4.5, 4.6, 10.1, 10.2, 10.3, 10.4, 11.2, 11.3, 11.4, 12.3**
 
-- [ ] 5. Implement A2AChannel and ChannelManager
-  - [ ] 5.1 Create `src/a2a/channel.ts` with A2AChannel and ChannelManager
+- [x] 5. Implement A2AChannel and ChannelManager
+  - [x] 5.1 Create `src/a2a/channel.ts` with A2AChannel and ChannelManager
     - LocalChannel — in-memory, zero-copy message passing between agents in the same process
     - Channel state machine: connecting → open → closed, with reconnecting state for remote channels
     - Message ordering guarantee within a channel
@@ -84,11 +84,11 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - **Property 12: Channel retry on failure**
     - **Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5**
 
-- [ ] 6. Checkpoint - Ensure all tests pass
+- [x] 6. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Implement MCP integration layer
-  - [ ] 7.1 Create MCP tool registration and invocation bridge in `src/a2a/mcp-bridge.ts`
+- [x] 7. Implement MCP integration layer
+  - [x] 7.1 Create MCP tool registration and invocation bridge in `src/a2a/mcp-bridge.ts`
     - Wraps existing `src/mcp/server.ts` MCPServer and `src/mcp/registry.ts` MCPRegistry
     - registerAgentTools() — registers tools with "agentName.toolName" namespacing, validates uniqueness
     - invokeTool() — routes to source agent's handler, returns result or structured error
@@ -108,8 +108,8 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - Tool invocation error response structure (5.4)
     - _Requirements: 5.4, 6.3_
 
-- [ ] 8. Implement TaskNegotiator
-  - [ ] 8.1 Create `src/a2a/task-negotiator.ts` with TaskNegotiator implementation
+- [x] 8. Implement TaskNegotiator
+  - [x] 8.1 Create `src/a2a/task-negotiator.ts` with TaskNegotiator implementation
     - propose() — creates task-proposal envelope with description, capabilities, complexity, deadline; sends via A2ARouter
     - accept() — sends task-accept response with agent ID and estimated completion time
     - reject() — sends task-reject response with reason and optional alternative
@@ -124,8 +124,8 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - Test that proposals are marked timed-out after deadline
     - _Requirements: 7.4_
 
-- [ ] 9. Implement SwarmCoordinator
-  - [ ] 9.1 Create `src/a2a/swarm-coordinator.ts` with SwarmCoordinator implementation
+- [x] 9. Implement SwarmCoordinator
+  - [x] 9.1 Create `src/a2a/swarm-coordinator.ts` with SwarmCoordinator implementation
     - createSwarm() — broadcasts task-proposal to capable agents via A2ARouter, collects acceptances
     - Sub-task assignment based on agent capabilities
     - Shared state maintained via SwarmSession object, accessible to all participants
@@ -141,11 +141,11 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - Test reassignment on failure and escalation when no capable agent available
     - _Requirements: 8.5_
 
-- [ ] 10. Checkpoint - Ensure all tests pass
+- [x] 10. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 11. Implement CRDTSyncChannel
-  - [ ] 11.1 Create `src/a2a/crdt-sync.ts` with CRDTSyncChannel implementation
+- [x] 11. Implement CRDTSyncChannel
+  - [x] 11.1 Create `src/a2a/crdt-sync.ts` with CRDTSyncChannel implementation
     - broadcast() — wraps CRDT update in A2A envelope with "stream-data" type, includes vector clock, sends to all connected agents
     - onUpdate() — handler for incoming CRDT updates, applies to local state
     - Vector clock management — increment on send, merge on receive
@@ -160,8 +160,8 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - Test that malformed updates are logged and skipped
     - _Requirements: 9.5_
 
-- [ ] 12. Implement A2AObservability
-  - [ ] 12.1 Create `src/a2a/observability.ts` with A2AObservability implementation
+- [x] 12. Implement A2AObservability
+  - [x] 12.1 Create `src/a2a/observability.ts` with A2AObservability implementation
     - emit() — stores structured log events (A2ALogEvent)
     - getMetrics() — returns A2AMetrics with message counts, routing latency, tool invocation stats
     - getRecentEvents() — returns last N events
@@ -174,15 +174,15 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - **Property 34: MCP invocation record serialization round trip**
     - **Validates: Requirements 12.1, 12.2, 12.4, 12.5, 13.4, 13.5**
 
-- [ ] 13. Wire everything together and create public API
-  - [ ] 13.1 Create `src/a2a/index.ts` with public API exports
+- [x] 13. Wire everything together and create public API
+  - [x] 13.1 Create `src/a2a/index.ts` with public API exports
     - Export all types, schemas, and component classes
     - Create `createA2ALayer()` factory function that initializes AgentRegistry, A2ARouter, ChannelManager, TaskNegotiator, SwarmCoordinator, CRDTSyncChannel, A2AObservability, and MCPBridge
     - Wire A2ARouter to use AgentRegistry for lookups and A2AObservability for events
     - Wire SwarmCoordinator to use A2ARouter for messaging
     - Wire CRDTSyncChannel to use A2ARouter for broadcasting
     - _Requirements: all_
-  - [ ] 13.2 Add Hyperswarm discovery integration to AgentRegistry
+  - [x] 13.2 Add Hyperswarm discovery integration to AgentRegistry
     - enableHyperswarmDiscovery() — uses HypercoreManager from `src/hypercore/` to announce/discover Agent_Cards via DHT
     - disableHyperswarmDiscovery() — leaves Hyperswarm network
     - Remote card merge on discovery
@@ -192,7 +192,7 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - Test fallback to remote registry on routing failure
     - _Requirements: 1.7, 1.8, 4.4_
 
-- [ ] 14. Final checkpoint - Ensure all tests pass
+- [x] 14. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

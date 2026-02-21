@@ -18,6 +18,11 @@ export type { ChannelOptions } from './channel.js';
 export { MCPBridge } from './mcp-bridge.js';
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, ToolInvocationResult, MCPBridgeStats } from './mcp-bridge.js';
 export { A2AObservability } from './observability.js';
+export { TaskNegotiator } from './task-negotiator.js';
+export type { NegotiationRecord, ProposalStatus, ProposalHandler } from './task-negotiator.js';
+export { SwarmCoordinator } from './swarm-coordinator.js';
+export type { SwarmSession, SwarmSubTask, SwarmStatus, SubTaskStatus } from './swarm-coordinator.js';
+export { CRDTSyncChannel } from './crdt-sync.js';
 
 export interface A2ALayer {
   registry: AgentRegistry;
@@ -26,6 +31,9 @@ export interface A2ALayer {
   envelope: (agentId: string) => EnvelopeFactory;
   mcp: MCPBridge;
   observability: A2AObservability;
+  negotiator: (agentId: string) => TaskNegotiator;
+  swarm: SwarmCoordinator;
+  crdtSync: (agentId: string) => CRDTSyncChannel;
 }
 
 import { AgentRegistry } from './registry.js';
@@ -34,16 +42,20 @@ import { ChannelManager } from './channel.js';
 import { EnvelopeFactory } from './envelope.js';
 import { MCPBridge } from './mcp-bridge.js';
 import { A2AObservability } from './observability.js';
+import { TaskNegotiator } from './task-negotiator.js';
+import { SwarmCoordinator } from './swarm-coordinator.js';
+import { CRDTSyncChannel } from './crdt-sync.js';
 
 /**
  * createA2ALayer — Factory function that wires all A2A components together.
  */
-export function createA2ALayer(): A2ALayer {
+export function createA2ALayer(coordinatorAgentId = 'SUN'): A2ALayer {
   const registry = new AgentRegistry();
   const observability = new A2AObservability();
   const router = new A2ARouter(registry);
   const channels = new ChannelManager();
   const mcp = new MCPBridge();
+  const swarm = new SwarmCoordinator(coordinatorAgentId, router, registry);
 
   // Wire router to emit observability events
   const origSend = router.send.bind(router);
@@ -67,5 +79,8 @@ export function createA2ALayer(): A2ALayer {
     envelope: (agentId: string) => new EnvelopeFactory(agentId),
     mcp,
     observability,
+    negotiator: (agentId: string) => new TaskNegotiator(agentId, router),
+    swarm,
+    crdtSync: (agentId: string) => new CRDTSyncChannel(agentId, router),
   };
 }
