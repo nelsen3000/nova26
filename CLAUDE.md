@@ -62,6 +62,12 @@
   GEMINI-04: Monetization ($12/$25/$45 tiers), GEMINI-05: EU AI Act compliance,
   GEMINI-06: Local SLM optimization (Qwen 3.5 king)
 - [x] Created 5 Gemini prompts (GEMINI-07→11), 5 Grok prompts (R20-03→R22-02)
+- [x] Implemented KIMI-R22-01: Agent Model Routing — `src/model-routing/` (10 files, 85 tests)
+  - types.ts, hardware-detector.ts, model-registry.ts, router.ts, speculative-decoder.ts
+  - inference-queue.ts, metrics-tracker.ts, ollama-modelfile-generator.ts
+  - benchmark/nova-bench.ts (42 tasks), __tests__/routing.test.ts (85 tests)
+  - Wired into ralph-loop-types.ts (modelRoutingEnabled + modelRoutingConfig)
+  - 0 TS errors, 4990+ tests passing
 
 ## In Progress
 

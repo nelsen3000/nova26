@@ -52,7 +52,7 @@
 - [x] `KIMI-R21-02` Implement ACP integration (spec: .nova/specs/grok-r21-02-acp-integration.md, 67 tests) — DELIVERED, 6 files
 - [x] `KIMI-R21-03` Implement Compliance & Audit Trail (spec: .nova/specs/grok-r21-03-compliance-audit.md, 84 tests) — DELIVERED, 5 files, 1 TS error fixed by Claude
 - [x] `KIMI-PERP-01` ~~Implement Perplexity research integration~~ DONE (by Claude) — `src/tools/perplexity/` 4 files, 31 tests passing
-- [ ] `KIMI-R22-01` Implement Agent Model Routing (spec: .nova/specs/grok-r22-01-model-routing.md, 79 tests)
+- [x] `KIMI-R22-01` Implement Agent Model Routing (spec: .nova/specs/grok-r22-01-model-routing.md, 79 tests) — DONE (by Claude) — `src/model-routing/` 10 files, 85 tests passing, wired into ralph-loop-types.ts
 - [ ] `KIMI-R23-01` Implement Persistent Visual Workflow Engine (spec: .nova/specs/grok-r23-eternal-symphony.md, 70 tests)
 - [x] ~~`KIMI-R23-02` Implement MicroVM / WASI Ultra-Sandbox~~ **CUT** (Firecracker requires Linux KVM, no macOS)
 - [ ] `KIMI-R23-03` Implement Infinite Hierarchical Memory (spec: .nova/specs/grok-r23-eternal-symphony.md, 70 tests)

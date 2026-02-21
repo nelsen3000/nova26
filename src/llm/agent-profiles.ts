@@ -50,7 +50,7 @@ export const DEFAULT_AGENT_PROFILES: Record<AgentId, AgentProfile> = {
       ['quick-query', 'anthropic-claude-3-sonnet'],
     ]),
     costBudgetPerHour: 5.0,
-    qualityThreshold: 0.9,
+    qualityThreshold: 0.8,
     latencyBudget: 5000,
     description: 'Orchestrator - Task planning, dispatch, coordination',
     reasoning: 'Needs high reasoning capability for complex orchestration decisions',

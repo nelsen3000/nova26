@@ -35,6 +35,8 @@ import type { AdvancedInitConfig } from '../init/init-index.js';
 import type { AutonomyLevel } from '../config/autonomy.js';
 // R22-01 Model Routing
 import type { ModelRoutingConfig } from '../model-routing/index.js';
+// R23-01 Visual Workflow Engine
+import type { VisualWorkflowEngineConfig } from '../workflow-engine/types.js';
 
 // Placeholder configs for modules without dedicated config types
 export interface MigrationModuleConfig {
@@ -153,6 +155,9 @@ export interface RalphLoopOptions {
   // R22: Agent Model Routing (R22-01)
   modelRoutingEnabled?: boolean;
   modelRoutingConfig?: ModelRoutingConfig;
+  // R23: Persistent Visual Workflow Engine (R23-01)
+  visualWorkflowEnabled?: boolean;
+  visualWorkflowConfig?: VisualWorkflowEngineConfig;
 }
 
 // Re-export HookRegistry from lifecycle-hooks
