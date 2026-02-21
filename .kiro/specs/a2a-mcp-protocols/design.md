@@ -579,3 +579,297 @@ src/a2a/
     observability.property.test.ts
     serialization.property.test.ts
 ```
+
+
+## Correctness Properties
+
+*A property is a characteristic or behavior that should hold true across all valid executions of a system — essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+
+### Property 1: Agent Card registration and retrieval
+
+*For any* valid AgentCard, registering it with the AgentRegistry and then querying by its identifier should return an equivalent AgentCard. Querying by a capability present in the card should include that card in the results.
+
+**Validates: Requirements 1.1, 1.2, 1.3**
+
+### Property 2: Agent Card validation rejects incomplete cards
+
+*For any* AgentCard missing one or more required fields (identifier, name, version, tier, capabilities), the AgentRegistry should reject the registration with a descriptive error.
+
+**Validates: Requirements 1.4**
+
+### Property 3: Duplicate Agent Card updates revision
+
+*For any* AgentCard registered twice with the same identifier but different data, the AgentRegistry should contain only one card for that identifier, with the updated data and a revision counter incremented by one.
+
+**Validates: Requirements 1.5**
+
+### Property 4: Agent Card serialization round trip
+
+*For any* valid AgentCard, serializing to JSON and deserializing back should produce an equivalent AgentCard object.
+
+**Validates: Requirements 1.6**
+
+### Property 5: Remote Agent Card merge preserves origin
+
+*For any* AgentCard received from a remote source, merging it into the local AgentRegistry should store it with origin set to "remote" and all original fields preserved.
+
+**Validates: Requirements 1.8**
+
+### Property 6: A2A Envelope structure and uniqueness
+
+*For any* set of A2A_Envelopes created by the EnvelopeFactory, each envelope should have a unique message identifier, a positive timestamp, and all required fields (id, schemaVersion, sender, recipient, type, timestamp, payload).
+
+**Validates: Requirements 2.1, 2.2, 13.6**
+
+### Property 7: A2A Envelope serialization round trip
+
+*For any* valid A2A_Envelope, serializing to JSON and deserializing back should produce an equivalent A2A_Envelope object, including the schemaVersion field.
+
+**Validates: Requirements 2.3, 13.1, 13.2, 13.3**
+
+### Property 8: Correlation threading
+
+*For any* set of A2A_Envelopes sharing the same correlationId, querying the thread by that correlationId should return exactly those envelopes, in timestamp order.
+
+**Validates: Requirements 2.4**
+
+### Property 9: Message type validation
+
+*For any* A2A_Envelope with a type from the valid set ("request", "response", "notification", "task-proposal", "task-accept", "task-reject", "stream-start", "stream-data", "stream-end", "error"), validation should succeed. For any envelope with a type outside this set, validation should fail.
+
+**Validates: Requirements 2.5**
+
+### Property 10: Channel state machine validity
+
+*For any* A2A_Channel, the lifecycle transitions should follow: connecting → open (on acknowledgment), open → closed (on close), and open → reconnecting → open (on disconnect/reconnect). Invalid transitions should be rejected.
+
+**Validates: Requirements 3.1, 3.2, 3.3**
+
+### Property 11: Channel message ordering
+
+*For any* open A2A_Channel and any sequence of N messages sent, the recipient should receive exactly N messages in the same order they were sent.
+
+**Validates: Requirements 3.4**
+
+### Property 12: Channel retry on failure
+
+*For any* open A2A_Channel where message delivery fails, the channel should retry up to 3 times with each retry delay at least double the previous before emitting a failure event.
+
+**Validates: Requirements 3.5**
+
+### Property 13: Direct message routing
+
+*For any* A2A_Envelope with a specific recipient identifier that exists in the AgentRegistry, the A2A_Router should deliver the envelope to exactly that agent.
+
+**Validates: Requirements 4.1**
+
+### Property 14: Broadcast delivery
+
+*For any* A2A_Envelope with a broadcast marker ("*") and any set of N registered agents, the A2A_Router should deliver the envelope to all N agents.
+
+**Validates: Requirements 4.2, 11.3**
+
+### Property 15: Capability-based routing
+
+*For any* A2A_Envelope targeting a capability (via routingHint), the A2A_Router should deliver the envelope to an agent whose AgentCard contains a matching CapabilityDescriptor.
+
+**Validates: Requirements 4.3**
+
+### Property 16: Tier-based routing enforcement
+
+*For any* sender agent with tier T_s and recipient agent with tier T_r, the A2A_Router should allow delivery if and only if T_r is in the allowed target tiers for T_s according to the tier rules. Messages from L2/L3 agents to L0/L1 agents should require an escalation justification field.
+
+**Validates: Requirements 4.5, 11.2**
+
+### Property 17: Routing event emission
+
+*For any* message routed by the A2A_Router, a routing event should be emitted containing the envelope identifier, source agent, target agent, routing path (local/remote/broadcast), and latency.
+
+**Validates: Requirements 4.6, 12.3**
+
+### Property 18: MCP tool registration and listing
+
+*For any* set of tools registered from multiple agents, listing all tools should return exactly those tools with correct name, description, input/output schemas, and source agent identifier. Tool names should follow the "agentName.toolName" namespace pattern.
+
+**Validates: Requirements 5.1, 5.2, 5.6**
+
+### Property 19: MCP tool invocation routing
+
+*For any* registered tool with a mock handler, invoking that tool via MCP should call the handler registered by the source agent and return the handler's result.
+
+**Validates: Requirements 5.3**
+
+### Property 20: MCP tool name uniqueness
+
+*For any* attempt to register two tools with the same fully-qualified name (agentName.toolName), the second registration should be rejected with a descriptive error.
+
+**Validates: Requirements 5.5**
+
+### Property 21: MCP resource registration and read round trip
+
+*For any* resource registered with a URI, name, MIME type, and content loader, reading that resource by URI should return the content produced by the loader with the correct MIME type.
+
+**Validates: Requirements 6.1, 6.2**
+
+### Property 22: MCP prompt template substitution
+
+*For any* prompt template with N placeholders and a matching set of N arguments, requesting the prompt should produce a rendered string where all placeholders are replaced with the corresponding argument values.
+
+**Validates: Requirements 6.4, 6.5**
+
+### Property 23: Task negotiation message structure
+
+*For any* task proposal, the proposal envelope should contain task description, required capabilities, estimated complexity, and deadline. Acceptance should contain the accepting agent's ID and estimated completion time. Rejection should contain a reason code.
+
+**Validates: Requirements 7.1, 7.2, 7.3**
+
+### Property 24: Task acceptance creates correlation thread
+
+*For any* task proposal that is accepted, the proposal, acceptance, and all subsequent messages should share the same correlationId.
+
+**Validates: Requirements 7.5**
+
+### Property 25: Swarm broadcast to capable agents
+
+*For any* swarm task with required capabilities, the Swarm_Coordinator should broadcast proposals only to agents whose AgentCards contain matching capabilities.
+
+**Validates: Requirements 8.1**
+
+### Property 26: Swarm sub-task assignment and state consistency
+
+*For any* active swarm with N participants, each participant should be assigned at least one sub-task. Completing a sub-task should update the shared swarm state, and when all sub-tasks are completed, the swarm status should transition to "completed" with aggregated results.
+
+**Validates: Requirements 8.2, 8.3, 8.4, 8.6**
+
+### Property 27: CRDT update broadcast and apply round trip
+
+*For any* CRDT update broadcast by an agent, all connected agents should receive the update and apply it to their local state. Each update message should contain a non-empty vector clock.
+
+**Validates: Requirements 9.1, 9.2, 9.4**
+
+### Property 28: CRDT concurrent update confluence
+
+*For any* set of CRDT updates applied concurrently from different agents, the final state should be the same regardless of the order in which updates are applied (confluence property).
+
+**Validates: Requirements 9.3**
+
+### Property 29: Sandbox routing enforcement
+
+*For any* sandbox configuration and any message from a sandboxed agent, delivery should succeed if and only if the target agent is in the same sandbox or on the sandbox's allowed communication list. Rejected messages should emit a security event.
+
+**Validates: Requirements 10.1, 10.2**
+
+### Property 30: Sandbox discovery filtering
+
+*For any* sandboxed agent querying the AgentRegistry, the results should contain only agents within the same sandbox unless cross-sandbox access is explicitly granted.
+
+**Validates: Requirements 10.3, 10.4**
+
+### Property 31: Cross-tier audit logging
+
+*For any* cross-tier message (sender tier ≠ recipient tier), the A2A_Router should log the communication with source tier, target tier, and message type.
+
+**Validates: Requirements 11.4**
+
+### Property 32: A2A message metrics accuracy
+
+*For any* sequence of K messages sent and J messages received, the A2A metrics should report totalMessagesSent = K and totalMessagesReceived = J, with messagesByType counts matching the actual distribution.
+
+**Validates: Requirements 12.1, 12.4**
+
+### Property 33: MCP tool invocation metrics accuracy
+
+*For any* sequence of N tool invocations, the MCP metrics should report totalToolInvocations = N, with per-tool counts matching the actual distribution.
+
+**Validates: Requirements 12.2, 12.5**
+
+### Property 34: MCP invocation record serialization round trip
+
+*For any* valid MCP tool invocation record (tool name, arguments, result, duration), serializing to JSON and deserializing back should produce an equivalent record.
+
+**Validates: Requirements 13.4, 13.5**
+
+## Error Handling
+
+### Error Types
+
+| Error Code | Trigger | Response |
+|---|---|---|
+| `AGENT_NOT_FOUND` | Target agent ID not in registry (local or remote) | Return routing error with the unknown agent ID |
+| `CAPABILITY_NOT_FOUND` | No agent matches the requested capability | Return routing error with the capability ID |
+| `TIER_VIOLATION` | Message violates tier routing rules | Reject message, emit security event |
+| `SANDBOX_VIOLATION` | Message crosses sandbox boundary without authorization | Reject message, emit security event |
+| `ESCALATION_REQUIRED` | L2/L3 → L0/L1 proposal missing justification | Reject message with descriptive error |
+| `CHANNEL_CLOSED` | Attempt to send on a closed channel | Return channel-closed error |
+| `DELIVERY_FAILED` | Message delivery failed after all retries | Emit delivery failure event |
+| `DUPLICATE_TOOL` | Tool registration with existing fully-qualified name | Reject registration with descriptive error |
+| `INVALID_CARD` | Agent Card missing required fields | Reject registration with validation errors |
+| `SCHEMA_VERSION_MISMATCH` | Deserialization encounters unknown schema version | Return error with expected vs actual version |
+| `PROPOSAL_TIMEOUT` | Task proposal deadline expired without response | Mark proposal as timed-out, notify proposer |
+| `CRDT_DESERIALIZATION_FAILED` | CRDT update payload cannot be deserialized | Log error with source agent, skip update |
+
+### Error Recovery Strategies
+
+1. **Channel disconnection**: Transition to "reconnecting", attempt re-establishment via Hyperswarm or WebSocket. If reconnection fails after configurable timeout, transition to "closed".
+2. **Routing failure**: Check remote registry via Hyperswarm before returning error. If remote lookup also fails, return `AGENT_NOT_FOUND`.
+3. **Swarm participant failure**: Reassign sub-task to another capable agent. If no capable agent is available, escalate to Ralph Loop.
+4. **CRDT deserialization failure**: Log and skip the malformed update. Continue processing remaining updates. Do not halt synchronization.
+5. **Tool invocation failure**: Return structured MCP error response. Do not retry tool calls (caller decides retry policy).
+
+## Testing Strategy
+
+### Property-Based Testing
+
+Library: **fast-check** (already in project dependencies)
+
+Each correctness property maps to a single property-based test with minimum 100 iterations. Tests are tagged with:
+
+```
+Feature: a2a-mcp-protocols, Property N: [property title]
+```
+
+Test file locations:
+- `src/a2a/__tests__/registry.property.test.ts` — Properties 1-5 (Agent Card registry)
+- `src/a2a/__tests__/envelope.property.test.ts` — Properties 6-9 (envelope structure/serialization)
+- `src/a2a/__tests__/channel.property.test.ts` — Properties 10-12 (channel lifecycle)
+- `src/a2a/__tests__/router.property.test.ts` — Properties 13-17 (routing)
+- `src/a2a/__tests__/mcp-integration.property.test.ts` — Properties 18-22 (MCP tools/resources)
+- `src/a2a/__tests__/task-negotiator.property.test.ts` — Properties 23-24 (task negotiation)
+- `src/a2a/__tests__/swarm-coordinator.property.test.ts` — Properties 25-26 (swarm)
+- `src/a2a/__tests__/crdt-sync.property.test.ts` — Properties 27-28 (CRDT)
+- `src/a2a/__tests__/sandbox-routing.property.test.ts` — Properties 29-30 (sandbox)
+- `src/a2a/__tests__/observability.property.test.ts` — Properties 31-34 (observability/metrics)
+
+### Generators
+
+Custom fast-check arbitraries needed:
+- `arbAgentCard()` — generates valid AgentCard objects with random tiers, capabilities, endpoints
+- `arbA2AEnvelope()` — generates valid A2A_Envelopes with random types, senders, recipients
+- `arbCapabilityDescriptor()` — generates valid capability descriptors
+- `arbTaskProposal()` — generates valid task proposal payloads
+- `arbCRDTSyncMessage()` — generates valid CRDT sync messages with vector clocks
+- `arbSandboxConfig()` — generates sandbox configurations with allow lists
+- `arbTierPair()` — generates sender/recipient tier pairs for routing tests
+- `arbMCPToolDefinition()` — generates valid MCP tool definitions with schemas
+
+### Unit Testing
+
+Unit tests complement property tests for specific examples and edge cases:
+- Resource-not-found error (6.3)
+- Schema version mismatch error (13.7)
+- Channel reconnection on disconnect (3.7)
+- Remote registry fallback (4.4)
+- Task proposal timeout (7.4)
+- Swarm participant failure and reassignment (8.5)
+- CRDT deserialization failure skip (9.5)
+- Default tier assignments match specification (11.1)
+- Tool invocation error response structure (5.4)
+
+### Integration Testing
+
+Integration tests for cross-module behavior:
+- Ralph Loop → Swarm Coordinator → A2A Router → Agent delivery
+- MCP tool invocation across agents via A2A
+- Hyperswarm-based remote agent discovery and channel establishment
+- End-to-end CRDT sync between two agent instances
+- Sandbox enforcement with real sandbox module integration

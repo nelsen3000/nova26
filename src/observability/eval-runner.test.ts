@@ -34,8 +34,8 @@ describe('EvalRunner', () => {
     resetEvalRunner();
     resetEvalRegistry();
     resetGoldenSetManager();
-    runner = new EvalRunner();
-    registry = new EvalRegistry();
+    runner = getEvalRunner();  // Use singleton to ensure consistency
+    registry = getEvalRegistry();  // Use same singleton instance
   });
 
   describe('run', () => {
@@ -221,8 +221,8 @@ describe('GoldenSetManager', () => {
   beforeEach(() => {
     resetGoldenSetManager();
     resetEvalRegistry();
-    manager = new GoldenSetManager();
-    registry = new EvalRegistry();
+    manager = getGoldenSetManager();  // Use singleton for consistency
+    registry = getEvalRegistry();  // Use same singleton instance
   });
 
   describe('createGoldenSet', () => {

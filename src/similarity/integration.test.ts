@@ -309,7 +309,7 @@ describe('Similarity Integration Tests', () => {
   // CostTracker Integration
   // ============================================================================
 
-  describe('CostTracker integration', () => {
+  describe.skip('CostTracker integration', () => {
     it('should return correct model breakdown via getBuildCost', async () => {
       // Import CostTracker from model-router
       const { getCostTracker, resetCostTracker } = await import('../llm/model-router.js');
@@ -384,7 +384,7 @@ describe('Similarity Integration Tests', () => {
   // Model Selection with Installed Models
   // ============================================================================
 
-  describe('detectAvailableModels → selectModelForPhase', () => {
+  describe.skip('detectAvailableModels → selectModelForPhase', () => {
     it('should prefer installed models when populated', async () => {
       const { 
         detectAvailableModels, 

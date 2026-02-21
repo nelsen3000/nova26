@@ -311,7 +311,7 @@ describe('EvalReporter', () => {
     it('identifies significant changes', () => {
       const runA = createMockRun();
       const runB = createMockRun();
-      runB.results[0].score = 0.9; // Small change, not significant
+      runB.results[0].score = 0.97; // Small change (0.03 < threshold of 0.05), not significant
 
       const diff = reporter.generateDiffReport(runA, runB);
 

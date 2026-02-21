@@ -238,7 +238,9 @@ describe('PerplexityClient', () => {
     });
 
     it('throws PerplexityRateLimitError on 429', async () => {
-      fetchMock.mockResolvedValueOnce({
+      // Need to provide enough mock responses for all retry attempts
+      // maxRetries = 3, so we need 3 responses all returning 429
+      const rateLimitResponse = {
         ok: false,
         status: 429,
         headers: {
@@ -246,33 +248,50 @@ describe('PerplexityClient', () => {
         },
         text: () => Promise.resolve('Rate limited'),
         json: () => Promise.reject(new Error('No JSON')),
-      } as unknown as Response);
+      } as unknown as Response;
+
+      fetchMock
+        .mockResolvedValueOnce(rateLimitResponse)
+        .mockResolvedValueOnce(rateLimitResponse)
+        .mockResolvedValueOnce(rateLimitResponse);
 
       const client = new PerplexityClient({ apiKey: 'test-key' });
       await expect(client.search('test query')).rejects.toThrow(PerplexityRateLimitError);
     });
 
     it('throws PerplexityServerError on 500', async () => {
-      fetchMock.mockResolvedValueOnce({
+      // Server errors (500+) retry once (only on first attempt)
+      // So we need 2 responses: first for initial attempt, second for the retry
+      const serverErrorResponse = {
         ok: false,
         status: 500,
         headers: { get: () => null },
         text: () => Promise.resolve('Server error'),
         json: () => Promise.reject(new Error('No JSON')),
-      } as unknown as Response);
+      } as unknown as Response;
+
+      fetchMock
+        .mockResolvedValueOnce(serverErrorResponse)
+        .mockResolvedValueOnce(serverErrorResponse);
 
       const client = new PerplexityClient({ apiKey: 'test-key' });
       await expect(client.search('test query')).rejects.toThrow(PerplexityServerError);
     });
 
     it('throws PerplexityServerError on 503', async () => {
-      fetchMock.mockResolvedValueOnce({
+      // Server errors (500+) retry once (only on first attempt)
+      // So we need 2 responses: first for initial attempt, second for the retry
+      const serverErrorResponse = {
         ok: false,
         status: 503,
         headers: { get: () => null },
         text: () => Promise.resolve('Service unavailable'),
         json: () => Promise.reject(new Error('No JSON')),
-      } as unknown as Response);
+      } as unknown as Response;
+
+      fetchMock
+        .mockResolvedValueOnce(serverErrorResponse)
+        .mockResolvedValueOnce(serverErrorResponse);
 
       const client = new PerplexityClient({ apiKey: 'test-key' });
       await expect(client.search('test query')).rejects.toThrow(PerplexityServerError);

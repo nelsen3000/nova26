@@ -247,10 +247,13 @@ export class EvalStore {
       };
     }
 
-    // Split into first and second half
-    const mid = Math.floor(history.length / 2);
-    const firstHalf = history.slice(0, mid);
-    const secondHalf = history.slice(mid);
+    // Reverse history to ensure oldest runs come first (listRuns returns newest first)
+    const sortedHistory = history.reverse();
+
+    // Split into first (older) and second (newer) half
+    const mid = Math.floor(sortedHistory.length / 2);
+    const firstHalf = sortedHistory.slice(0, mid);
+    const secondHalf = sortedHistory.slice(mid);
 
     // Calculate averages
     const avgFirst = {
