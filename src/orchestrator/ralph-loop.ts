@@ -17,6 +17,7 @@ import { initWorkflow } from '../git/workflow.js';
 import { recordCost, checkBudgetAlerts, getTodaySpending } from '../cost/cost-tracker.js';
 import { recordTaskResult } from '../analytics/agent-analytics.js';
 import { createConvexSyncClient, type ConvexSyncClient } from '../convex/sync.js';
+import { getConvexBridge } from '../convex/bridge.js';
 import type { PRD, Task, LLMResponse, TodoItem, PlanningPhase } from '../types/index.js';
 import { AgentLoop, type AgentLoopResult } from '../agent-loop/agent-loop.js';
 import { getToolRegistry, type ToolExecution } from '../tools/tool-registry.js';
@@ -41,20 +42,38 @@ import type { AdvancedInitConfig } from '../init/init-index.js';
 
 // R16-01 Portfolio
 import type { PortfolioEngineConfig } from '../portfolio/index.js';
+import { createPortfolioEngine } from '../portfolio/index.js';
 // R16-03 Generative UI
 import type { LivePreviewConfig } from '../generative-ui/live-preview.js';
+import { createLivePreview } from '../generative-ui/live-preview.js';
 // R16-04 Autonomous Testing
 import type { TestRunConfig } from '../testing/autonomous-runner.js';
-// R17-01 Code Review
+import { createTestRunner } from '../testing/autonomous-runner.js';
+// R17-03 Code Review
 import type { ReviewConfig } from '../review/pr-intelligence.js';
+import { createPRIntelligence } from '../review/pr-intelligence.js';
+// R17-04 Migration
+import { createMigrationEngine } from '../migration/migration-engine.js';
+// R17-05 Debug
+import { createDebugger } from '../debug/debugger.js';
 // R17-06 Accessibility
 import type { A11yConfig } from '../a11y/wcag-engine.js';
+import { createWCAGEngine } from '../a11y/wcag-engine.js';
 // R17-07 Technical Debt
 import type { DebtConfig } from '../debt/technical-debt.js';
+import { createDebtTracker } from '../debt/technical-debt.js';
+// R17-08 Dependency Management
+import { createDependencyAnalyzer } from '../dependency/dependency-analyzer.js';
 // R17-09 Production Feedback
 import type { FeedbackLoopConfig } from '../prod-feedback/feedback-loop.js';
+import { createFeedbackLoop } from '../prod-feedback/feedback-loop.js';
 // R17-10 Health Dashboard
 import type { HealthConfig } from '../health/health-dashboard.js';
+import { createHealthMonitor } from '../health/health-dashboard.js';
+// R17-11 Environment Management
+import { createEnvironmentManager } from '../env/environment-manager.js';
+// R17-12 Orchestration Optimization
+import { createOrchestrationOptimizer } from '../orchestration-opt/optimizer.js';
 
 // Placeholder configs for modules without dedicated config types
 export interface MigrationModuleConfig {
@@ -80,6 +99,22 @@ export interface EnvModuleConfig {
 export interface OrchestrationModuleConfig {
   metaLearningEnabled?: boolean;
   retrospectiveAfterBuild?: boolean;
+}
+
+export interface ModuleContext {
+  portfolioEngine?: ReturnType<typeof createPortfolioEngine>;
+  livePreview?: ReturnType<typeof createLivePreview>;
+  testRunner?: ReturnType<typeof createTestRunner>;
+  codeReviewer?: ReturnType<typeof createPRIntelligence>;
+  migrationEngine?: ReturnType<typeof createMigrationEngine>;
+  debugger?: ReturnType<typeof createDebugger>;
+  wcagEngine?: ReturnType<typeof createWCAGEngine>;
+  debtTracker?: ReturnType<typeof createDebtTracker>;
+  depAnalyzer?: ReturnType<typeof createDependencyAnalyzer>;
+  feedbackLoop?: ReturnType<typeof createFeedbackLoop>;
+  healthMonitor?: ReturnType<typeof createHealthMonitor>;
+  envManager?: ReturnType<typeof createEnvironmentManager>;
+  orchestrationOpt?: ReturnType<typeof createOrchestrationOptimizer>;
 }
 
 export interface RalphLoopOptions {
@@ -370,6 +405,97 @@ export async function ralphLoop(
     }
   }
 
+  // --- Initialize Convex Bridge (S6 — dashboard persistence layer) ---
+  const bridge = getConvexBridge();
+  if (bridge) {
+    await bridge.logActivity({
+      type: 'build_started',
+      buildId: convexClient?.buildId ?? undefined,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  // --- Initialize R16/R17 Modules ---
+  const moduleContext: ModuleContext = {};
+
+  // R16-01 Portfolio Intelligence
+  if (options?.portfolioEnabled) {
+    moduleContext.portfolioEngine = createPortfolioEngine(options.portfolioConfig);
+    console.log('Portfolio Intelligence: enabled');
+  }
+
+  // R16-03 Generative UI
+  if (options?.generativeUIEnabled) {
+    moduleContext.livePreview = createLivePreview(options.generativeUIConfig);
+    console.log('Generative UI: enabled');
+  }
+
+  // R16-04 Autonomous Testing
+  if (options?.autonomousTestingEnabled) {
+    moduleContext.testRunner = createTestRunner(options.testRunConfig);
+    console.log('Autonomous Testing: enabled');
+  }
+
+  // R17-03 Code Review
+  if (options?.codeReviewEnabled) {
+    moduleContext.codeReviewer = createPRIntelligence(options.codeReviewConfig);
+    console.log('Code Review: enabled');
+  }
+
+  // R17-04 Migration Engine
+  if (options?.migrationEnabled) {
+    moduleContext.migrationEngine = createMigrationEngine(options.migrationConfig);
+    console.log('Migration Engine: enabled');
+  }
+
+  // R17-05 Debug Engine
+  if (options?.debugEngineEnabled) {
+    moduleContext.debugger = createDebugger(options.debugConfig);
+    console.log('Debug Engine: enabled');
+  }
+
+  // R17-06 Accessibility (WCAG)
+  if (options?.accessibilityEnabled) {
+    moduleContext.wcagEngine = createWCAGEngine(options.accessibilityConfig);
+    console.log('Accessibility (WCAG): enabled');
+  }
+
+  // R17-07 Technical Debt
+  if (options?.debtScoringEnabled) {
+    moduleContext.debtTracker = createDebtTracker(options.debtConfig);
+    console.log('Technical Debt: enabled');
+  }
+
+  // R17-08 Dependency Management
+  if (options?.dependencyManagementEnabled) {
+    moduleContext.depAnalyzer = createDependencyAnalyzer(options.dependencyConfig);
+    console.log('Dependency Management: enabled');
+  }
+
+  // R17-09 Production Feedback
+  if (options?.productionFeedbackEnabled) {
+    moduleContext.feedbackLoop = createFeedbackLoop(options.productionFeedbackConfig);
+    console.log('Production Feedback: enabled');
+  }
+
+  // R17-10 Health Dashboard
+  if (options?.healthDashboardEnabled) {
+    moduleContext.healthMonitor = createHealthMonitor(options.healthConfig);
+    console.log('Health Dashboard: enabled');
+  }
+
+  // R17-11 Environment Management
+  if (options?.envManagementEnabled) {
+    moduleContext.envManager = createEnvironmentManager(options.envConfig);
+    console.log('Environment Management: enabled');
+  }
+
+  // R17-12 Orchestration Optimization
+  if (options?.orchestrationOptimizationEnabled) {
+    moduleContext.orchestrationOpt = createOrchestrationOptimizer(options.orchestrationConfig);
+    console.log('Orchestration Optimization: enabled');
+  }
+
   let maxIterations = prd.tasks.length * 3; // Prevent infinite loops
   let iteration = 0;
   
@@ -436,7 +562,7 @@ export async function ralphLoop(
         
         // Process tasks in parallel
         const taskResults = await parallelRunner.runPhase(independentTasks, async (task) => {
-          await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient);
+          await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient, moduleContext);
         });
         
         // Check results and promote tasks
@@ -461,7 +587,7 @@ export async function ralphLoop(
     console.log(`\n--- Processing: ${task.id} (${task.title}) [Phase ${task.phase}] ---`);
     
     try {
-      await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient);
+      await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient, moduleContext);
 
       // Promote pending tasks after each task completes
       promotePendingTasks(prd);
@@ -481,6 +607,22 @@ export async function ralphLoop(
 
   // Convex sync: complete build at session end (MEGA-04)
   await convexClient?.completeBuild(allDone);
+
+  // Bridge: log final build result + completion activity
+  if (bridge) {
+    await bridge.logBuild({
+      prdId: prd.meta.name,
+      prdName: prd.meta.name,
+      status: allDone ? 'completed' : 'failed',
+      startedAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+    });
+    await bridge.logActivity({
+      type: allDone ? 'build_completed' : 'build_failed',
+      buildId: convexClient?.buildId ?? undefined,
+      timestamp: new Date().toISOString(),
+    });
+  }
 
   // Git workflow: finalize (create PR if all tasks done)
   if (gitWf && allDone) {
@@ -786,7 +928,8 @@ async function processTask(
   loopOptions?: RalphLoopOptions,
   eventStore?: EventStore,
   gitWf?: ReturnType<typeof initWorkflow>,
-  convexClient?: ConvexSyncClient
+  convexClient?: ConvexSyncClient,
+  moduleContext?: ModuleContext
 ): Promise<void> {
   const trace = tracer.startTrace(sessionId, task.id, task.agent);
 
