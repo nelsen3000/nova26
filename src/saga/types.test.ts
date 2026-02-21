@@ -215,6 +215,12 @@ describe('Mutation operations', () => {
         goalGenomeArb,
         fc.constantFrom<'add' | 'remove' | 'perturb'>('add', 'remove', 'perturb'),
         (genome, mutationType) => {
+          // Skip if parent genome has duplicate objective IDs (invalid input)
+          const parentIds = genome.objectives.map(o => o.id);
+          if (new Set(parentIds).size !== parentIds.length) {
+            return;
+          }
+
           // Skip remove mutation when only 1 objective (can't remove)
           if (mutationType === 'remove' && genome.objectives.length <= 1) {
             return;

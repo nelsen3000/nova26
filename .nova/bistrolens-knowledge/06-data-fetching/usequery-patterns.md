@@ -640,7 +640,7 @@ function RecipeBody({ recipe }: { recipe: Recipe }) {
 - See `usemutation-patterns.md` for write operations
 - See `caching-strategies.md` for cache optimization
 - See `pagination-patterns.md` for large datasets
-- See `../09-hooks/useAuth.md` for auth-aware queries
+- See `../09-hooks/use-auth.md` for auth-aware queries
 - See `../02-react-patterns/effect-patterns.md` for side effects
 
 ---

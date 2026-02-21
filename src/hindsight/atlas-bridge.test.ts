@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ATLASBridge, createATLASBridge } from './atlas-bridge.js';
 import { createHindsightEngine } from './engine.js';
-import type { BuildLog, HindsightEngine } from './types.js';
+import type { BuildLog, HindsightEngine, MemoryFragment } from './types.js';
 
 function makeBuildLog(overrides: Partial<BuildLog> = {}): BuildLog {
   return {
@@ -16,6 +16,11 @@ function makeBuildLog(overrides: Partial<BuildLog> = {}): BuildLog {
     durationMs: 5000,
     ...overrides,
   };
+}
+
+async function getAllFragments(engine: HindsightEngine): Promise<MemoryFragment[]> {
+  const json = await engine.exportMemories();
+  return JSON.parse(json);
 }
 
 describe('ATLASBridge', () => {
@@ -33,11 +38,8 @@ describe('ATLASBridge', () => {
       const log = makeBuildLog({ success: true });
       await bridge.onBuildLogged(log);
 
-      const result = await engine.retrieve({
-        query: 'build',
-        topK: 10,
-      });
-      expect(result.fragments.length).toBeGreaterThan(0);
+      const frags = await getAllFragments(engine);
+      expect(frags.length).toBeGreaterThan(0);
     });
 
     it('stores a memory fragment for a failed build', async () => {
@@ -47,21 +49,37 @@ describe('ATLASBridge', () => {
       });
       await bridge.onBuildLogged(log);
 
-      const result = await engine.retrieve({ query: 'build failure', topK: 10 });
-      expect(result.fragments.length).toBeGreaterThan(0);
+      const frags = await getAllFragments(engine);
+      expect(frags.length).toBeGreaterThan(0);
+      expect(frags[0].content).toContain('FAILURE');
     });
 
     it('failed builds have higher relevance than successful ones', async () => {
       await bridge.onBuildLogged(makeBuildLog({ success: true, buildId: 'ok' }));
       await bridge.onBuildLogged(makeBuildLog({ success: false, buildId: 'fail', errors: ['err'] }));
 
-      const result = await engine.retrieve({ query: 'build', topK: 10 });
-      const fragments = result.fragments.map(f => f.fragment);
-      const failFrag = fragments.find(f => f.content.includes('FAILURE'));
-      const okFrag = fragments.find(f => f.content.includes('SUCCESS'));
+      const frags = await getAllFragments(engine);
+      const failFrag = frags.find(f => f.content.includes('FAILURE'));
+      const okFrag = frags.find(f => f.content.includes('SUCCESS'));
+      expect(failFrag).toBeDefined();
+      expect(okFrag).toBeDefined();
       if (failFrag && okFrag) {
         expect(failFrag.relevance).toBeGreaterThan(okFrag.relevance);
       }
+    });
+
+    it('sets build provenance sourceType', async () => {
+      await bridge.onBuildLogged(makeBuildLog({ buildId: 'bld-123' }));
+      const frags = await getAllFragments(engine);
+      expect(frags[0].provenance.sourceType).toBe('build');
+      expect(frags[0].provenance.sourceId).toBe('bld-123');
+    });
+
+    it('includes build tags', async () => {
+      await bridge.onBuildLogged(makeBuildLog({ success: true }));
+      const frags = await getAllFragments(engine);
+      expect(frags[0].tags).toContain('build');
+      expect(frags[0].tags).toContain('success');
     });
   });
 
@@ -70,15 +88,21 @@ describe('ATLASBridge', () => {
       const insights = ['Insight 1: Use caching', 'Insight 2: Reduce complexity'];
       await bridge.onRetrospectiveComplete('proj-test', 'agent-test', insights);
 
-      const result = await engine.retrieve({ query: 'insight', topK: 10 });
-      expect(result.fragments.length).toBeGreaterThanOrEqual(2);
+      const frags = await getAllFragments(engine);
+      expect(frags.length).toBeGreaterThanOrEqual(2);
     });
 
     it('stores with retrospective provenance', async () => {
       await bridge.onRetrospectiveComplete('proj-x', 'agent-x', ['Key learning']);
-      const result = await engine.retrieve({ query: 'learning', topK: 5 });
-      const frag = result.fragments[0]?.fragment;
-      expect(frag?.provenance.sourceType).toBe('retrospective');
+      const frags = await getAllFragments(engine);
+      expect(frags[0].provenance.sourceType).toBe('retrospective');
+    });
+
+    it('each insight becomes its own fragment', async () => {
+      const insights = ['first', 'second', 'third'];
+      await bridge.onRetrospectiveComplete('p', 'a', insights);
+      const frags = await getAllFragments(engine);
+      expect(frags).toHaveLength(3);
     });
 
     it('handles empty insights array without error', async () => {
@@ -144,7 +168,7 @@ describe('ATLASBridge', () => {
       };
       const result = await bridge.enrichRetrieval(baseContext, 'some query');
       expect(result).toBeDefined();
-      expect(result.formattedContext).toBeTruthy(); // at minimum has base
+      expect(result.formattedContext).toBeTruthy();
     });
   });
 });

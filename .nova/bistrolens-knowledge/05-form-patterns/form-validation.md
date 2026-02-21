@@ -425,7 +425,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 - See `form-submission.md` for handling validated form data
 - See `../07-error-handling/error-messages.md` for error display best practices
-- See `../09-hooks/useAuthWithRecaptcha.md` in hooks for reCAPTCHA integration
+- See `../09-hooks/use-auth-with-recaptcha.md` in hooks for reCAPTCHA integration
 - See `../11-validation/client-validation.md` in validation patterns for more validators
 
 ---

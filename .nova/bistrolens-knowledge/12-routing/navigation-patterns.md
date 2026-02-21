@@ -462,7 +462,7 @@ const handleNavClick = (view: string) => {
 
 - See `route-structure.md` for the full view/route map
 - See `protected-routes.md` for auth-gated navigation
-- See `../09-hooks/useSwipeGesture.md` for swipe implementation
+- See `../09-hooks/use-swipe-gesture.md` for swipe implementation
 
 ---
 

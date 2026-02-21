@@ -238,5 +238,5 @@ await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true }
 ## Related Patterns
 
 - `subscription-enforcement.md` — Server-side tier enforcement
-- `../09-hooks/useTierGates.md` — Client-side tier gates
-- `../09-hooks/useFreemium.md` — Freemium usage limits
+- `../09-hooks/use-tier-gates.md` — Client-side tier gates
+- `../09-hooks/use-freemium.md` — Freemium usage limits

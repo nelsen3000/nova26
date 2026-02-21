@@ -541,7 +541,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 - See `form-validation.md` for pre-submission validation
 - See `../07-error-handling/error-messages.md` for error display patterns
 - See `../04-ui-components/loading-states.md` for loading UI patterns
-- See `../09-hooks/useAuthWithRecaptcha.md` in hooks for auth-specific submission
+- See `../09-hooks/use-auth-with-recaptcha.md` in hooks for auth-specific submission
 - See `../07-error-handling/retry-logic.md` for handling failed submissions
 
 ---

@@ -158,12 +158,12 @@ This document tracks the extraction of 79 patterns from BistroLens into Nova26's
 - Custom hooks in components
 
 ### ✅ Completed
-1. `useAuth.md` - Authentication hook with reCAPTCHA, signup/signin, error handling
-2. `useSubscription.md` - Subscription tier management, localStorage persistence, refresh capability
-3. `useToast.md` - Toast notifications, queue management, auto-dismiss
-4. `useLocalStorage.md` - Safe localStorage wrapper with quota management, error handling
-5. `useDebounce.md` - Debounced values, search optimization, input handling
-6. `useMediaQuery.md` - Responsive hooks, breakpoint detection, SSR safety
+1. `use-auth.md` - Authentication hook with reCAPTCHA, signup/signin, error handling
+2. `use-subscription.md` - Subscription tier management, localStorage persistence, refresh capability
+3. `use-toast.md` - Toast notifications, queue management, auto-dismiss
+4. `use-local-storage.md` - Safe localStorage wrapper with quota management, error handling
+5. `use-debounce.md` - Debounced values, search optimization, input handling
+6. `use-media-query.md` - Responsive hooks, breakpoint detection, SSR safety
 
 ---
 
@@ -285,10 +285,10 @@ No issues found:
 11 broken cross-references identified in Related Patterns sections (references to patterns not in scope for this extraction):
 - `rate-limiting.md` (01-convex-patterns/mutation-patterns.md)
 - `soft-delete-pattern.md` (01-convex-patterns/schema-conventions.md)
-- `useAuthWithRecaptcha.md` (05-form-patterns/form-submission.md, form-validation.md)
-- `convex-file-storage.md`, `resilience-patterns.md` (09-hooks/useLocalStorage.md)
-- `useSwipeGesture.md` (09-hooks/useMediaQuery.md, 12-routing/navigation-patterns.md)
-- `useTierGates.md`, `useFreemium.md`, `subscription-service.md` (09-hooks/useSubscription.md)
+- `use-auth-with-recaptcha.md` (05-form-patterns/form-submission.md, form-validation.md)
+- `convex-file-storage.md`, `resilience-patterns.md` (09-hooks/use-local-storage.md)
+- `use-swipe-gesture.md` (09-hooks/use-media-query.md, 12-routing/navigation-patterns.md)
+- `use-tier-gates.md`, `use-freemium.md`, `subscription-service.md` (09-hooks/use-subscription.md)
 
 These reference patterns that were identified as candidates for future extraction but are outside the 79-pattern scope.
 

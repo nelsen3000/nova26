@@ -426,7 +426,7 @@ saveCookingSession({ ...session, lastActiveAt: Date.now() });
 
 - See `context-patterns.md` for how persisted settings are loaded into context
 - See `global-state.md` for the subscription tier caching pattern
-- See `../09-hooks/useLocalStorage.md` for the custom hook abstraction
+- See `../09-hooks/use-local-storage.md` for the custom hook abstraction
 
 ---
 

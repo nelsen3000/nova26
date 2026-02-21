@@ -168,7 +168,7 @@ const display = diff < 86400000
 
 - See `number-formatting.md` for numeric display patterns
 - See `string-utilities.md` for text manipulation
-- See `../09-hooks/useLocalStorage.md` for persisting date values
+- See `../09-hooks/use-local-storage.md` for persisting date values
 
 ---
 

@@ -192,6 +192,38 @@ export type {
 } from './atlas-goal-store.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// Overnight Evolution
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  OvernightEvolution,
+  createOvernightEvolution,
+  DEFAULT_CONFIG as OVERNIGHT_DEFAULT_CONFIG,
+} from './overnight-evolution.js';
+
+export type {
+  OvernightEvolutionConfig,
+  OvernightReport,
+} from './overnight-evolution.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Portfolio Learning
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  PortfolioLearning,
+  createPortfolioLearning,
+  DEFAULT_CONFIG as PORTFOLIO_DEFAULT_CONFIG,
+} from './portfolio-learning.js';
+
+export type {
+  PortfolioLearningConfig,
+  PortfolioEntry,
+  CrossProjectLearningEntry,
+  PortfolioStore,
+} from './portfolio-learning.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // SAGA Engine
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -260,6 +292,18 @@ export const DEFAULTS = {
     consensusThreshold: 0.7,
     rejectionThreshold: 0.3,
     timeoutMs: 30000,
+  },
+  overnight: {
+    durationMs: 8 * 60 * 60 * 1000, // 8 hours
+    checkpointIntervalMs: 30 * 60 * 1000, // 30 minutes
+    minFitnessThreshold: 0.7,
+    maxGenerations: 100,
+  },
+  portfolio: {
+    minPortfolioFitness: 0.7,
+    maxPortfolioSeedsPercent: 0.2,
+    reevaluateImportedGenomes: true,
+    enableCrossProjectLogging: true,
   },
   engine: {
     autonomyLevel: 3,

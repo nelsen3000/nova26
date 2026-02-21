@@ -21,26 +21,26 @@ Remediate 87 structural audit failures, extract 21 agent template patterns, buil
     - For every `.md` pattern file on disk, confirm it appears in INDEX.md and per-category counts match
     - **Validates: Requirements 1.3, 1.4**
 
-- [-] 2. KIRO-06-02: Fix 7 Intelligence Pattern Files (28 section gaps)
-  - [-] 2.1 Audit each of the 7 files in `.nova/nova26-patterns/02-intelligence/` for missing sections
+- [x] 2. KIRO-06-02: Fix 7 Intelligence Pattern Files (28 section gaps)
+  - [x] 2.1 Audit each of the 7 files in `.nova/nova26-patterns/02-intelligence/` for missing sections
     - Check each file for all 8 required sections: Title (H1), Overview/Problem, Source, Pattern/Solution, Usage/Example, Anti-Patterns, When to Use, Benefits
     - Record which sections are missing per file
     - _Requirements: 2.1_
-  - [ ] 2.2 Add missing sections to each intelligence pattern file
+  - [x] 2.2 Add missing sections to each intelligence pattern file
     - For each file, add missing sections with accurate content derived from the source code path in the Source section
     - Preserve all existing content and section ordering
     - _Requirements: 2.2, 2.3_
-  - [ ] 2.3 Verify section completeness (Property 2)
+  - [x] 2.3 Verify section completeness (Property 2)
     - **Property 2: Intelligence pattern section completeness**
     - For all 7 files, confirm all 8 required section headers are present
     - **Validates: Requirements 2.1, 2.4**
 
-- [ ] 3. Checkpoint — Verify KIRO-06-01 and KIRO-06-02
+- [x] 3. Checkpoint — Verify KIRO-06-01 and KIRO-06-02
   - Ensure INDEX.md lists all 51 patterns and all 7 intelligence files have complete sections
   - Ask the user if questions arise
 
-- [ ] 4. KIRO-06-03: Fix 11 BistroLens Hook Filenames (kebab-case)
-  - [ ] 4.1 Rename all 11 camelCase hook files to kebab-case
+- [x] 4. KIRO-06-03: Fix 11 BistroLens Hook Filenames (kebab-case)
+  - [x] 4.1 Rename all 11 camelCase hook files to kebab-case
     - `useAuth.md` → `use-auth.md`
     - `useAuthWithRecaptcha.md` → `use-auth-with-recaptcha.md`
     - `useDebounce.md` → `use-debounce.md`
@@ -53,19 +53,19 @@ Remediate 87 structural audit failures, extract 21 agent template patterns, buil
     - `useTierGates.md` → `use-tier-gates.md`
     - `useToast.md` → `use-toast.md`
     - _Requirements: 3.1, 3.2_
-  - [ ] 4.2 Update all cross-references to renamed files
+  - [x] 4.2 Update all cross-references to renamed files
     - Search all files in `.nova/bistrolens-knowledge/` for references to old camelCase filenames
     - Update each reference to the new kebab-case filename
     - Update `.nova/bistrolens-knowledge/INDEX.md` entries to match new filenames
     - _Requirements: 3.3_
-  - [ ] 4.3 Verify kebab-case compliance and zero stale references (Properties 3, 4)
+  - [x] 4.3 Verify kebab-case compliance and zero stale references (Properties 3, 4)
     - **Property 3: Kebab-case filename compliance**
     - **Property 4: Zero stale hook references**
     - Confirm zero camelCase files remain and zero old filename references exist
     - **Validates: Requirements 3.2, 3.3, 3.4**
 
-- [ ] 5. KIRO-06-04: Fix Stale Reference in AI_COORDINATION.md
-  - [ ] 5.1 Identify and fix stale references in `.nova/AI_COORDINATION.md`
+- [-] 5. KIRO-06-04: Fix Stale Reference in AI_COORDINATION.md
+  - [-] 5.1 Identify and fix stale references in `.nova/AI_COORDINATION.md`
     - Scan the entire document for file path references
     - For each reference, check if the file exists on disk
     - The known stale reference is `sun-prd-generator.js` around line 215 — search `src/` for the replacement

@@ -724,7 +724,7 @@ const [current, setCurrent] = useState<Achievement | null>(null);
 - See `error-states.md` for inline error displays
 - See `loading-states.md` for loading indicators
 - See `form-components.md` for form validation feedback
-- See `../09-hooks/useToast.md` for toast hook implementation (if extracted)
+- See `../09-hooks/use-toast.md` for toast hook implementation (if extracted)
 
 ---
 

@@ -132,9 +132,9 @@ The following patterns were referenced in cross-references but not extracted (ou
 
 - `rate-limiting.md` — API rate limiting patterns
 - `soft-delete-pattern.md` — Dedicated soft delete documentation
-- `useAuthWithRecaptcha.md` — reCAPTCHA-specific auth hook
-- `useSwipeGesture.md` — Mobile swipe gesture hook
-- `useTierGates.md` / `useFreemium.md` — Subscription tier gate hooks
+- `use-auth-with-recaptcha.md` — reCAPTCHA-specific auth hook
+- `use-swipe-gesture.md` — Mobile swipe gesture hook
+- `use-tier-gates.md` / `use-freemium.md` — Subscription tier gate hooks
 - `subscription-service.md` — Subscription service layer
 - `convex-file-storage.md` — Dedicated file storage hook
 - `resilience-patterns.md` — Circuit breaker / retry patterns

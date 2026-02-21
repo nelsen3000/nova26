@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TasteVaultBridge, createTasteVaultBridge } from './taste-vault-bridge.js';
 import { createHindsightEngine } from './engine.js';
-import type { GraphNode, HindsightEngine } from './types.js';
+import type { GraphNode, HindsightEngine, MemoryFragment } from './types.js';
 
 function makeGraphNode(overrides: Partial<GraphNode> = {}): GraphNode {
   return {
@@ -13,6 +13,11 @@ function makeGraphNode(overrides: Partial<GraphNode> = {}): GraphNode {
     tags: ['architecture', 'testing'],
     ...overrides,
   };
+}
+
+async function getAllFragments(engine: HindsightEngine): Promise<MemoryFragment[]> {
+  const json = await engine.exportMemories();
+  return JSON.parse(json);
 }
 
 describe('TasteVaultBridge', () => {
@@ -30,37 +35,43 @@ describe('TasteVaultBridge', () => {
       const node = makeGraphNode({ content: 'Prefer composition over inheritance' });
       await bridge.onPatternLearned(node);
 
-      const result = await engine.retrieve({ query: 'composition', topK: 5 });
-      expect(result.fragments.length).toBeGreaterThan(0);
+      const frags = await getAllFragments(engine);
+      expect(frags.length).toBeGreaterThan(0);
     });
 
-    it('uses node confidence as relevance', async () => {
+    it('uses node confidence as relevance and confidence', async () => {
       const node = makeGraphNode({ confidence: 0.92 });
       await bridge.onPatternLearned(node);
 
-      const result = await engine.retrieve({ query: node.content, topK: 5 });
-      const frag = result.fragments[0]?.fragment;
-      expect(frag?.confidence).toBeCloseTo(0.92, 1);
+      const frags = await getAllFragments(engine);
+      expect(frags[0].confidence).toBeCloseTo(0.92, 1);
     });
 
     it('includes taste-vault and pattern tags', async () => {
       const node = makeGraphNode({ tags: ['custom-tag'] });
       await bridge.onPatternLearned(node);
 
-      const result = await engine.retrieve({ query: node.content, topK: 5 });
-      const frag = result.fragments[0]?.fragment;
-      expect(frag?.tags).toContain('taste-vault');
-      expect(frag?.tags).toContain('pattern');
-      expect(frag?.tags).toContain('custom-tag');
+      const frags = await getAllFragments(engine);
+      const frag = frags[0];
+      expect(frag.tags).toContain('taste-vault');
+      expect(frag.tags).toContain('pattern');
+      expect(frag.tags).toContain('custom-tag');
     });
 
     it('stores graphNodeId in extra metadata', async () => {
       const node = makeGraphNode({ id: 'special-node-id' });
       await bridge.onPatternLearned(node);
 
-      const result = await engine.retrieve({ query: node.content, topK: 5 });
-      const frag = result.fragments[0]?.fragment;
-      expect(frag?.extra?.graphNodeId).toBe('special-node-id');
+      const frags = await getAllFragments(engine);
+      expect(frags[0].extra?.graphNodeId).toBe('special-node-id');
+    });
+
+    it('fragment type is semantic', async () => {
+      const node = makeGraphNode();
+      await bridge.onPatternLearned(node);
+
+      const frags = await getAllFragments(engine);
+      expect(frags[0].type).toBe('semantic');
     });
   });
 
@@ -70,11 +81,9 @@ describe('TasteVaultBridge', () => {
       await bridge.onPatternLearned(node);
       await bridge.onPatternReinforced(node.id, 0.2);
 
-      const result = await engine.retrieve({ query: 'reinforcement', topK: 10 });
-      const reinforcementFrags = result.fragments.filter(
-        f => f.fragment.tags?.includes('reinforcement')
-      );
-      expect(reinforcementFrags.length).toBeGreaterThan(0);
+      const frags = await getAllFragments(engine);
+      const reinforcementFrag = frags.find(f => f.tags.includes('reinforcement'));
+      expect(reinforcementFrag).toBeDefined();
     });
 
     it('does not throw for unknown pattern id', async () => {
@@ -88,11 +97,9 @@ describe('TasteVaultBridge', () => {
       await bridge.onPatternLearned(node);
       await bridge.onPatternReinforced(node.id, 0.15);
 
-      const result = await engine.retrieve({ query: 'reinforcement', topK: 10 });
-      const reinFrag = result.fragments.find(
-        f => f.fragment.tags?.includes('reinforcement')
-      );
-      expect(reinFrag?.fragment.extra?.boostAmount).toBe(0.15);
+      const frags = await getAllFragments(engine);
+      const reinFrag = frags.find(f => f.tags.includes('reinforcement'));
+      expect(reinFrag?.extra?.boostAmount).toBe(0.15);
     });
   });
 
@@ -105,30 +112,28 @@ describe('TasteVaultBridge', () => {
         'Use strict mode for all new modules'
       );
 
-      const result = await engine.retrieve({ query: 'conflict', topK: 5 });
-      expect(result.fragments.length).toBeGreaterThan(0);
+      const frags = await getAllFragments(engine);
+      expect(frags.length).toBeGreaterThan(0);
     });
 
     it('includes conflict-resolution tag', async () => {
       await bridge.onConflictResolved('c-1', 'win', 'lose', 'resolution text');
-      const result = await engine.retrieve({ query: 'conflict resolution', topK: 5 });
-      const frag = result.fragments[0]?.fragment;
-      expect(frag?.tags).toContain('conflict-resolution');
+      const frags = await getAllFragments(engine);
+      const frag = frags[0];
+      expect(frag.tags).toContain('conflict-resolution');
     });
 
     it('stores winner and loser ids in extra', async () => {
       await bridge.onConflictResolved('c-2', 'node-win', 'node-lose', 'chose A over B');
-      const result = await engine.retrieve({ query: 'chose', topK: 5 });
-      const frag = result.fragments[0]?.fragment;
-      expect(frag?.extra?.winningPatternId).toBe('node-win');
-      expect(frag?.extra?.losingPatternId).toBe('node-lose');
+      const frags = await getAllFragments(engine);
+      expect(frags[0].extra?.winningPatternId).toBe('node-win');
+      expect(frags[0].extra?.losingPatternId).toBe('node-lose');
     });
 
     it('fragment type is procedural', async () => {
       await bridge.onConflictResolved('c-3', 'a', 'b', 'prefer X');
-      const result = await engine.retrieve({ query: 'prefer', topK: 5 });
-      const frag = result.fragments[0]?.fragment;
-      expect(frag?.type).toBe('procedural');
+      const frags = await getAllFragments(engine);
+      expect(frags[0].type).toBe('procedural');
     });
   });
 
