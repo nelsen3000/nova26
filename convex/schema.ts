@@ -289,4 +289,392 @@ export default defineSchema({
     .index('by_agent', ['agentId'])
     .index('by_timestamp', ['timestamp'])
     .index('by_company_time', ['companyId', 'timestamp']),
+
+  // =====================
+  // SAGA (Self-Evolving Goal Agents) Tables (2)
+  // =====================
+
+  // Goal genomes for evolutionary optimization
+  goalGenomes: defineTable({
+    genomeId: v.string(),
+    agentName: v.string(),
+    schemaVersion: v.number(),
+    generation: v.number(),
+    parentId: v.optional(v.string()),
+    objectives: v.array(v.object({
+      id: v.string(),
+      description: v.string(),
+      domain: v.string(),
+      parameters: v.record(v.string(), v.any()),
+      weight: v.number(),
+    })),
+    fitnessCriteria: v.array(v.object({
+      objectiveId: v.string(),
+      metricName: v.string(),
+      targetValue: v.number(),
+      currentValue: v.number(),
+    })),
+    fitnessScore: v.optional(v.number()),
+    serializedData: v.string(), // Full genome JSON
+    createdAt: v.string(),
+    projectId: v.string(),
+    isArchived: v.boolean(),
+  }).index('by_genome_id', ['genomeId'])
+    .index('by_agent', ['agentName'])
+    .index('by_project', ['projectId'])
+    .index('by_fitness', ['fitnessScore'])
+    .index('by_generation', ['generation']),
+
+  // Evolution sessions for SAGA
+  evolutionSessions: defineTable({
+    sessionId: v.string(),
+    agentName: v.string(),
+    projectId: v.string(),
+    status: v.union(
+      v.literal('running'),
+      v.literal('paused'),
+      v.literal('completed'),
+      v.literal('failed'),
+      v.literal('budget_exceeded')
+    ),
+    config: v.string(), // Serialized EvolutionConfig
+    currentGeneration: v.number(),
+    populationIds: v.array(v.string()),
+    bestGenomeId: v.optional(v.string()),
+    fitnessHistory: v.array(v.array(v.number())), // Array of fitness scores per generation
+    startedAt: v.string(),
+    updatedAt: v.string(),
+    completedAt: v.optional(v.string()),
+    metrics: v.object({
+      outerLoopIterations: v.number(),
+      innerLoopExecutions: v.number(),
+      totalComputeTimeMs: v.number(),
+      peakMemoryBytes: v.number(),
+      candidatesGenerated: v.number(),
+      candidatesRejectedByTaste: v.number(),
+      swarmDebatesRun: v.number(),
+    }),
+  }).index('by_session_id', ['sessionId'])
+    .index('by_agent', ['agentName'])
+    .index('by_project', ['projectId'])
+    .index('by_status', ['status']),
+
+  // =====================
+  // Hindsight Persistent Memory Tables (3)
+  // =====================
+
+  // Memory fragments with vector embeddings
+  memoryFragments: defineTable({
+    fragmentId: v.string(),
+    content: v.string(),
+    contentType: v.union(
+      v.literal('text'),
+      v.literal('code'),
+      v.literal('error'),
+      v.literal('insight'),
+      v.literal('task_result')
+    ),
+    agentId: v.string(),
+    projectId: v.string(),
+    namespaceId: v.string(),
+    embeddingVector: v.optional(v.array(v.number())),
+    accessCount: v.number(),
+    lastAccessedAt: v.optional(v.string()),
+    createdAt: v.string(),
+    expiresAt: v.optional(v.string()),
+    isPinned: v.boolean(),
+    isArchived: v.boolean(),
+    consolidationCount: v.number(),
+    metadata: v.record(v.string(), v.any()),
+  }).index('by_fragment_id', ['fragmentId'])
+    .index('by_agent', ['agentId'])
+    .index('by_project', ['projectId'])
+    .index('by_namespace', ['namespaceId'])
+    .index('by_created', ['createdAt'])
+    .index('by_accessed', ['lastAccessedAt']),
+
+  // Consolidation jobs for memory maintenance
+  consolidationJobs: defineTable({
+    jobId: v.string(),
+    namespaceId: v.string(),
+    status: v.union(
+      v.literal('pending'),
+      v.literal('running'),
+      v.literal('completed'),
+      v.literal('failed')
+    ),
+    startedAt: v.string(),
+    completedAt: v.optional(v.string()),
+    fragmentsProcessed: v.number(),
+    fragmentsDeduplicated: v.number(),
+    fragmentsArchived: v.number(),
+    errorMessage: v.optional(v.string()),
+  }).index('by_job_id', ['jobId'])
+    .index('by_namespace', ['namespaceId'])
+    .index('by_status', ['status']),
+
+  // Namespace management for parallel universes
+  memoryNamespaces: defineTable({
+    namespaceId: v.string(),
+    name: v.string(),
+    parentNamespaceId: v.optional(v.string()),
+    forkedFromId: v.optional(v.string()),
+    projectId: v.string(),
+    agentId: v.string(),
+    isActive: v.boolean(),
+    fragmentCount: v.number(),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+  }).index('by_namespace_id', ['namespaceId'])
+    .index('by_project', ['projectId'])
+    .index('by_agent', ['agentId'])
+    .index('by_parent', ['parentNamespaceId']),
+
+  // =====================
+  // Taste Vault Tables (2)
+  // =====================
+
+  // Taste patterns with success scores
+  tastePatterns: defineTable({
+    patternId: v.string(),
+    canonicalContent: v.string(),
+    patternType: v.union(
+      v.literal('architectural'),
+      v.literal('code_style'),
+      v.literal('testing'),
+      v.literal('security'),
+      v.literal('performance')
+    ),
+    successScore: v.number(),
+    userDiversity: v.number(),
+    promotionCount: v.number(),
+    harmReports: v.number(),
+    isActive: v.boolean(),
+    language: v.optional(v.string()),
+    tags: v.array(v.string()),
+    createdAt: v.string(),
+    lastPromotedAt: v.string(),
+    embeddingVector: v.optional(v.array(v.number())),
+  }).index('by_pattern_id', ['patternId'])
+    .index('by_type', ['patternType'])
+    .index('by_success_score', ['successScore'])
+    .index('by_active', ['isActive'])
+    .index('by_promoted', ['lastPromotedAt']),
+
+  // User votes on patterns
+  patternVotes: defineTable({
+    voteId: v.string(),
+    patternId: v.string(),
+    userId: v.string(),
+    voteType: v.union(v.literal('upvote'), v.literal('downvote'), v.literal('report')),
+    context: v.optional(v.string()),
+    createdAt: v.string(),
+  }).index('by_vote_id', ['voteId'])
+    .index('by_pattern', ['patternId'])
+    .index('by_user', ['userId'])
+    .index('by_pattern_user', ['patternId', 'userId']),
+
+  // =====================
+  // A2A/MCP Protocol Tables (3)
+  // =====================
+
+  // Agent cards for discovery
+  agentCards: defineTable({
+    cardId: v.string(),
+    agentId: v.string(),
+    name: v.string(),
+    description: v.string(),
+    tier: v.union(v.literal('L0'), v.literal('L1'), v.literal('L2'), v.literal('L3')),
+    capabilities: v.array(v.object({
+      skill: v.string(),
+      description: v.string(),
+      inputSchema: v.optional(v.record(v.string(), v.any())),
+      outputSchema: v.optional(v.record(v.string(), v.any())),
+    })),
+    endpoints: v.array(v.object({
+      protocol: v.union(v.literal('a2a'), v.literal('mcp')),
+      url: v.string(),
+      authentication: v.optional(v.record(v.string(), v.any())),
+    })),
+    origin: v.union(v.literal('local'), v.literal('remote')),
+    revision: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+  }).index('by_card_id', ['cardId'])
+    .index('by_agent', ['agentId'])
+    .index('by_tier', ['tier'])
+    .index('by_origin', ['origin'])
+    .index('by_active', ['isActive']),
+
+  // Swarm coordination tasks
+  swarmTasks: defineTable({
+    taskId: v.string(),
+    swarmId: v.string(),
+    coordinatorId: v.string(),
+    taskType: v.string(),
+    payload: v.string(), // JSON serialized
+    status: v.union(
+      v.literal('proposed'),
+      v.literal('negotiating'),
+      v.literal('assigned'),
+      v.literal('executing'),
+      v.literal('completed'),
+      v.literal('failed')
+    ),
+    assignedAgentId: v.optional(v.string()),
+    priority: v.number(),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+    completedAt: v.optional(v.string()),
+    result: v.optional(v.string()),
+  }).index('by_task_id', ['taskId'])
+    .index('by_swarm', ['swarmId'])
+    .index('by_coordinator', ['coordinatorId'])
+    .index('by_status', ['status'])
+    .index('by_assigned', ['assignedAgentId']),
+
+  // A2A message log for audit
+  a2aMessages: defineTable({
+    messageId: v.string(),
+    envelopeId: v.string(),
+    messageType: v.union(
+      v.literal('request'),
+      v.literal('response'),
+      v.literal('notification'),
+      v.literal('task_proposal'),
+      v.literal('crdt_sync')
+    ),
+    senderId: v.string(),
+    recipientId: v.string(),
+    correlationId: v.optional(v.string()),
+    payload: v.string(), // JSON serialized
+    timestamp: v.string(),
+    delivered: v.boolean(),
+  }).index('by_message_id', ['messageId'])
+    .index('by_envelope', ['envelopeId'])
+    .index('by_sender', ['senderId'])
+    .index('by_recipient', ['recipientId'])
+    .index('by_correlation', ['correlationId'])
+    .index('by_timestamp', ['timestamp']),
+
+  // =====================
+  // Hypercore P2P Tables (2)
+  // =====================
+
+  // P2P peers and connections
+  hypercorePeers: defineTable({
+    peerId: v.string(),
+    publicKey: v.string(),
+    displayName: v.optional(v.string()),
+    isLocal: v.boolean(),
+    connectionStatus: v.union(
+      v.literal('connected'),
+      v.literal('disconnected'),
+      v.literal('connecting'),
+      v.literal('banned')
+    ),
+    lastSeenAt: v.string(),
+    bytesTransferred: v.number(),
+    latencyMs: v.optional(v.number()),
+    version: v.string(),
+    capabilities: v.array(v.string()),
+  }).index('by_peer_id', ['peerId'])
+    .index('by_public_key', ['publicKey'])
+    .index('by_status', ['connectionStatus']),
+
+  // Replication status for feeds
+  replicationStatus: defineTable({
+    feedId: v.string(),
+    feedType: v.union(v.literal('memory'), v.literal('crdt'), v.literal('audit')),
+    localSeq: v.number(),
+    remoteSeq: v.optional(v.number()),
+    syncPercentage: v.number(),
+    peerCount: v.number(),
+    lastSyncAt: v.optional(v.string()),
+    conflictCount: v.number(),
+    isFullySynced: v.boolean(),
+    updatedAt: v.string(),
+  }).index('by_feed_id', ['feedId'])
+    .index('by_type', ['feedType'])
+    .index('by_synced', ['isFullySynced']),
+
+  // =====================
+  // Hypervisor (Reel 2) Tables (3)
+  // =====================
+
+  // Virtual machines
+  virtualMachines: defineTable({
+    vmId: v.string(),
+    name: v.string(),
+    provider: v.union(v.literal('hypercore-hal'), v.literal('qemu'), v.literal('cloud-hypervisor')),
+    status: v.union(
+      v.literal('creating'),
+      v.literal('running'),
+      v.literal('paused'),
+      v.literal('stopped'),
+      v.literal('failed'),
+      v.literal('destroyed')
+    ),
+    vmSpec: v.string(), // JSON serialized hac.toml content
+    parentHarnessId: v.optional(v.string()),
+    ipAddress: v.optional(v.string()),
+    vsockPort: v.optional(v.number()),
+    cpuCount: v.number(),
+    memoryMB: v.number(),
+    diskMB: v.number(),
+    createdAt: v.string(),
+    startedAt: v.optional(v.string()),
+    stoppedAt: v.optional(v.string()),
+    errorMessage: v.optional(v.string()),
+  }).index('by_vm_id', ['vmId'])
+    .index('by_name', ['name'])
+    .index('by_status', ['status'])
+    .index('by_provider', ['provider'])
+    .index('by_harness', ['parentHarnessId']),
+
+  // Sandbox policies
+  sandboxPolicies: defineTable({
+    policyId: v.string(),
+    name: v.string(),
+    policyType: v.union(v.literal('ultra'), v.literal('standard'), v.literal('permissive')),
+    rules: v.array(v.object({
+      action: v.union(v.literal('allow'), v.literal('deny')),
+      resource: v.string(),
+      condition: v.optional(v.string()),
+    })),
+    maxSyscallsPerSecond: v.number(),
+    maxNetworkConnections: v.number(),
+    allowedSystemCalls: v.array(v.string()),
+    blockedSystemCalls: v.array(v.string()),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+  }).index('by_policy_id', ['policyId'])
+    .index('by_name', ['name'])
+    .index('by_type', ['policyType']),
+
+  // Agent deployments in VMs
+  agentDeployments: defineTable({
+    deploymentId: v.string(),
+    vmId: v.string(),
+    agentId: v.string(),
+    agentType: v.union(v.literal('moltbot'), v.literal('custom')),
+    manifestHash: v.string(),
+    status: v.union(
+      v.literal('pending'),
+      v.literal('deploying'),
+      v.literal('running'),
+      v.literal('failed'),
+      v.literal('terminated')
+    ),
+    environment: v.record(v.string(), v.string()),
+    startedAt: v.string(),
+    terminatedAt: v.optional(v.string()),
+    healthCheckUrl: v.optional(v.string()),
+    lastHealthCheck: v.optional(v.string()),
+    isHealthy: v.optional(v.boolean()),
+  }).index('by_deployment_id', ['deploymentId'])
+    .index('by_vm', ['vmId'])
+    .index('by_agent', ['agentId'])
+    .index('by_status', ['status']),
 });
