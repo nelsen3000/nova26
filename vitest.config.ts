@@ -5,7 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     fileParallelism: false,
-    include: ['src/**/*.test.ts', 'src/**/*-tests.ts', 'convex/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'src/**/*-tests.ts', 'convex/**/*.test.ts', 'tests/**/*.test.ts'],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts', 'convex/**/*.ts'],

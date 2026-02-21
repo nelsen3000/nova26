@@ -1,0 +1,12 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/sitemap.xml/route": "/sitemap.xml",
+  "/dashboard/settings/page": "/dashboard/settings",
+  "/dashboard/agents/page": "/dashboard/agents",
+  "/dashboard/builds/[buildId]/page": "/dashboard/builds/[buildId]",
+  "/dashboard/page": "/dashboard",
+  "/(landing)/page": "/",
+  "/dashboard/builds/page": "/dashboard/builds",
+  "/(auth)/sign-in/page": "/sign-in",
+  "/(auth)/sign-up/page": "/sign-up"
+}

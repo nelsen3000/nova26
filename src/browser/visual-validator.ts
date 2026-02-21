@@ -217,6 +217,105 @@ export async function validateVisually(
     score -= 5;
   }
 
+  // NEW CHECKS - AI UX Requirements
+
+  // 1. Confidence indicators (for AI output UIs)
+  if ((componentCode.includes('ai') || componentCode.includes('AI') || componentCode.includes('generated')) &&
+      !componentCode.includes('confidence') && !componentCode.includes('score') && !componentCode.includes('certainty')) {
+    issues.push('AI output detected but no confidence indicator found');
+    score -= 8;
+  }
+
+  // 2. Undo/rollback controls (for AI-driven actions)
+  if ((componentCode.includes('mutation') || componentCode.includes('useMutation') || componentCode.includes('submit')) &&
+      !componentCode.includes('undo') && !componentCode.includes('revert') && !componentCode.includes('rollback')) {
+    issues.push('Mutation detected but no undo/rollback control found');
+    score -= 8;
+  }
+
+  // 3. Feedback widgets (thumbs up/down, ratings)
+  if ((componentCode.includes('ai') || componentCode.includes('AI') || componentCode.includes('response')) &&
+      !componentCode.includes('thumbs') && !componentCode.includes('rating') && !componentCode.includes('feedback') && !componentCode.includes('helpful')) {
+    issues.push('AI response detected but no feedback widget found');
+    score -= 7;
+  }
+
+  // 4. Explainability affordances ("Why?" buttons, info icons)
+  if ((componentCode.includes('ai') || componentCode.includes('AI') || componentCode.includes('recommendation')) &&
+      !componentCode.includes('why') && !componentCode.includes('explain') && !componentCode.includes('info') && !componentCode.includes('tooltip')) {
+    issues.push('AI output detected but no explainability affordance found (Why? button, info icon)');
+    score -= 8;
+  }
+
+  // 5. Confirmation dialogs (before risky actions)
+  if ((componentCode.includes('delete') || componentCode.includes('remove') || componentCode.includes('destroy')) &&
+      !componentCode.includes('confirm') && !componentCode.includes('dialog') && !componentCode.includes('alert') && !componentCode.includes('modal')) {
+    issues.push('Destructive action detected but no confirmation dialog found');
+    score -= 10;
+  }
+
+  // 6. Keyboard navigation (tabIndex, onKeyDown, onKeyPress)
+  if (!componentCode.includes('tabIndex') && !componentCode.includes('onKeyDown') && !componentCode.includes('onKeyPress') && !componentCode.includes('onKeyUp')) {
+    issues.push('No keyboard navigation support detected (tabIndex, onKeyDown)');
+    score -= 8;
+  }
+
+  // 7. ARIA live regions (for streaming/dynamic content)
+  if ((componentCode.includes('streaming') || componentCode.includes('dynamic') || componentCode.includes('real-time') || componentCode.includes('live')) &&
+      !componentCode.includes('aria-live')) {
+    issues.push('Dynamic/streaming content detected but no aria-live region found');
+    score -= 8;
+  }
+
+  // 8. Color contrast (check for low-contrast Tailwind classes)
+  const lowContrastPatterns = [
+    'text-gray-300',
+    'text-gray-400',
+    'bg-white.*text-gray-300',
+    'bg-white.*text-gray-400',
+  ];
+  for (const pattern of lowContrastPatterns) {
+    if (new RegExp(pattern).test(componentCode)) {
+      issues.push('Low color contrast detected (text-gray-300/400 on light backgrounds)');
+      score -= 7;
+      break;
+    }
+  }
+
+  // 9. i18n readiness (check for hardcoded user-facing strings)
+  const hardcodedStringPattern = /["'](?:Click|Submit|Cancel|Delete|Save|Edit|Add|Remove|Update|Create|Search|Filter|Sort|Login|Logout|Sign in|Sign up|Welcome|Hello|Error|Success|Warning|Loading|Please|Thank you)[^"']*["']/gi;
+  const hardcodedMatches = componentCode.match(hardcodedStringPattern);
+  if (hardcodedMatches && hardcodedMatches.length > 3) {
+    issues.push(`Multiple hardcoded user-facing strings detected (${hardcodedMatches.length} found) — consider i18n keys`);
+    score -= 6;
+  }
+
+  // 10. Progressive disclosure (collapsible/expandable sections)
+  if (componentCode.length > 500 && // Only check for longer components
+      !componentCode.includes('collapse') && !componentCode.includes('expand') && !componentCode.includes('accordion') && 
+      !componentCode.includes('details') && !componentCode.includes('summary') && !componentCode.includes('Collapsible')) {
+    issues.push('Long component detected but no progressive disclosure pattern found (collapsible sections)');
+    score -= 6;
+  }
+
+  // 11. Semantic HTML (check for proper use of semantic elements)
+  const hasGenericDivs = (componentCode.match(/<div/g) || []).length > 5;
+  const hasSemanticHTML = componentCode.includes('<nav') || componentCode.includes('<main') || 
+                          componentCode.includes('<header') || componentCode.includes('<footer') || 
+                          componentCode.includes('<section') || componentCode.includes('<article');
+  
+  if (hasGenericDivs && !hasSemanticHTML && componentCode.length > 300) {
+    issues.push('Excessive use of <div> without semantic HTML elements (nav, main, header, footer, section)');
+    score -= 8;
+  }
+
+  // 12. Focus management (for modals/dialogs)
+  if ((componentCode.includes('modal') || componentCode.includes('Modal') || componentCode.includes('dialog') || componentCode.includes('Dialog')) &&
+      !componentCode.includes('autoFocus') && !componentCode.includes('focus') && !componentCode.includes('trap')) {
+    issues.push('Modal/dialog detected but no focus management found (autoFocus, focus trap)');
+    score -= 8;
+  }
+
   score = Math.max(0, score);
 
   return {

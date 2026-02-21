@@ -1,0 +1,4921 @@
+{
+  "nodes": [
+    {
+      "id": "bistrolens/01-convex-patterns/convex-file-storage",
+      "name": "convex-file-storage",
+      "module": "01-convex-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/error-handling",
+      "name": "error-handling",
+      "module": "01-convex-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 6,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/file-storage-patterns",
+      "name": "file-storage-patterns",
+      "module": "01-convex-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/migration-procedures",
+      "name": "migration-procedures",
+      "module": "01-convex-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/mutation-patterns",
+      "name": "mutation-patterns",
+      "module": "01-convex-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 9,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/optimistic-mutation-pattern",
+      "name": "optimistic-mutation-pattern",
+      "module": "01-convex-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 0,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/performance-optimization",
+      "name": "performance-optimization",
+      "module": "01-convex-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/query-patterns",
+      "name": "query-patterns",
+      "module": "01-convex-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 8,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/real-time-subscriptions",
+      "name": "real-time-subscriptions",
+      "module": "01-convex-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/schema-conventions",
+      "name": "schema-conventions",
+      "module": "01-convex-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/soft-delete-pattern",
+      "name": "soft-delete-pattern",
+      "module": "01-convex-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/02-react-patterns/component-structure",
+      "name": "component-structure",
+      "module": "02-react-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/02-react-patterns/effect-patterns",
+      "name": "effect-patterns",
+      "module": "02-react-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 5,
+      "outDegree": 2
+    },
+    {
+      "id": "bistrolens/02-react-patterns/error-boundaries",
+      "name": "error-boundaries",
+      "module": "02-react-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/02-react-patterns/memo-optimization",
+      "name": "memo-optimization",
+      "module": "02-react-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 6,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/02-react-patterns/state-management",
+      "name": "state-management",
+      "module": "02-react-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 5,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/02-react-patterns/suspense-patterns",
+      "name": "suspense-patterns",
+      "module": "02-react-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 5,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/03-auth-patterns/age-verification",
+      "name": "age-verification",
+      "module": "03-auth-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/03-auth-patterns/auth-helpers",
+      "name": "auth-helpers",
+      "module": "03-auth-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 15,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/03-auth-patterns/rbac-implementation",
+      "name": "rbac-implementation",
+      "module": "03-auth-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 5,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/03-auth-patterns/session-management",
+      "name": "session-management",
+      "module": "03-auth-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 6,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "name": "subscription-enforcement",
+      "module": "03-auth-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 8,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/03-auth-patterns/subscription-service",
+      "name": "subscription-service",
+      "module": "03-auth-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/04-ui-components/button-variants",
+      "name": "button-variants",
+      "module": "04-ui-components",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 5,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/04-ui-components/card-layouts",
+      "name": "card-layouts",
+      "module": "04-ui-components",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/04-ui-components/empty-states",
+      "name": "empty-states",
+      "module": "04-ui-components",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/04-ui-components/error-states",
+      "name": "error-states",
+      "module": "04-ui-components",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 6,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/04-ui-components/form-components",
+      "name": "form-components",
+      "module": "04-ui-components",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/04-ui-components/loading-states",
+      "name": "loading-states",
+      "module": "04-ui-components",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 15,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/04-ui-components/modal-dialog",
+      "name": "modal-dialog",
+      "module": "04-ui-components",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 5,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/04-ui-components/toast-notifications",
+      "name": "toast-notifications",
+      "module": "04-ui-components",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 7,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/05-form-patterns/dynamic-fields",
+      "name": "dynamic-fields",
+      "module": "05-form-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 0,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/05-form-patterns/file-upload-forms",
+      "name": "file-upload-forms",
+      "module": "05-form-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/05-form-patterns/form-submission",
+      "name": "form-submission",
+      "module": "05-form-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 7,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/05-form-patterns/form-validation",
+      "name": "form-validation",
+      "module": "05-form-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 12,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/05-form-patterns/multi-step-forms",
+      "name": "multi-step-forms",
+      "module": "05-form-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 0,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/06-data-fetching/caching-strategies",
+      "name": "caching-strategies",
+      "module": "06-data-fetching",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/06-data-fetching/pagination-patterns",
+      "name": "pagination-patterns",
+      "module": "06-data-fetching",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/06-data-fetching/usemutation-patterns",
+      "name": "usemutation-patterns",
+      "module": "06-data-fetching",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/06-data-fetching/usequery-patterns",
+      "name": "usequery-patterns",
+      "module": "06-data-fetching",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 5,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/07-error-handling/error-boundaries",
+      "name": "error-boundaries",
+      "module": "07-error-handling",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/07-error-handling/error-logging",
+      "name": "error-logging",
+      "module": "07-error-handling",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 6,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/07-error-handling/error-messages",
+      "name": "error-messages",
+      "module": "07-error-handling",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 9,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/07-error-handling/resilience-patterns",
+      "name": "resilience-patterns",
+      "module": "07-error-handling",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/07-error-handling/retry-logic",
+      "name": "retry-logic",
+      "module": "07-error-handling",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 5,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/08-testing-patterns/component-testing",
+      "name": "component-testing",
+      "module": "08-testing-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/08-testing-patterns/e2e-testing",
+      "name": "e2e-testing",
+      "module": "08-testing-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/08-testing-patterns/integration-testing",
+      "name": "integration-testing",
+      "module": "08-testing-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/08-testing-patterns/test-utilities",
+      "name": "test-utilities",
+      "module": "08-testing-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/08-testing-patterns/unit-testing",
+      "name": "unit-testing",
+      "module": "08-testing-patterns",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/09-hooks/useAuth",
+      "name": "useAuth",
+      "module": "09-hooks",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/09-hooks/useAuthWithRecaptcha",
+      "name": "useAuthWithRecaptcha",
+      "module": "09-hooks",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/09-hooks/useDebounce",
+      "name": "useDebounce",
+      "module": "09-hooks",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/09-hooks/useFreemium",
+      "name": "useFreemium",
+      "module": "09-hooks",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/09-hooks/useIntersectionObserver",
+      "name": "useIntersectionObserver",
+      "module": "09-hooks",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 0,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/09-hooks/useLocalStorage",
+      "name": "useLocalStorage",
+      "module": "09-hooks",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 5,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/09-hooks/useMediaQuery",
+      "name": "useMediaQuery",
+      "module": "09-hooks",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/09-hooks/useSubscription",
+      "name": "useSubscription",
+      "module": "09-hooks",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/09-hooks/useSwipeGesture",
+      "name": "useSwipeGesture",
+      "module": "09-hooks",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 2
+    },
+    {
+      "id": "bistrolens/09-hooks/useTierGates",
+      "name": "useTierGates",
+      "module": "09-hooks",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/09-hooks/useToast",
+      "name": "useToast",
+      "module": "09-hooks",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 6
+    },
+    {
+      "id": "bistrolens/10-utilities/array-utilities",
+      "name": "array-utilities",
+      "module": "10-utilities",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/10-utilities/date-formatting",
+      "name": "date-formatting",
+      "module": "10-utilities",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/10-utilities/number-formatting",
+      "name": "number-formatting",
+      "module": "10-utilities",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/10-utilities/string-utilities",
+      "name": "string-utilities",
+      "module": "10-utilities",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/10-utilities/validation-helpers",
+      "name": "validation-helpers",
+      "module": "10-utilities",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/11-validation/business-rules",
+      "name": "business-rules",
+      "module": "11-validation",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 5
+    },
+    {
+      "id": "bistrolens/11-validation/client-validation",
+      "name": "client-validation",
+      "module": "11-validation",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/11-validation/convex-validators",
+      "name": "convex-validators",
+      "module": "11-validation",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/11-validation/rate-limiting",
+      "name": "rate-limiting",
+      "module": "11-validation",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/11-validation/schema-validation",
+      "name": "schema-validation",
+      "module": "11-validation",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/12-routing/navigation-patterns",
+      "name": "navigation-patterns",
+      "module": "12-routing",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/12-routing/protected-routes",
+      "name": "protected-routes",
+      "module": "12-routing",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/12-routing/route-structure",
+      "name": "route-structure",
+      "module": "12-routing",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/13-state-management/context-patterns",
+      "name": "context-patterns",
+      "module": "13-state-management",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/13-state-management/global-state",
+      "name": "global-state",
+      "module": "13-state-management",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/13-state-management/local-state",
+      "name": "local-state",
+      "module": "13-state-management",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/13-state-management/state-persistence",
+      "name": "state-persistence",
+      "module": "13-state-management",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/14-performance/bundle-optimization",
+      "name": "bundle-optimization",
+      "module": "14-performance",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/14-performance/code-splitting",
+      "name": "code-splitting",
+      "module": "14-performance",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/14-performance/image-optimization",
+      "name": "image-optimization",
+      "module": "14-performance",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/14-performance/render-optimization",
+      "name": "render-optimization",
+      "module": "14-performance",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 4
+    },
+    {
+      "id": "bistrolens/15-accessibility/aria-patterns",
+      "name": "aria-patterns",
+      "module": "15-accessibility",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 4,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/15-accessibility/keyboard-navigation",
+      "name": "keyboard-navigation",
+      "module": "15-accessibility",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/15-accessibility/screen-reader",
+      "name": "screen-reader",
+      "module": "15-accessibility",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/15-accessibility/wcag-compliance",
+      "name": "wcag-compliance",
+      "module": "15-accessibility",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/16-deployment/build-process",
+      "name": "build-process",
+      "module": "16-deployment",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "bistrolens/16-deployment/deployment-config",
+      "name": "deployment-config",
+      "module": "16-deployment",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 3,
+      "outDegree": 2
+    },
+    {
+      "id": "bistrolens/16-deployment/release-checklist",
+      "name": "release-checklist",
+      "module": "16-deployment",
+      "knowledgeBase": "bistrolens",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/01-orchestration/agent-schema-registry",
+      "name": "agent-schema-registry",
+      "module": "01-orchestration",
+      "knowledgeBase": "nova26",
+      "inDegree": 0,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/01-orchestration/council-consensus-voting",
+      "name": "council-consensus-voting",
+      "module": "01-orchestration",
+      "knowledgeBase": "nova26",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/01-orchestration/event-store",
+      "name": "event-store",
+      "module": "01-orchestration",
+      "knowledgeBase": "nova26",
+      "inDegree": 3,
+      "outDegree": 2
+    },
+    {
+      "id": "nova26/01-orchestration/gate-runner-pipeline",
+      "name": "gate-runner-pipeline",
+      "module": "01-orchestration",
+      "knowledgeBase": "nova26",
+      "inDegree": 17,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/01-orchestration/parallel-task-runner",
+      "name": "parallel-task-runner",
+      "module": "01-orchestration",
+      "knowledgeBase": "nova26",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "name": "prompt-builder-dependency-injection",
+      "module": "01-orchestration",
+      "knowledgeBase": "nova26",
+      "inDegree": 6,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/01-orchestration/ralph-loop-execution",
+      "name": "ralph-loop-execution",
+      "module": "01-orchestration",
+      "knowledgeBase": "nova26",
+      "inDegree": 34,
+      "outDegree": 6
+    },
+    {
+      "id": "nova26/01-orchestration/task-picker",
+      "name": "task-picker",
+      "module": "01-orchestration",
+      "knowledgeBase": "nova26",
+      "inDegree": 4,
+      "outDegree": 2
+    },
+    {
+      "id": "nova26/01-orchestration/test-fix-retest-loop",
+      "name": "test-fix-retest-loop",
+      "module": "01-orchestration",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 2
+    },
+    {
+      "id": "nova26/01-orchestration/todo-tracking-system",
+      "name": "todo-tracking-system",
+      "module": "01-orchestration",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 2
+    },
+    {
+      "id": "nova26/02-agent-system/agent-explanations",
+      "name": "agent-explanations",
+      "module": "02-agent-system",
+      "knowledgeBase": "nova26",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/02-agent-system/agent-loader",
+      "name": "agent-loader",
+      "module": "02-agent-system",
+      "knowledgeBase": "nova26",
+      "inDegree": 12,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/02-agent-system/atlas-convex",
+      "name": "atlas-convex",
+      "module": "02-agent-system",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/02-agent-system/convex-client",
+      "name": "convex-client",
+      "module": "02-agent-system",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/02-agent-system/prd-generator",
+      "name": "prd-generator",
+      "module": "02-agent-system",
+      "knowledgeBase": "nova26",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/02-intelligence/checkpoint-system",
+      "name": "checkpoint-system",
+      "module": "02-intelligence",
+      "knowledgeBase": "nova26",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/02-intelligence/langfuse-tracing",
+      "name": "langfuse-tracing",
+      "module": "02-intelligence",
+      "knowledgeBase": "nova26",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/02-intelligence/llm-response-cache",
+      "name": "llm-response-cache",
+      "module": "02-intelligence",
+      "knowledgeBase": "nova26",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/02-intelligence/model-router-fallback-chains",
+      "name": "model-router-fallback-chains",
+      "module": "02-intelligence",
+      "knowledgeBase": "nova26",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/02-intelligence/security-scanner",
+      "name": "security-scanner",
+      "module": "02-intelligence",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 2
+    },
+    {
+      "id": "nova26/02-intelligence/session-memory-relevance",
+      "name": "session-memory-relevance",
+      "module": "02-intelligence",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/02-intelligence/smart-retry-escalation",
+      "name": "smart-retry-escalation",
+      "module": "02-intelligence",
+      "knowledgeBase": "nova26",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/03-quality-gates/piston-client",
+      "name": "piston-client",
+      "module": "03-quality-gates",
+      "knowledgeBase": "nova26",
+      "inDegree": 3,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/03-quality-gates/test-runner-gate",
+      "name": "test-runner-gate",
+      "module": "03-quality-gates",
+      "knowledgeBase": "nova26",
+      "inDegree": 5,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/03-quality-gates/typescript-gate",
+      "name": "typescript-gate",
+      "module": "03-quality-gates",
+      "knowledgeBase": "nova26",
+      "inDegree": 9,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/04-cli-and-commands/cli-entry",
+      "name": "cli-entry",
+      "module": "04-cli-and-commands",
+      "knowledgeBase": "nova26",
+      "inDegree": 3,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/04-cli-and-commands/slash-commands-extended",
+      "name": "slash-commands-extended",
+      "module": "04-cli-and-commands",
+      "knowledgeBase": "nova26",
+      "inDegree": 2,
+      "outDegree": 5
+    },
+    {
+      "id": "nova26/04-cli-and-commands/slash-commands",
+      "name": "slash-commands",
+      "module": "04-cli-and-commands",
+      "knowledgeBase": "nova26",
+      "inDegree": 3,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/05-execution/docker-executor",
+      "name": "docker-executor",
+      "module": "05-execution",
+      "knowledgeBase": "nova26",
+      "inDegree": 2,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/05-execution/swarm-mode",
+      "name": "swarm-mode",
+      "module": "05-execution",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/06-llm-integration/model-router",
+      "name": "model-router",
+      "module": "06-llm-integration",
+      "knowledgeBase": "nova26",
+      "inDegree": 8,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/06-llm-integration/ollama-client",
+      "name": "ollama-client",
+      "module": "06-llm-integration",
+      "knowledgeBase": "nova26",
+      "inDegree": 3,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/06-llm-integration/response-cache",
+      "name": "response-cache",
+      "module": "06-llm-integration",
+      "knowledgeBase": "nova26",
+      "inDegree": 5,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/06-llm-integration/structured-output",
+      "name": "structured-output",
+      "module": "06-llm-integration",
+      "knowledgeBase": "nova26",
+      "inDegree": 5,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/07-memory-and-persistence/checkpoint-system",
+      "name": "checkpoint-system",
+      "module": "07-memory-and-persistence",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/07-memory-and-persistence/session-memory",
+      "name": "session-memory",
+      "module": "07-memory-and-persistence",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/08-security/security-scanner",
+      "name": "security-scanner",
+      "module": "08-security",
+      "knowledgeBase": "nova26",
+      "inDegree": 0,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/09-observability/observability-setup",
+      "name": "observability-setup",
+      "module": "09-observability",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 5
+    },
+    {
+      "id": "nova26/09-observability/tracer",
+      "name": "tracer",
+      "module": "09-observability",
+      "knowledgeBase": "nova26",
+      "inDegree": 4,
+      "outDegree": 5
+    },
+    {
+      "id": "nova26/10-cost-management/cost-tracker",
+      "name": "cost-tracker",
+      "module": "10-cost-management",
+      "knowledgeBase": "nova26",
+      "inDegree": 5,
+      "outDegree": 5
+    },
+    {
+      "id": "nova26/11-codebase-analysis/dependency-analyzer",
+      "name": "dependency-analyzer",
+      "module": "11-codebase-analysis",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/11-codebase-analysis/repo-map",
+      "name": "repo-map",
+      "module": "11-codebase-analysis",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/12-git-and-integrations/git-workflow",
+      "name": "git-workflow",
+      "module": "12-git-and-integrations",
+      "knowledgeBase": "nova26",
+      "inDegree": 2,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/12-git-and-integrations/issue-importer",
+      "name": "issue-importer",
+      "module": "12-git-and-integrations",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/12-git-and-integrations/xcode-integration",
+      "name": "xcode-integration",
+      "module": "12-git-and-integrations",
+      "knowledgeBase": "nova26",
+      "inDegree": 0,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/13-browser-and-preview/preview-server",
+      "name": "preview-server",
+      "module": "13-browser-and-preview",
+      "knowledgeBase": "nova26",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/13-browser-and-preview/visual-validator",
+      "name": "visual-validator",
+      "module": "13-browser-and-preview",
+      "knowledgeBase": "nova26",
+      "inDegree": 2,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/13-browser-and-preview/vscode-extension",
+      "name": "vscode-extension",
+      "module": "13-browser-and-preview",
+      "knowledgeBase": "nova26",
+      "inDegree": 0,
+      "outDegree": 4
+    },
+    {
+      "id": "nova26/14-templates-and-skills/skill-loader",
+      "name": "skill-loader",
+      "module": "14-templates-and-skills",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/14-templates-and-skills/template-engine",
+      "name": "template-engine",
+      "module": "14-templates-and-skills",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 3
+    },
+    {
+      "id": "nova26/15-type-system/core-types",
+      "name": "core-types",
+      "module": "15-type-system",
+      "knowledgeBase": "nova26",
+      "inDegree": 1,
+      "outDegree": 6
+    }
+  ],
+  "edges": [
+    {
+      "source": "bistrolens/01-convex-patterns/convex-file-storage",
+      "target": "bistrolens/01-convex-patterns/file-storage-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/convex-file-storage",
+      "target": "bistrolens/05-form-patterns/file-upload-forms",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/convex-file-storage",
+      "target": "bistrolens/01-convex-patterns/mutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/error-handling",
+      "target": "bistrolens/01-convex-patterns/mutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/error-handling",
+      "target": "bistrolens/01-convex-patterns/query-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/error-handling",
+      "target": "bistrolens/01-convex-patterns/real-time-subscriptions",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/file-storage-patterns",
+      "target": "bistrolens/01-convex-patterns/mutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/file-storage-patterns",
+      "target": "bistrolens/01-convex-patterns/query-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/file-storage-patterns",
+      "target": "bistrolens/01-convex-patterns/error-handling",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/migration-procedures",
+      "target": "bistrolens/01-convex-patterns/schema-conventions",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/migration-procedures",
+      "target": "bistrolens/01-convex-patterns/mutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/migration-procedures",
+      "target": "bistrolens/01-convex-patterns/query-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/mutation-patterns",
+      "target": "bistrolens/01-convex-patterns/query-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/mutation-patterns",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/mutation-patterns",
+      "target": "bistrolens/11-validation/rate-limiting",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/optimistic-mutation-pattern",
+      "target": "bistrolens/01-convex-patterns/mutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/optimistic-mutation-pattern",
+      "target": "bistrolens/01-convex-patterns/real-time-subscriptions",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/optimistic-mutation-pattern",
+      "target": "bistrolens/05-form-patterns/form-submission",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/performance-optimization",
+      "target": "bistrolens/01-convex-patterns/query-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/performance-optimization",
+      "target": "bistrolens/01-convex-patterns/real-time-subscriptions",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/performance-optimization",
+      "target": "bistrolens/01-convex-patterns/schema-conventions",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/query-patterns",
+      "target": "bistrolens/01-convex-patterns/schema-conventions",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/query-patterns",
+      "target": "bistrolens/01-convex-patterns/mutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/query-patterns",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/real-time-subscriptions",
+      "target": "bistrolens/01-convex-patterns/query-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/real-time-subscriptions",
+      "target": "bistrolens/01-convex-patterns/mutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/real-time-subscriptions",
+      "target": "bistrolens/01-convex-patterns/performance-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/schema-conventions",
+      "target": "bistrolens/01-convex-patterns/query-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/schema-conventions",
+      "target": "bistrolens/01-convex-patterns/soft-delete-pattern",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/schema-conventions",
+      "target": "bistrolens/01-convex-patterns/migration-procedures",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/soft-delete-pattern",
+      "target": "bistrolens/01-convex-patterns/mutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/soft-delete-pattern",
+      "target": "bistrolens/01-convex-patterns/schema-conventions",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/01-convex-patterns/soft-delete-pattern",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/component-structure",
+      "target": "bistrolens/02-react-patterns/state-management",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/component-structure",
+      "target": "bistrolens/02-react-patterns/effect-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/component-structure",
+      "target": "bistrolens/02-react-patterns/memo-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/component-structure",
+      "target": "bistrolens/02-react-patterns/error-boundaries",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/effect-patterns",
+      "target": "bistrolens/02-react-patterns/memo-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/effect-patterns",
+      "target": "bistrolens/02-react-patterns/state-management",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/error-boundaries",
+      "target": "bistrolens/02-react-patterns/suspense-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/error-boundaries",
+      "target": "bistrolens/07-error-handling/error-messages",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/error-boundaries",
+      "target": "bistrolens/07-error-handling/error-logging",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/memo-optimization",
+      "target": "bistrolens/02-react-patterns/component-structure",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/memo-optimization",
+      "target": "bistrolens/02-react-patterns/effect-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/memo-optimization",
+      "target": "bistrolens/14-performance/render-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/state-management",
+      "target": "bistrolens/02-react-patterns/component-structure",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/state-management",
+      "target": "bistrolens/02-react-patterns/effect-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/state-management",
+      "target": "bistrolens/02-react-patterns/memo-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/state-management",
+      "target": "bistrolens/13-state-management/context-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/suspense-patterns",
+      "target": "bistrolens/02-react-patterns/error-boundaries",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/suspense-patterns",
+      "target": "bistrolens/14-performance/code-splitting",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/02-react-patterns/suspense-patterns",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/age-verification",
+      "target": "bistrolens/03-auth-patterns/session-management",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/age-verification",
+      "target": "bistrolens/03-auth-patterns/rbac-implementation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/age-verification",
+      "target": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/age-verification",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/auth-helpers",
+      "target": "bistrolens/03-auth-patterns/session-management",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/auth-helpers",
+      "target": "bistrolens/03-auth-patterns/rbac-implementation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/auth-helpers",
+      "target": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/rbac-implementation",
+      "target": "bistrolens/03-auth-patterns/session-management",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/rbac-implementation",
+      "target": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/rbac-implementation",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/rbac-implementation",
+      "target": "bistrolens/03-auth-patterns/age-verification",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/session-management",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/session-management",
+      "target": "bistrolens/03-auth-patterns/rbac-implementation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/session-management",
+      "target": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "target": "bistrolens/03-auth-patterns/rbac-implementation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "target": "bistrolens/03-auth-patterns/session-management",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "target": "bistrolens/01-convex-patterns/error-handling",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/subscription-service",
+      "target": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/subscription-service",
+      "target": "bistrolens/09-hooks/useTierGates",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/03-auth-patterns/subscription-service",
+      "target": "bistrolens/09-hooks/useFreemium",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/button-variants",
+      "target": "bistrolens/04-ui-components/form-components",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/button-variants",
+      "target": "bistrolens/04-ui-components/modal-dialog",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/button-variants",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/button-variants",
+      "target": "bistrolens/04-ui-components/toast-notifications",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/card-layouts",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/card-layouts",
+      "target": "bistrolens/04-ui-components/empty-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/card-layouts",
+      "target": "bistrolens/04-ui-components/error-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/card-layouts",
+      "target": "bistrolens/04-ui-components/button-variants",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/card-layouts",
+      "target": "bistrolens/04-ui-components/modal-dialog",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/empty-states",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/empty-states",
+      "target": "bistrolens/04-ui-components/error-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/empty-states",
+      "target": "bistrolens/04-ui-components/toast-notifications",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/empty-states",
+      "target": "bistrolens/04-ui-components/button-variants",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/error-states",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/error-states",
+      "target": "bistrolens/04-ui-components/empty-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/error-states",
+      "target": "bistrolens/04-ui-components/toast-notifications",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/error-states",
+      "target": "bistrolens/04-ui-components/form-components",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/form-components",
+      "target": "bistrolens/04-ui-components/button-variants",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/form-components",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/form-components",
+      "target": "bistrolens/05-form-patterns/form-submission",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/form-components",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/form-components",
+      "target": "bistrolens/04-ui-components/error-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/loading-states",
+      "target": "bistrolens/04-ui-components/empty-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/loading-states",
+      "target": "bistrolens/04-ui-components/error-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/loading-states",
+      "target": "bistrolens/05-form-patterns/form-submission",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/loading-states",
+      "target": "bistrolens/04-ui-components/toast-notifications",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/loading-states",
+      "target": "bistrolens/02-react-patterns/suspense-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/modal-dialog",
+      "target": "bistrolens/04-ui-components/toast-notifications",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/modal-dialog",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/modal-dialog",
+      "target": "bistrolens/04-ui-components/empty-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/modal-dialog",
+      "target": "bistrolens/04-ui-components/error-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/modal-dialog",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/toast-notifications",
+      "target": "bistrolens/04-ui-components/modal-dialog",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/toast-notifications",
+      "target": "bistrolens/04-ui-components/error-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/toast-notifications",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/toast-notifications",
+      "target": "bistrolens/04-ui-components/form-components",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/04-ui-components/toast-notifications",
+      "target": "bistrolens/09-hooks/useToast",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/dynamic-fields",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/dynamic-fields",
+      "target": "bistrolens/05-form-patterns/form-submission",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/dynamic-fields",
+      "target": "bistrolens/02-react-patterns/state-management",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/dynamic-fields",
+      "target": "bistrolens/10-utilities/array-utilities",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/file-upload-forms",
+      "target": "bistrolens/05-form-patterns/form-submission",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/file-upload-forms",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/file-upload-forms",
+      "target": "bistrolens/07-error-handling/error-messages",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/file-upload-forms",
+      "target": "bistrolens/14-performance/image-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/form-submission",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/form-submission",
+      "target": "bistrolens/07-error-handling/error-messages",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/form-submission",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/form-submission",
+      "target": "bistrolens/09-hooks/useAuthWithRecaptcha",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/form-submission",
+      "target": "bistrolens/07-error-handling/retry-logic",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/form-validation",
+      "target": "bistrolens/05-form-patterns/form-submission",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/form-validation",
+      "target": "bistrolens/07-error-handling/error-messages",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/form-validation",
+      "target": "bistrolens/09-hooks/useAuthWithRecaptcha",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/form-validation",
+      "target": "bistrolens/11-validation/client-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/multi-step-forms",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/multi-step-forms",
+      "target": "bistrolens/05-form-patterns/form-submission",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/multi-step-forms",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/multi-step-forms",
+      "target": "bistrolens/02-react-patterns/state-management",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/05-form-patterns/multi-step-forms",
+      "target": "bistrolens/13-state-management/local-state",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/caching-strategies",
+      "target": "bistrolens/06-data-fetching/usequery-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/caching-strategies",
+      "target": "bistrolens/06-data-fetching/usemutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/caching-strategies",
+      "target": "bistrolens/06-data-fetching/pagination-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/caching-strategies",
+      "target": "bistrolens/01-convex-patterns/query-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/pagination-patterns",
+      "target": "bistrolens/06-data-fetching/usequery-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/pagination-patterns",
+      "target": "bistrolens/06-data-fetching/usemutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/pagination-patterns",
+      "target": "bistrolens/06-data-fetching/caching-strategies",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/pagination-patterns",
+      "target": "bistrolens/02-react-patterns/state-management",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/pagination-patterns",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/usemutation-patterns",
+      "target": "bistrolens/06-data-fetching/usequery-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/usemutation-patterns",
+      "target": "bistrolens/06-data-fetching/pagination-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/usemutation-patterns",
+      "target": "bistrolens/06-data-fetching/caching-strategies",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/usemutation-patterns",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/usemutation-patterns",
+      "target": "bistrolens/01-convex-patterns/error-handling",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/usequery-patterns",
+      "target": "bistrolens/06-data-fetching/usemutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/usequery-patterns",
+      "target": "bistrolens/06-data-fetching/caching-strategies",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/usequery-patterns",
+      "target": "bistrolens/06-data-fetching/pagination-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/usequery-patterns",
+      "target": "bistrolens/09-hooks/useAuth",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/06-data-fetching/usequery-patterns",
+      "target": "bistrolens/02-react-patterns/effect-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-boundaries",
+      "target": "bistrolens/07-error-handling/error-messages",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-boundaries",
+      "target": "bistrolens/07-error-handling/retry-logic",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-boundaries",
+      "target": "bistrolens/07-error-handling/error-logging",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-boundaries",
+      "target": "bistrolens/02-react-patterns/suspense-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-boundaries",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-logging",
+      "target": "bistrolens/07-error-handling/error-boundaries",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-logging",
+      "target": "bistrolens/07-error-handling/error-messages",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-logging",
+      "target": "bistrolens/07-error-handling/retry-logic",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-logging",
+      "target": "bistrolens/01-convex-patterns/error-handling",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-messages",
+      "target": "bistrolens/07-error-handling/retry-logic",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-messages",
+      "target": "bistrolens/07-error-handling/error-boundaries",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-messages",
+      "target": "bistrolens/07-error-handling/error-logging",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-messages",
+      "target": "bistrolens/04-ui-components/toast-notifications",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/error-messages",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/resilience-patterns",
+      "target": "bistrolens/07-error-handling/retry-logic",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/resilience-patterns",
+      "target": "bistrolens/07-error-handling/error-boundaries",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/resilience-patterns",
+      "target": "bistrolens/07-error-handling/error-logging",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/retry-logic",
+      "target": "bistrolens/07-error-handling/error-boundaries",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/retry-logic",
+      "target": "bistrolens/07-error-handling/error-messages",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/retry-logic",
+      "target": "bistrolens/07-error-handling/error-logging",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/retry-logic",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/07-error-handling/retry-logic",
+      "target": "bistrolens/04-ui-components/toast-notifications",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/component-testing",
+      "target": "bistrolens/08-testing-patterns/unit-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/component-testing",
+      "target": "bistrolens/08-testing-patterns/integration-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/component-testing",
+      "target": "bistrolens/08-testing-patterns/e2e-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/component-testing",
+      "target": "bistrolens/08-testing-patterns/test-utilities",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/component-testing",
+      "target": "bistrolens/15-accessibility/aria-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/e2e-testing",
+      "target": "bistrolens/08-testing-patterns/unit-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/e2e-testing",
+      "target": "bistrolens/08-testing-patterns/component-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/e2e-testing",
+      "target": "bistrolens/08-testing-patterns/integration-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/e2e-testing",
+      "target": "bistrolens/16-deployment/deployment-config",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/e2e-testing",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/integration-testing",
+      "target": "bistrolens/08-testing-patterns/unit-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/integration-testing",
+      "target": "bistrolens/08-testing-patterns/component-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/integration-testing",
+      "target": "bistrolens/08-testing-patterns/e2e-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/integration-testing",
+      "target": "bistrolens/08-testing-patterns/test-utilities",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/test-utilities",
+      "target": "bistrolens/08-testing-patterns/unit-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/test-utilities",
+      "target": "bistrolens/08-testing-patterns/component-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/test-utilities",
+      "target": "bistrolens/08-testing-patterns/integration-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/test-utilities",
+      "target": "bistrolens/08-testing-patterns/e2e-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/unit-testing",
+      "target": "bistrolens/08-testing-patterns/component-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/unit-testing",
+      "target": "bistrolens/08-testing-patterns/e2e-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/08-testing-patterns/unit-testing",
+      "target": "bistrolens/08-testing-patterns/integration-testing",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useAuth",
+      "target": "bistrolens/03-auth-patterns/session-management",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useAuth",
+      "target": "bistrolens/03-auth-patterns/rbac-implementation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useAuth",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useAuth",
+      "target": "bistrolens/07-error-handling/error-messages",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useAuth",
+      "target": "bistrolens/09-hooks/useSubscription",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useAuthWithRecaptcha",
+      "target": "bistrolens/09-hooks/useAuth",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useAuthWithRecaptcha",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useAuthWithRecaptcha",
+      "target": "bistrolens/03-auth-patterns/session-management",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useDebounce",
+      "target": "bistrolens/06-data-fetching/usemutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useDebounce",
+      "target": "bistrolens/06-data-fetching/caching-strategies",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useDebounce",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useDebounce",
+      "target": "bistrolens/09-hooks/useLocalStorage",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useFreemium",
+      "target": "bistrolens/09-hooks/useTierGates",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useFreemium",
+      "target": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useFreemium",
+      "target": "bistrolens/09-hooks/useSubscription",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useIntersectionObserver",
+      "target": "bistrolens/09-hooks/useDebounce",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useIntersectionObserver",
+      "target": "bistrolens/02-react-patterns/memo-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useIntersectionObserver",
+      "target": "bistrolens/02-react-patterns/suspense-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useLocalStorage",
+      "target": "bistrolens/01-convex-patterns/convex-file-storage",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useLocalStorage",
+      "target": "bistrolens/01-convex-patterns/error-handling",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useLocalStorage",
+      "target": "bistrolens/07-error-handling/resilience-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useLocalStorage",
+      "target": "bistrolens/13-state-management/state-persistence",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useMediaQuery",
+      "target": "bistrolens/09-hooks/useSwipeGesture",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useMediaQuery",
+      "target": "bistrolens/09-hooks/useDebounce",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useMediaQuery",
+      "target": "bistrolens/04-ui-components/card-layouts",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useMediaQuery",
+      "target": "bistrolens/04-ui-components/form-components",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useSubscription",
+      "target": "bistrolens/09-hooks/useTierGates",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useSubscription",
+      "target": "bistrolens/09-hooks/useFreemium",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useSubscription",
+      "target": "bistrolens/03-auth-patterns/subscription-service",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useSubscription",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useSubscription",
+      "target": "bistrolens/09-hooks/useLocalStorage",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useSwipeGesture",
+      "target": "bistrolens/09-hooks/useMediaQuery",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useSwipeGesture",
+      "target": "bistrolens/04-ui-components/modal-dialog",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useTierGates",
+      "target": "bistrolens/09-hooks/useFreemium",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useTierGates",
+      "target": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useTierGates",
+      "target": "bistrolens/09-hooks/useSubscription",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useToast",
+      "target": "bistrolens/07-error-handling/error-messages",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useToast",
+      "target": "bistrolens/04-ui-components/loading-states",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useToast",
+      "target": "bistrolens/04-ui-components/modal-dialog",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useToast",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useToast",
+      "target": "bistrolens/04-ui-components/button-variants",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/09-hooks/useToast",
+      "target": "bistrolens/09-hooks/useLocalStorage",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/array-utilities",
+      "target": "bistrolens/06-data-fetching/usequery-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/array-utilities",
+      "target": "bistrolens/10-utilities/validation-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/array-utilities",
+      "target": "bistrolens/10-utilities/number-formatting",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/date-formatting",
+      "target": "bistrolens/10-utilities/number-formatting",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/date-formatting",
+      "target": "bistrolens/10-utilities/string-utilities",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/date-formatting",
+      "target": "bistrolens/09-hooks/useLocalStorage",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/number-formatting",
+      "target": "bistrolens/10-utilities/string-utilities",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/number-formatting",
+      "target": "bistrolens/10-utilities/date-formatting",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/number-formatting",
+      "target": "bistrolens/10-utilities/validation-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/string-utilities",
+      "target": "bistrolens/10-utilities/validation-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/string-utilities",
+      "target": "bistrolens/10-utilities/number-formatting",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/string-utilities",
+      "target": "bistrolens/04-ui-components/button-variants",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/validation-helpers",
+      "target": "bistrolens/11-validation/convex-validators",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/validation-helpers",
+      "target": "bistrolens/11-validation/schema-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/validation-helpers",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/10-utilities/validation-helpers",
+      "target": "bistrolens/10-utilities/string-utilities",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/business-rules",
+      "target": "bistrolens/11-validation/convex-validators",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/business-rules",
+      "target": "bistrolens/11-validation/client-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/business-rules",
+      "target": "bistrolens/11-validation/schema-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/business-rules",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/business-rules",
+      "target": "bistrolens/01-convex-patterns/error-handling",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/client-validation",
+      "target": "bistrolens/11-validation/convex-validators",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/client-validation",
+      "target": "bistrolens/11-validation/business-rules",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/client-validation",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/convex-validators",
+      "target": "bistrolens/11-validation/schema-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/convex-validators",
+      "target": "bistrolens/11-validation/business-rules",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/convex-validators",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/rate-limiting",
+      "target": "bistrolens/11-validation/business-rules",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/rate-limiting",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/rate-limiting",
+      "target": "bistrolens/01-convex-patterns/mutation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/schema-validation",
+      "target": "bistrolens/11-validation/convex-validators",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/schema-validation",
+      "target": "bistrolens/11-validation/client-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/schema-validation",
+      "target": "bistrolens/05-form-patterns/form-validation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/11-validation/schema-validation",
+      "target": "bistrolens/11-validation/business-rules",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/12-routing/navigation-patterns",
+      "target": "bistrolens/12-routing/route-structure",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/12-routing/navigation-patterns",
+      "target": "bistrolens/12-routing/protected-routes",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/12-routing/navigation-patterns",
+      "target": "bistrolens/09-hooks/useSwipeGesture",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/12-routing/protected-routes",
+      "target": "bistrolens/12-routing/route-structure",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/12-routing/protected-routes",
+      "target": "bistrolens/12-routing/navigation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/12-routing/protected-routes",
+      "target": "bistrolens/03-auth-patterns/auth-helpers",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/12-routing/protected-routes",
+      "target": "bistrolens/03-auth-patterns/subscription-enforcement",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/12-routing/route-structure",
+      "target": "bistrolens/12-routing/navigation-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/12-routing/route-structure",
+      "target": "bistrolens/12-routing/protected-routes",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/12-routing/route-structure",
+      "target": "bistrolens/02-react-patterns/suspense-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/context-patterns",
+      "target": "bistrolens/13-state-management/local-state",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/context-patterns",
+      "target": "bistrolens/13-state-management/global-state",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/context-patterns",
+      "target": "bistrolens/13-state-management/state-persistence",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/global-state",
+      "target": "bistrolens/13-state-management/context-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/global-state",
+      "target": "bistrolens/13-state-management/local-state",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/global-state",
+      "target": "bistrolens/13-state-management/state-persistence",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/global-state",
+      "target": "bistrolens/06-data-fetching/usequery-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/local-state",
+      "target": "bistrolens/13-state-management/context-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/local-state",
+      "target": "bistrolens/13-state-management/global-state",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/local-state",
+      "target": "bistrolens/02-react-patterns/memo-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/local-state",
+      "target": "bistrolens/02-react-patterns/effect-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/state-persistence",
+      "target": "bistrolens/13-state-management/context-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/state-persistence",
+      "target": "bistrolens/13-state-management/global-state",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/13-state-management/state-persistence",
+      "target": "bistrolens/09-hooks/useLocalStorage",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/bundle-optimization",
+      "target": "bistrolens/14-performance/code-splitting",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/bundle-optimization",
+      "target": "bistrolens/14-performance/image-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/bundle-optimization",
+      "target": "bistrolens/14-performance/render-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/code-splitting",
+      "target": "bistrolens/14-performance/bundle-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/code-splitting",
+      "target": "bistrolens/14-performance/render-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/code-splitting",
+      "target": "bistrolens/14-performance/image-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/image-optimization",
+      "target": "bistrolens/14-performance/code-splitting",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/image-optimization",
+      "target": "bistrolens/14-performance/render-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/image-optimization",
+      "target": "bistrolens/14-performance/bundle-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/render-optimization",
+      "target": "bistrolens/13-state-management/local-state",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/render-optimization",
+      "target": "bistrolens/14-performance/code-splitting",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/render-optimization",
+      "target": "bistrolens/14-performance/image-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/14-performance/render-optimization",
+      "target": "bistrolens/02-react-patterns/memo-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/aria-patterns",
+      "target": "bistrolens/15-accessibility/keyboard-navigation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/aria-patterns",
+      "target": "bistrolens/15-accessibility/screen-reader",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/aria-patterns",
+      "target": "bistrolens/15-accessibility/wcag-compliance",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/keyboard-navigation",
+      "target": "bistrolens/15-accessibility/aria-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/keyboard-navigation",
+      "target": "bistrolens/15-accessibility/screen-reader",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/keyboard-navigation",
+      "target": "bistrolens/15-accessibility/wcag-compliance",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/screen-reader",
+      "target": "bistrolens/15-accessibility/aria-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/screen-reader",
+      "target": "bistrolens/15-accessibility/keyboard-navigation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/screen-reader",
+      "target": "bistrolens/15-accessibility/wcag-compliance",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/wcag-compliance",
+      "target": "bistrolens/15-accessibility/aria-patterns",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/wcag-compliance",
+      "target": "bistrolens/15-accessibility/keyboard-navigation",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/15-accessibility/wcag-compliance",
+      "target": "bistrolens/15-accessibility/screen-reader",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/16-deployment/build-process",
+      "target": "bistrolens/16-deployment/deployment-config",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/16-deployment/build-process",
+      "target": "bistrolens/16-deployment/release-checklist",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/16-deployment/build-process",
+      "target": "bistrolens/14-performance/bundle-optimization",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/16-deployment/deployment-config",
+      "target": "bistrolens/16-deployment/build-process",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/16-deployment/deployment-config",
+      "target": "bistrolens/16-deployment/release-checklist",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/16-deployment/release-checklist",
+      "target": "bistrolens/16-deployment/build-process",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/16-deployment/release-checklist",
+      "target": "bistrolens/16-deployment/deployment-config",
+      "type": "related"
+    },
+    {
+      "source": "bistrolens/16-deployment/release-checklist",
+      "target": "bistrolens/07-error-handling/error-logging",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/agent-schema-registry",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/agent-schema-registry",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/agent-schema-registry",
+      "target": "nova26/06-llm-integration/structured-output",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/council-consensus-voting",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/council-consensus-voting",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/council-consensus-voting",
+      "target": "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/event-store",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/event-store",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/gate-runner-pipeline",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/gate-runner-pipeline",
+      "target": "nova26/01-orchestration/council-consensus-voting",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/gate-runner-pipeline",
+      "target": "nova26/06-llm-integration/structured-output",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/parallel-task-runner",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/parallel-task-runner",
+      "target": "nova26/01-orchestration/task-picker",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/parallel-task-runner",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/ralph-loop-execution",
+      "target": "nova26/01-orchestration/task-picker",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/ralph-loop-execution",
+      "target": "nova26/01-orchestration/parallel-task-runner",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/ralph-loop-execution",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/ralph-loop-execution",
+      "target": "nova26/01-orchestration/council-consensus-voting",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/ralph-loop-execution",
+      "target": "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/ralph-loop-execution",
+      "target": "nova26/01-orchestration/event-store",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/task-picker",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/task-picker",
+      "target": "nova26/01-orchestration/parallel-task-runner",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/test-fix-retest-loop",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/test-fix-retest-loop",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/todo-tracking-system",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/01-orchestration/todo-tracking-system",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/agent-explanations",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/agent-explanations",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/agent-explanations",
+      "target": "nova26/01-orchestration/task-picker",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/agent-loader",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/agent-loader",
+      "target": "nova26/02-agent-system/agent-explanations",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/agent-loader",
+      "target": "nova26/02-agent-system/prd-generator",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/atlas-convex",
+      "target": "nova26/02-agent-system/convex-client",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/atlas-convex",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/atlas-convex",
+      "target": "nova26/01-orchestration/event-store",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/convex-client",
+      "target": "nova26/02-agent-system/atlas-convex",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/convex-client",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/convex-client",
+      "target": "bistrolens/01-convex-patterns/convex-file-storage",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/prd-generator",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/prd-generator",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-agent-system/prd-generator",
+      "target": "nova26/01-orchestration/task-picker",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/checkpoint-system",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/checkpoint-system",
+      "target": "nova26/02-intelligence/langfuse-tracing",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/checkpoint-system",
+      "target": "nova26/02-intelligence/llm-response-cache",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/langfuse-tracing",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/langfuse-tracing",
+      "target": "nova26/02-intelligence/checkpoint-system",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/langfuse-tracing",
+      "target": "nova26/02-intelligence/session-memory-relevance",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/llm-response-cache",
+      "target": "nova26/02-intelligence/model-router-fallback-chains",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/llm-response-cache",
+      "target": "nova26/02-intelligence/checkpoint-system",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/llm-response-cache",
+      "target": "nova26/10-cost-management/cost-tracker",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/model-router-fallback-chains",
+      "target": "nova26/02-intelligence/smart-retry-escalation",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/model-router-fallback-chains",
+      "target": "nova26/02-intelligence/llm-response-cache",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/model-router-fallback-chains",
+      "target": "nova26/06-llm-integration/structured-output",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/security-scanner",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/security-scanner",
+      "target": "nova26/02-intelligence/smart-retry-escalation",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/session-memory-relevance",
+      "target": "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/session-memory-relevance",
+      "target": "nova26/02-intelligence/checkpoint-system",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/session-memory-relevance",
+      "target": "nova26/02-intelligence/langfuse-tracing",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/smart-retry-escalation",
+      "target": "nova26/02-intelligence/model-router-fallback-chains",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/smart-retry-escalation",
+      "target": "nova26/01-orchestration/test-fix-retest-loop",
+      "type": "related"
+    },
+    {
+      "source": "nova26/02-intelligence/smart-retry-escalation",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/03-quality-gates/piston-client",
+      "target": "nova26/03-quality-gates/typescript-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/03-quality-gates/piston-client",
+      "target": "nova26/03-quality-gates/test-runner-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/03-quality-gates/piston-client",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/03-quality-gates/test-runner-gate",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/03-quality-gates/test-runner-gate",
+      "target": "nova26/03-quality-gates/piston-client",
+      "type": "related"
+    },
+    {
+      "source": "nova26/03-quality-gates/test-runner-gate",
+      "target": "nova26/03-quality-gates/typescript-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/03-quality-gates/typescript-gate",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/03-quality-gates/typescript-gate",
+      "target": "nova26/03-quality-gates/piston-client",
+      "type": "related"
+    },
+    {
+      "source": "nova26/03-quality-gates/typescript-gate",
+      "target": "nova26/03-quality-gates/test-runner-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/cli-entry",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/cli-entry",
+      "target": "nova26/04-cli-and-commands/slash-commands",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/cli-entry",
+      "target": "nova26/04-cli-and-commands/slash-commands-extended",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/cli-entry",
+      "target": "nova26/02-agent-system/agent-explanations",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/slash-commands-extended",
+      "target": "nova26/04-cli-and-commands/cli-entry",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/slash-commands-extended",
+      "target": "nova26/04-cli-and-commands/slash-commands",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/slash-commands-extended",
+      "target": "nova26/03-quality-gates/typescript-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/slash-commands-extended",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/slash-commands-extended",
+      "target": "nova26/02-agent-system/agent-explanations",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/slash-commands",
+      "target": "nova26/04-cli-and-commands/cli-entry",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/slash-commands",
+      "target": "nova26/04-cli-and-commands/slash-commands-extended",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/slash-commands",
+      "target": "nova26/02-agent-system/prd-generator",
+      "type": "related"
+    },
+    {
+      "source": "nova26/04-cli-and-commands/slash-commands",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/05-execution/docker-executor",
+      "target": "nova26/03-quality-gates/typescript-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/05-execution/docker-executor",
+      "target": "nova26/03-quality-gates/piston-client",
+      "type": "related"
+    },
+    {
+      "source": "nova26/05-execution/docker-executor",
+      "target": "nova26/03-quality-gates/test-runner-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/05-execution/docker-executor",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/05-execution/swarm-mode",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/05-execution/swarm-mode",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/05-execution/swarm-mode",
+      "target": "nova26/01-orchestration/parallel-task-runner",
+      "type": "related"
+    },
+    {
+      "source": "nova26/05-execution/swarm-mode",
+      "target": "nova26/01-orchestration/council-consensus-voting",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/model-router",
+      "target": "nova26/06-llm-integration/ollama-client",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/model-router",
+      "target": "nova26/06-llm-integration/response-cache",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/model-router",
+      "target": "nova26/06-llm-integration/structured-output",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/model-router",
+      "target": "nova26/10-cost-management/cost-tracker",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/ollama-client",
+      "target": "nova26/06-llm-integration/model-router",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/ollama-client",
+      "target": "nova26/06-llm-integration/structured-output",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/ollama-client",
+      "target": "nova26/06-llm-integration/response-cache",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/ollama-client",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/response-cache",
+      "target": "nova26/06-llm-integration/model-router",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/response-cache",
+      "target": "nova26/06-llm-integration/ollama-client",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/response-cache",
+      "target": "nova26/10-cost-management/cost-tracker",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/response-cache",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/structured-output",
+      "target": "nova26/06-llm-integration/ollama-client",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/structured-output",
+      "target": "nova26/06-llm-integration/model-router",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/structured-output",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/06-llm-integration/structured-output",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/07-memory-and-persistence/checkpoint-system",
+      "target": "nova26/07-memory-and-persistence/session-memory",
+      "type": "related"
+    },
+    {
+      "source": "nova26/07-memory-and-persistence/checkpoint-system",
+      "target": "nova26/06-llm-integration/response-cache",
+      "type": "related"
+    },
+    {
+      "source": "nova26/07-memory-and-persistence/checkpoint-system",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/07-memory-and-persistence/checkpoint-system",
+      "target": "nova26/01-orchestration/event-store",
+      "type": "related"
+    },
+    {
+      "source": "nova26/07-memory-and-persistence/session-memory",
+      "target": "nova26/07-memory-and-persistence/checkpoint-system",
+      "type": "related"
+    },
+    {
+      "source": "nova26/07-memory-and-persistence/session-memory",
+      "target": "nova26/06-llm-integration/response-cache",
+      "type": "related"
+    },
+    {
+      "source": "nova26/07-memory-and-persistence/session-memory",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/07-memory-and-persistence/session-memory",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/08-security/security-scanner",
+      "target": "nova26/03-quality-gates/typescript-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/08-security/security-scanner",
+      "target": "nova26/03-quality-gates/test-runner-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/08-security/security-scanner",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/08-security/security-scanner",
+      "target": "nova26/05-execution/docker-executor",
+      "type": "related"
+    },
+    {
+      "source": "nova26/09-observability/observability-setup",
+      "target": "nova26/09-observability/tracer",
+      "type": "related"
+    },
+    {
+      "source": "nova26/09-observability/observability-setup",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/09-observability/observability-setup",
+      "target": "nova26/06-llm-integration/model-router",
+      "type": "related"
+    },
+    {
+      "source": "nova26/09-observability/observability-setup",
+      "target": "nova26/02-intelligence/security-scanner",
+      "type": "related"
+    },
+    {
+      "source": "nova26/09-observability/observability-setup",
+      "target": "nova26/10-cost-management/cost-tracker",
+      "type": "related"
+    },
+    {
+      "source": "nova26/09-observability/tracer",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/09-observability/tracer",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/09-observability/tracer",
+      "target": "nova26/06-llm-integration/model-router",
+      "type": "related"
+    },
+    {
+      "source": "nova26/09-observability/tracer",
+      "target": "nova26/09-observability/observability-setup",
+      "type": "related"
+    },
+    {
+      "source": "nova26/09-observability/tracer",
+      "target": "nova26/10-cost-management/cost-tracker",
+      "type": "related"
+    },
+    {
+      "source": "nova26/10-cost-management/cost-tracker",
+      "target": "nova26/06-llm-integration/model-router",
+      "type": "related"
+    },
+    {
+      "source": "nova26/10-cost-management/cost-tracker",
+      "target": "nova26/06-llm-integration/response-cache",
+      "type": "related"
+    },
+    {
+      "source": "nova26/10-cost-management/cost-tracker",
+      "target": "nova26/09-observability/tracer",
+      "type": "related"
+    },
+    {
+      "source": "nova26/10-cost-management/cost-tracker",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/10-cost-management/cost-tracker",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/11-codebase-analysis/dependency-analyzer",
+      "target": "nova26/11-codebase-analysis/repo-map",
+      "type": "related"
+    },
+    {
+      "source": "nova26/11-codebase-analysis/dependency-analyzer",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/11-codebase-analysis/dependency-analyzer",
+      "target": "nova26/03-quality-gates/typescript-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/11-codebase-analysis/dependency-analyzer",
+      "target": "nova26/09-observability/tracer",
+      "type": "related"
+    },
+    {
+      "source": "nova26/11-codebase-analysis/repo-map",
+      "target": "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "type": "related"
+    },
+    {
+      "source": "nova26/11-codebase-analysis/repo-map",
+      "target": "nova26/11-codebase-analysis/dependency-analyzer",
+      "type": "related"
+    },
+    {
+      "source": "nova26/11-codebase-analysis/repo-map",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/11-codebase-analysis/repo-map",
+      "target": "nova26/06-llm-integration/model-router",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/git-workflow",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/git-workflow",
+      "target": "nova26/12-git-and-integrations/issue-importer",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/git-workflow",
+      "target": "nova26/03-quality-gates/typescript-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/git-workflow",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/issue-importer",
+      "target": "nova26/12-git-and-integrations/git-workflow",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/issue-importer",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/issue-importer",
+      "target": "nova26/02-agent-system/prd-generator",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/issue-importer",
+      "target": "nova26/15-type-system/core-types",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/xcode-integration",
+      "target": "nova26/12-git-and-integrations/git-workflow",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/xcode-integration",
+      "target": "nova26/03-quality-gates/typescript-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/xcode-integration",
+      "target": "nova26/05-execution/docker-executor",
+      "type": "related"
+    },
+    {
+      "source": "nova26/12-git-and-integrations/xcode-integration",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/13-browser-and-preview/preview-server",
+      "target": "nova26/13-browser-and-preview/visual-validator",
+      "type": "related"
+    },
+    {
+      "source": "nova26/13-browser-and-preview/preview-server",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/13-browser-and-preview/preview-server",
+      "target": "nova26/03-quality-gates/test-runner-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/13-browser-and-preview/visual-validator",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/13-browser-and-preview/visual-validator",
+      "target": "nova26/03-quality-gates/typescript-gate",
+      "type": "related"
+    },
+    {
+      "source": "nova26/13-browser-and-preview/visual-validator",
+      "target": "nova26/13-browser-and-preview/preview-server",
+      "type": "related"
+    },
+    {
+      "source": "nova26/13-browser-and-preview/vscode-extension",
+      "target": "nova26/13-browser-and-preview/preview-server",
+      "type": "related"
+    },
+    {
+      "source": "nova26/13-browser-and-preview/vscode-extension",
+      "target": "nova26/13-browser-and-preview/visual-validator",
+      "type": "related"
+    },
+    {
+      "source": "nova26/13-browser-and-preview/vscode-extension",
+      "target": "nova26/04-cli-and-commands/cli-entry",
+      "type": "related"
+    },
+    {
+      "source": "nova26/13-browser-and-preview/vscode-extension",
+      "target": "nova26/05-execution/swarm-mode",
+      "type": "related"
+    },
+    {
+      "source": "nova26/14-templates-and-skills/skill-loader",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/14-templates-and-skills/skill-loader",
+      "target": "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "type": "related"
+    },
+    {
+      "source": "nova26/14-templates-and-skills/skill-loader",
+      "target": "nova26/14-templates-and-skills/template-engine",
+      "type": "related"
+    },
+    {
+      "source": "nova26/14-templates-and-skills/template-engine",
+      "target": "nova26/04-cli-and-commands/slash-commands",
+      "type": "related"
+    },
+    {
+      "source": "nova26/14-templates-and-skills/template-engine",
+      "target": "nova26/14-templates-and-skills/skill-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/14-templates-and-skills/template-engine",
+      "target": "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "type": "related"
+    },
+    {
+      "source": "nova26/15-type-system/core-types",
+      "target": "nova26/01-orchestration/ralph-loop-execution",
+      "type": "related"
+    },
+    {
+      "source": "nova26/15-type-system/core-types",
+      "target": "nova26/01-orchestration/gate-runner-pipeline",
+      "type": "related"
+    },
+    {
+      "source": "nova26/15-type-system/core-types",
+      "target": "nova26/02-agent-system/agent-loader",
+      "type": "related"
+    },
+    {
+      "source": "nova26/15-type-system/core-types",
+      "target": "nova26/06-llm-integration/model-router",
+      "type": "related"
+    },
+    {
+      "source": "nova26/15-type-system/core-types",
+      "target": "nova26/01-orchestration/todo-tracking-system",
+      "type": "related"
+    },
+    {
+      "source": "nova26/15-type-system/core-types",
+      "target": "nova26/09-observability/tracer",
+      "type": "related"
+    }
+  ],
+  "islands": [],
+  "cycles": [
+    [
+      "bistrolens/01-convex-patterns/query-patterns",
+      "bistrolens/01-convex-patterns/schema-conventions"
+    ],
+    [
+      "bistrolens/01-convex-patterns/mutation-patterns",
+      "bistrolens/01-convex-patterns/query-patterns",
+      "bistrolens/01-convex-patterns/schema-conventions",
+      "bistrolens/01-convex-patterns/soft-delete-pattern"
+    ],
+    [
+      "bistrolens/01-convex-patterns/schema-conventions",
+      "bistrolens/01-convex-patterns/soft-delete-pattern"
+    ],
+    [
+      "bistrolens/03-auth-patterns/auth-helpers",
+      "bistrolens/03-auth-patterns/session-management"
+    ],
+    [
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation"
+    ],
+    [
+      "bistrolens/03-auth-patterns/auth-helpers",
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/subscription-enforcement"
+    ],
+    [
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/subscription-enforcement"
+    ],
+    [
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/subscription-enforcement"
+    ],
+    [
+      "bistrolens/01-convex-patterns/mutation-patterns",
+      "bistrolens/01-convex-patterns/query-patterns",
+      "bistrolens/01-convex-patterns/schema-conventions",
+      "bistrolens/01-convex-patterns/soft-delete-pattern",
+      "bistrolens/03-auth-patterns/auth-helpers",
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/subscription-enforcement",
+      "bistrolens/01-convex-patterns/error-handling"
+    ],
+    [
+      "bistrolens/01-convex-patterns/query-patterns",
+      "bistrolens/01-convex-patterns/schema-conventions",
+      "bistrolens/01-convex-patterns/soft-delete-pattern",
+      "bistrolens/03-auth-patterns/auth-helpers",
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/subscription-enforcement",
+      "bistrolens/01-convex-patterns/error-handling"
+    ],
+    [
+      "bistrolens/01-convex-patterns/query-patterns",
+      "bistrolens/01-convex-patterns/schema-conventions",
+      "bistrolens/01-convex-patterns/soft-delete-pattern",
+      "bistrolens/03-auth-patterns/auth-helpers",
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/subscription-enforcement",
+      "bistrolens/01-convex-patterns/error-handling",
+      "bistrolens/01-convex-patterns/real-time-subscriptions"
+    ],
+    [
+      "bistrolens/01-convex-patterns/mutation-patterns",
+      "bistrolens/01-convex-patterns/query-patterns",
+      "bistrolens/01-convex-patterns/schema-conventions",
+      "bistrolens/01-convex-patterns/soft-delete-pattern",
+      "bistrolens/03-auth-patterns/auth-helpers",
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/subscription-enforcement",
+      "bistrolens/01-convex-patterns/error-handling",
+      "bistrolens/01-convex-patterns/real-time-subscriptions"
+    ],
+    [
+      "bistrolens/01-convex-patterns/query-patterns",
+      "bistrolens/01-convex-patterns/schema-conventions",
+      "bistrolens/01-convex-patterns/soft-delete-pattern",
+      "bistrolens/03-auth-patterns/auth-helpers",
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/subscription-enforcement",
+      "bistrolens/01-convex-patterns/error-handling",
+      "bistrolens/01-convex-patterns/real-time-subscriptions",
+      "bistrolens/01-convex-patterns/performance-optimization"
+    ],
+    [
+      "bistrolens/01-convex-patterns/real-time-subscriptions",
+      "bistrolens/01-convex-patterns/performance-optimization"
+    ],
+    [
+      "bistrolens/01-convex-patterns/schema-conventions",
+      "bistrolens/01-convex-patterns/soft-delete-pattern",
+      "bistrolens/03-auth-patterns/auth-helpers",
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/subscription-enforcement",
+      "bistrolens/01-convex-patterns/error-handling",
+      "bistrolens/01-convex-patterns/real-time-subscriptions",
+      "bistrolens/01-convex-patterns/performance-optimization"
+    ],
+    [
+      "bistrolens/03-auth-patterns/auth-helpers",
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation"
+    ],
+    [
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/age-verification"
+    ],
+    [
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/age-verification"
+    ],
+    [
+      "bistrolens/03-auth-patterns/auth-helpers",
+      "bistrolens/03-auth-patterns/session-management",
+      "bistrolens/03-auth-patterns/rbac-implementation",
+      "bistrolens/03-auth-patterns/age-verification"
+    ],
+    [
+      "bistrolens/01-convex-patterns/schema-conventions",
+      "bistrolens/01-convex-patterns/migration-procedures"
+    ],
+    [
+      "bistrolens/01-convex-patterns/mutation-patterns",
+      "bistrolens/01-convex-patterns/query-patterns",
+      "bistrolens/01-convex-patterns/schema-conventions",
+      "bistrolens/01-convex-patterns/migration-procedures"
+    ],
+    [
+      "bistrolens/01-convex-patterns/query-patterns",
+      "bistrolens/01-convex-patterns/schema-conventions",
+      "bistrolens/01-convex-patterns/migration-procedures"
+    ],
+    [
+      "bistrolens/01-convex-patterns/mutation-patterns",
+      "bistrolens/01-convex-patterns/query-patterns"
+    ],
+    [
+      "bistrolens/11-validation/convex-validators",
+      "bistrolens/11-validation/schema-validation"
+    ],
+    [
+      "bistrolens/11-validation/convex-validators",
+      "bistrolens/11-validation/schema-validation",
+      "bistrolens/11-validation/client-validation"
+    ],
+    [
+      "bistrolens/11-validation/business-rules",
+      "bistrolens/11-validation/convex-validators",
+      "bistrolens/11-validation/schema-validation",
+      "bistrolens/11-validation/client-validation"
+    ],
+    [
+      "bistrolens/05-form-patterns/form-validation",
+      "bistrolens/05-form-patterns/form-submission"
+    ],
+    [
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries"
+    ],
+    [
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries"
+    ],
+    [
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/07-error-handling/error-logging"
+    ],
+    [
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/07-error-handling/error-logging"
+    ],
+    [
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/07-error-handling/error-logging"
+    ],
+    [
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/02-react-patterns/error-boundaries"
+    ],
+    [
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/02-react-patterns/error-boundaries"
+    ],
+    [
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization"
+    ],
+    [
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization"
+    ],
+    [
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns"
+    ],
+    [
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state"
+    ],
+    [
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state"
+    ],
+    [
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/13-state-management/state-persistence"
+    ],
+    [
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/13-state-management/state-persistence"
+    ],
+    [
+      "bistrolens/01-convex-patterns/convex-file-storage",
+      "bistrolens/01-convex-patterns/file-storage-patterns",
+      "bistrolens/01-convex-patterns/mutation-patterns",
+      "bistrolens/11-validation/rate-limiting",
+      "bistrolens/11-validation/business-rules",
+      "bistrolens/11-validation/convex-validators",
+      "bistrolens/11-validation/schema-validation",
+      "bistrolens/11-validation/client-validation",
+      "bistrolens/05-form-patterns/form-validation",
+      "bistrolens/05-form-patterns/form-submission",
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/13-state-management/state-persistence",
+      "bistrolens/09-hooks/useLocalStorage"
+    ],
+    [
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/13-state-management/state-persistence",
+      "bistrolens/09-hooks/useLocalStorage",
+      "bistrolens/07-error-handling/resilience-patterns"
+    ],
+    [
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/13-state-management/state-persistence",
+      "bistrolens/09-hooks/useLocalStorage",
+      "bistrolens/07-error-handling/resilience-patterns"
+    ],
+    [
+      "bistrolens/13-state-management/state-persistence",
+      "bistrolens/09-hooks/useLocalStorage"
+    ],
+    [
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns"
+    ],
+    [
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns"
+    ],
+    [
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns"
+    ],
+    [
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/06-data-fetching/caching-strategies"
+    ],
+    [
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/06-data-fetching/caching-strategies"
+    ],
+    [
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/06-data-fetching/caching-strategies"
+    ],
+    [
+      "bistrolens/02-react-patterns/state-management",
+      "bistrolens/02-react-patterns/component-structure"
+    ],
+    [
+      "bistrolens/02-react-patterns/component-structure",
+      "bistrolens/02-react-patterns/effect-patterns",
+      "bistrolens/02-react-patterns/memo-optimization"
+    ],
+    [
+      "bistrolens/02-react-patterns/effect-patterns",
+      "bistrolens/02-react-patterns/memo-optimization"
+    ],
+    [
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/02-react-patterns/state-management",
+      "bistrolens/02-react-patterns/component-structure",
+      "bistrolens/02-react-patterns/effect-patterns",
+      "bistrolens/02-react-patterns/memo-optimization"
+    ],
+    [
+      "bistrolens/02-react-patterns/state-management",
+      "bistrolens/02-react-patterns/component-structure",
+      "bistrolens/02-react-patterns/effect-patterns"
+    ],
+    [
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/02-react-patterns/state-management"
+    ],
+    [
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states"
+    ],
+    [
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states"
+    ],
+    [
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states"
+    ],
+    [
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/04-ui-components/modal-dialog"
+    ],
+    [
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/04-ui-components/modal-dialog"
+    ],
+    [
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/04-ui-components/modal-dialog"
+    ],
+    [
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/04-ui-components/modal-dialog"
+    ],
+    [
+      "bistrolens/05-form-patterns/form-validation",
+      "bistrolens/05-form-patterns/form-submission",
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/04-ui-components/modal-dialog"
+    ],
+    [
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications"
+    ],
+    [
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications"
+    ],
+    [
+      "bistrolens/04-ui-components/form-components",
+      "bistrolens/04-ui-components/button-variants"
+    ],
+    [
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/04-ui-components/form-components",
+      "bistrolens/04-ui-components/button-variants"
+    ],
+    [
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/04-ui-components/form-components",
+      "bistrolens/04-ui-components/button-variants"
+    ],
+    [
+      "bistrolens/05-form-patterns/form-validation",
+      "bistrolens/05-form-patterns/form-submission",
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/04-ui-components/form-components"
+    ],
+    [
+      "bistrolens/05-form-patterns/form-submission",
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/04-ui-components/form-components"
+    ],
+    [
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/04-ui-components/form-components"
+    ],
+    [
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/04-ui-components/form-components"
+    ],
+    [
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/09-hooks/useToast"
+    ],
+    [
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/09-hooks/useToast"
+    ],
+    [
+      "bistrolens/05-form-patterns/form-validation",
+      "bistrolens/05-form-patterns/form-submission",
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/04-ui-components/loading-states",
+      "bistrolens/04-ui-components/empty-states",
+      "bistrolens/04-ui-components/error-states",
+      "bistrolens/04-ui-components/toast-notifications",
+      "bistrolens/09-hooks/useToast"
+    ],
+    [
+      "bistrolens/05-form-patterns/form-submission",
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/04-ui-components/loading-states"
+    ],
+    [
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns",
+      "bistrolens/06-data-fetching/pagination-patterns",
+      "bistrolens/04-ui-components/loading-states"
+    ],
+    [
+      "bistrolens/05-form-patterns/form-validation",
+      "bistrolens/05-form-patterns/form-submission",
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/06-data-fetching/usemutation-patterns"
+    ],
+    [
+      "bistrolens/05-form-patterns/form-validation",
+      "bistrolens/05-form-patterns/form-submission",
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/09-hooks/useAuth"
+    ],
+    [
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic",
+      "bistrolens/07-error-handling/error-boundaries",
+      "bistrolens/02-react-patterns/suspense-patterns",
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization",
+      "bistrolens/13-state-management/local-state",
+      "bistrolens/13-state-management/context-patterns",
+      "bistrolens/13-state-management/global-state",
+      "bistrolens/06-data-fetching/usequery-patterns",
+      "bistrolens/09-hooks/useAuth"
+    ],
+    [
+      "bistrolens/09-hooks/useTierGates",
+      "bistrolens/09-hooks/useFreemium"
+    ],
+    [
+      "bistrolens/09-hooks/useSubscription",
+      "bistrolens/09-hooks/useTierGates",
+      "bistrolens/09-hooks/useFreemium"
+    ],
+    [
+      "bistrolens/09-hooks/useSubscription",
+      "bistrolens/09-hooks/useTierGates"
+    ],
+    [
+      "bistrolens/14-performance/code-splitting",
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization"
+    ],
+    [
+      "bistrolens/14-performance/image-optimization",
+      "bistrolens/14-performance/render-optimization"
+    ],
+    [
+      "bistrolens/14-performance/bundle-optimization",
+      "bistrolens/14-performance/image-optimization"
+    ],
+    [
+      "bistrolens/07-error-handling/error-messages",
+      "bistrolens/07-error-handling/retry-logic"
+    ],
+    [
+      "bistrolens/05-form-patterns/form-validation",
+      "bistrolens/05-form-patterns/form-submission",
+      "bistrolens/07-error-handling/error-messages"
+    ],
+    [
+      "bistrolens/11-validation/client-validation",
+      "bistrolens/05-form-patterns/form-validation"
+    ],
+    [
+      "bistrolens/11-validation/business-rules",
+      "bistrolens/11-validation/convex-validators",
+      "bistrolens/11-validation/schema-validation"
+    ],
+    [
+      "bistrolens/11-validation/business-rules",
+      "bistrolens/11-validation/convex-validators"
+    ],
+    [
+      "bistrolens/01-convex-patterns/mutation-patterns",
+      "bistrolens/11-validation/rate-limiting"
+    ],
+    [
+      "bistrolens/10-utilities/validation-helpers",
+      "bistrolens/10-utilities/string-utilities"
+    ],
+    [
+      "bistrolens/10-utilities/string-utilities",
+      "bistrolens/10-utilities/number-formatting"
+    ],
+    [
+      "bistrolens/10-utilities/number-formatting",
+      "bistrolens/10-utilities/date-formatting"
+    ],
+    [
+      "bistrolens/10-utilities/string-utilities",
+      "bistrolens/10-utilities/number-formatting",
+      "bistrolens/10-utilities/date-formatting"
+    ],
+    [
+      "bistrolens/10-utilities/validation-helpers",
+      "bistrolens/10-utilities/string-utilities",
+      "bistrolens/10-utilities/number-formatting"
+    ],
+    [
+      "bistrolens/08-testing-patterns/component-testing",
+      "bistrolens/08-testing-patterns/unit-testing"
+    ],
+    [
+      "bistrolens/08-testing-patterns/unit-testing",
+      "bistrolens/08-testing-patterns/e2e-testing"
+    ],
+    [
+      "bistrolens/08-testing-patterns/component-testing",
+      "bistrolens/08-testing-patterns/unit-testing",
+      "bistrolens/08-testing-patterns/e2e-testing"
+    ],
+    [
+      "bistrolens/08-testing-patterns/unit-testing",
+      "bistrolens/08-testing-patterns/e2e-testing",
+      "bistrolens/08-testing-patterns/integration-testing"
+    ],
+    [
+      "bistrolens/08-testing-patterns/component-testing",
+      "bistrolens/08-testing-patterns/unit-testing",
+      "bistrolens/08-testing-patterns/e2e-testing",
+      "bistrolens/08-testing-patterns/integration-testing"
+    ],
+    [
+      "bistrolens/08-testing-patterns/e2e-testing",
+      "bistrolens/08-testing-patterns/integration-testing"
+    ],
+    [
+      "bistrolens/08-testing-patterns/unit-testing",
+      "bistrolens/08-testing-patterns/e2e-testing",
+      "bistrolens/08-testing-patterns/integration-testing",
+      "bistrolens/08-testing-patterns/test-utilities"
+    ],
+    [
+      "bistrolens/08-testing-patterns/component-testing",
+      "bistrolens/08-testing-patterns/unit-testing",
+      "bistrolens/08-testing-patterns/e2e-testing",
+      "bistrolens/08-testing-patterns/integration-testing",
+      "bistrolens/08-testing-patterns/test-utilities"
+    ],
+    [
+      "bistrolens/08-testing-patterns/integration-testing",
+      "bistrolens/08-testing-patterns/test-utilities"
+    ],
+    [
+      "bistrolens/08-testing-patterns/e2e-testing",
+      "bistrolens/08-testing-patterns/integration-testing",
+      "bistrolens/08-testing-patterns/test-utilities"
+    ],
+    [
+      "bistrolens/16-deployment/deployment-config",
+      "bistrolens/16-deployment/build-process"
+    ],
+    [
+      "bistrolens/16-deployment/build-process",
+      "bistrolens/16-deployment/release-checklist"
+    ],
+    [
+      "bistrolens/16-deployment/deployment-config",
+      "bistrolens/16-deployment/build-process",
+      "bistrolens/16-deployment/release-checklist"
+    ],
+    [
+      "bistrolens/15-accessibility/aria-patterns",
+      "bistrolens/15-accessibility/keyboard-navigation"
+    ],
+    [
+      "bistrolens/15-accessibility/aria-patterns",
+      "bistrolens/15-accessibility/keyboard-navigation",
+      "bistrolens/15-accessibility/screen-reader"
+    ],
+    [
+      "bistrolens/15-accessibility/keyboard-navigation",
+      "bistrolens/15-accessibility/screen-reader"
+    ],
+    [
+      "bistrolens/15-accessibility/aria-patterns",
+      "bistrolens/15-accessibility/keyboard-navigation",
+      "bistrolens/15-accessibility/screen-reader",
+      "bistrolens/15-accessibility/wcag-compliance"
+    ],
+    [
+      "bistrolens/15-accessibility/keyboard-navigation",
+      "bistrolens/15-accessibility/screen-reader",
+      "bistrolens/15-accessibility/wcag-compliance"
+    ],
+    [
+      "bistrolens/15-accessibility/screen-reader",
+      "bistrolens/15-accessibility/wcag-compliance"
+    ],
+    [
+      "bistrolens/09-hooks/useMediaQuery",
+      "bistrolens/09-hooks/useSwipeGesture"
+    ],
+    [
+      "bistrolens/12-routing/navigation-patterns",
+      "bistrolens/12-routing/route-structure"
+    ],
+    [
+      "bistrolens/12-routing/route-structure",
+      "bistrolens/12-routing/protected-routes"
+    ],
+    [
+      "bistrolens/12-routing/navigation-patterns",
+      "bistrolens/12-routing/route-structure",
+      "bistrolens/12-routing/protected-routes"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner"
+    ],
+    [
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/01-orchestration/council-consensus-voting"
+    ],
+    [
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/01-orchestration/council-consensus-voting"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/01-orchestration/council-consensus-voting",
+      "nova26/01-orchestration/prompt-builder-dependency-injection"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/01-orchestration/council-consensus-voting",
+      "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "nova26/02-agent-system/agent-loader"
+    ],
+    [
+      "nova26/02-agent-system/agent-loader",
+      "nova26/02-agent-system/agent-explanations"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/01-orchestration/council-consensus-voting",
+      "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "nova26/02-agent-system/agent-loader",
+      "nova26/02-agent-system/agent-explanations"
+    ],
+    [
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/01-orchestration/council-consensus-voting",
+      "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "nova26/02-agent-system/agent-loader",
+      "nova26/02-agent-system/agent-explanations"
+    ],
+    [
+      "nova26/02-agent-system/agent-loader",
+      "nova26/02-agent-system/prd-generator"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/01-orchestration/council-consensus-voting",
+      "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "nova26/02-agent-system/agent-loader",
+      "nova26/02-agent-system/prd-generator"
+    ],
+    [
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/01-orchestration/council-consensus-voting",
+      "nova26/01-orchestration/prompt-builder-dependency-injection",
+      "nova26/02-agent-system/agent-loader",
+      "nova26/02-agent-system/prd-generator"
+    ],
+    [
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/01-orchestration/council-consensus-voting",
+      "nova26/01-orchestration/prompt-builder-dependency-injection"
+    ],
+    [
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router"
+    ],
+    [
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache"
+    ],
+    [
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache"
+    ],
+    [
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker"
+    ],
+    [
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer"
+    ],
+    [
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer"
+    ],
+    [
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer"
+    ],
+    [
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup"
+    ],
+    [
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup"
+    ],
+    [
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup",
+      "nova26/02-intelligence/security-scanner"
+    ],
+    [
+      "nova26/02-intelligence/smart-retry-escalation",
+      "nova26/02-intelligence/model-router-fallback-chains"
+    ],
+    [
+      "nova26/02-intelligence/model-router-fallback-chains",
+      "nova26/02-intelligence/llm-response-cache"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup",
+      "nova26/02-intelligence/security-scanner",
+      "nova26/02-intelligence/smart-retry-escalation",
+      "nova26/02-intelligence/model-router-fallback-chains",
+      "nova26/02-intelligence/llm-response-cache",
+      "nova26/02-intelligence/checkpoint-system"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup",
+      "nova26/02-intelligence/security-scanner",
+      "nova26/02-intelligence/smart-retry-escalation",
+      "nova26/02-intelligence/model-router-fallback-chains",
+      "nova26/02-intelligence/llm-response-cache",
+      "nova26/02-intelligence/checkpoint-system",
+      "nova26/02-intelligence/langfuse-tracing"
+    ],
+    [
+      "nova26/02-intelligence/checkpoint-system",
+      "nova26/02-intelligence/langfuse-tracing"
+    ],
+    [
+      "nova26/02-intelligence/checkpoint-system",
+      "nova26/02-intelligence/langfuse-tracing",
+      "nova26/02-intelligence/session-memory-relevance"
+    ],
+    [
+      "nova26/02-intelligence/langfuse-tracing",
+      "nova26/02-intelligence/session-memory-relevance"
+    ],
+    [
+      "nova26/02-intelligence/llm-response-cache",
+      "nova26/02-intelligence/checkpoint-system"
+    ],
+    [
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup",
+      "nova26/02-intelligence/security-scanner",
+      "nova26/02-intelligence/smart-retry-escalation",
+      "nova26/02-intelligence/model-router-fallback-chains",
+      "nova26/02-intelligence/llm-response-cache"
+    ],
+    [
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup",
+      "nova26/02-intelligence/security-scanner",
+      "nova26/02-intelligence/smart-retry-escalation",
+      "nova26/02-intelligence/model-router-fallback-chains"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup",
+      "nova26/02-intelligence/security-scanner",
+      "nova26/02-intelligence/smart-retry-escalation",
+      "nova26/01-orchestration/test-fix-retest-loop"
+    ],
+    [
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup",
+      "nova26/02-intelligence/security-scanner",
+      "nova26/02-intelligence/smart-retry-escalation",
+      "nova26/01-orchestration/test-fix-retest-loop"
+    ],
+    [
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup",
+      "nova26/02-intelligence/security-scanner",
+      "nova26/02-intelligence/smart-retry-escalation"
+    ],
+    [
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer",
+      "nova26/09-observability/observability-setup"
+    ],
+    [
+      "nova26/10-cost-management/cost-tracker",
+      "nova26/09-observability/tracer"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache",
+      "nova26/10-cost-management/cost-tracker"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router",
+      "nova26/06-llm-integration/response-cache"
+    ],
+    [
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client",
+      "nova26/06-llm-integration/model-router"
+    ],
+    [
+      "nova26/06-llm-integration/structured-output",
+      "nova26/06-llm-integration/ollama-client"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/task-picker",
+      "nova26/01-orchestration/parallel-task-runner",
+      "nova26/01-orchestration/gate-runner-pipeline",
+      "nova26/06-llm-integration/structured-output"
+    ],
+    [
+      "nova26/01-orchestration/ralph-loop-execution",
+      "nova26/01-orchestration/event-store"
+    ],
+    [
+      "nova26/02-agent-system/atlas-convex",
+      "nova26/02-agent-system/convex-client"
+    ],
+    [
+      "nova26/03-quality-gates/piston-client",
+      "nova26/03-quality-gates/typescript-gate"
+    ],
+    [
+      "nova26/03-quality-gates/piston-client",
+      "nova26/03-quality-gates/typescript-gate",
+      "nova26/03-quality-gates/test-runner-gate"
+    ],
+    [
+      "nova26/03-quality-gates/typescript-gate",
+      "nova26/03-quality-gates/test-runner-gate"
+    ],
+    [
+      "nova26/04-cli-and-commands/cli-entry",
+      "nova26/04-cli-and-commands/slash-commands"
+    ],
+    [
+      "nova26/04-cli-and-commands/cli-entry",
+      "nova26/04-cli-and-commands/slash-commands",
+      "nova26/04-cli-and-commands/slash-commands-extended"
+    ],
+    [
+      "nova26/04-cli-and-commands/slash-commands",
+      "nova26/04-cli-and-commands/slash-commands-extended"
+    ],
+    [
+      "nova26/07-memory-and-persistence/checkpoint-system",
+      "nova26/07-memory-and-persistence/session-memory"
+    ],
+    [
+      "nova26/11-codebase-analysis/dependency-analyzer",
+      "nova26/11-codebase-analysis/repo-map"
+    ],
+    [
+      "nova26/12-git-and-integrations/git-workflow",
+      "nova26/12-git-and-integrations/issue-importer"
+    ],
+    [
+      "nova26/13-browser-and-preview/preview-server",
+      "nova26/13-browser-and-preview/visual-validator"
+    ],
+    [
+      "nova26/14-templates-and-skills/skill-loader",
+      "nova26/14-templates-and-skills/template-engine"
+    ]
+  ],
+  "hubs": [
+    {
+      "id": "nova26/01-orchestration/ralph-loop-execution",
+      "inDegree": 34
+    },
+    {
+      "id": "nova26/01-orchestration/gate-runner-pipeline",
+      "inDegree": 17
+    },
+    {
+      "id": "bistrolens/03-auth-patterns/auth-helpers",
+      "inDegree": 15
+    },
+    {
+      "id": "bistrolens/04-ui-components/loading-states",
+      "inDegree": 15
+    },
+    {
+      "id": "bistrolens/05-form-patterns/form-validation",
+      "inDegree": 12
+    },
+    {
+      "id": "nova26/02-agent-system/agent-loader",
+      "inDegree": 12
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/mutation-patterns",
+      "inDegree": 9
+    },
+    {
+      "id": "bistrolens/07-error-handling/error-messages",
+      "inDegree": 9
+    },
+    {
+      "id": "nova26/03-quality-gates/typescript-gate",
+      "inDegree": 9
+    },
+    {
+      "id": "bistrolens/01-convex-patterns/query-patterns",
+      "inDegree": 8
+    }
+  ]
+}

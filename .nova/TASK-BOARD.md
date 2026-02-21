@@ -51,7 +51,7 @@
 - [x] `KIMI-R21-01` Implement MCP integration (spec: .nova/specs/grok-r21-01-mcp-integration.md, 78 tests) — DELIVERED, 5 files, 2 TS errors fixed by Claude
 - [x] `KIMI-R21-02` Implement ACP integration (spec: .nova/specs/grok-r21-02-acp-integration.md, 67 tests) — DELIVERED, 6 files
 - [x] `KIMI-R21-03` Implement Compliance & Audit Trail (spec: .nova/specs/grok-r21-03-compliance-audit.md, 84 tests) — DELIVERED, 5 files, 1 TS error fixed by Claude
-- [ ] `KIMI-PERP-01` Implement Perplexity research integration (spec: .nova/specs/perplexity-integration.md, 25 tests)
+- [x] `KIMI-PERP-01` ~~Implement Perplexity research integration~~ DONE (by Claude) — `src/tools/perplexity/` 4 files, 31 tests passing
 - [ ] `KIMI-R22-01` Implement Agent Model Routing (spec: .nova/specs/grok-r22-01-model-routing.md, 79 tests)
 - [ ] `KIMI-R23-01` Implement Persistent Visual Workflow Engine (spec: .nova/specs/grok-r23-eternal-symphony.md, 70 tests)
 - [x] ~~`KIMI-R23-02` Implement MicroVM / WASI Ultra-Sandbox~~ **CUT** (Firecracker requires Linux KVM, no macOS)
@@ -200,7 +200,7 @@
 - [x] `CL-32` ~~Evaluate Grok R20-03 spec~~ DONE — accepted, 82 tests, saved to .nova/specs/
 - [x] `CL-33` ~~Write Kimi sprint from Grok R21 specs~~ DONE — `.prompts/kimi-r21-sprint.md` (3 tasks, 229+ tests)
 - [x] `CL-34` ~~Evaluate Grok R21 specs~~ DONE — all 3 accepted (MCP 78, ACP 67, Compliance 84 = 229 tests)
-- [ ] `CL-35` Evaluate Gemini-07→11 research (extract actionable features)
+- [x] `CL-35` ~~Evaluate Gemini-07→11 research~~ BLOCKED (not delivered) → wrote `.prompts/gemini-07.md` through `gemini-11.md` (5 new research prompts)
 - [x] `CL-36` ~~Write Kimi sprint from Grok R22 spec~~ DONE — `.prompts/kimi-r22-sprint.md` (1 task, 79 tests)
 - [x] `CL-37b` ~~Save Grok spec summaries + Shannon research to .nova/~~ DONE — 5 specs + 1 research file
 - [x] `CL-38` ~~Update MISSING_FEATURES.md~~ DONE — R19 marked complete, R20-R22 updated, R23 gaps + frontier features added, 77 features tracked
@@ -209,8 +209,15 @@
 - [x] `CL-41` ~~Write Grok R23 research prompts~~ DONE — `.prompts/grok-r23.md` (5 specs)
 - [x] `CL-42` ~~Write Gemini-12→15 research prompts~~ DONE — 4 frontier research topics
 - [x] `CL-43` ~~Write Kimi R20 continuation prompt~~ DONE — R19 complete, begin R20-01
-- [ ] `CL-44` Evaluate Gemini-12→15 research (when delivered)
+- [x] `CL-44` ~~Evaluate Gemini-12 (partial)~~ DONE — accepted, evaluation at `.nova/research/gemini-12-evaluation.md`, created `src/llm/models/agent-model-map.json` (21-agent routing table). Gemini-13→15 not yet delivered.
+- [ ] `CL-44b` Evaluate Gemini-13→15 research (when delivered)
 - [ ] `CL-45` Write Grok R24 specs from Gemini frontier research (when delivered)
+- [x] `CL-49` ~~Sonnet 4.6 Sprint S1–S11~~ DONE — Next.js 15, Tailwind, ConvexProvider, Auth, Middleware, Bridge, 88 tests, next build 0 errors
+- [x] `CL-50` ~~Sonnet 4.6 Sprint S7–S21~~ DONE — Full dashboard UI (sidebar, overview, builds, agents, settings, activity feed, Cmd+K, landing auth-aware), 11 routes, 0 TS errors
+- [x] `CL-51` ~~UX validation upgrades~~ DONE — 12 new visual-validator checks, VENUS.md AI UX principles, hard-limits.json 4 new SEVERE rules
+- [x] `CL-52` ~~Implement KIMI-PERP-01~~ DONE — `src/tools/perplexity/` (4 files), 31 tests passing
+- [x] `CL-53` ~~Write Gemini-07→11 prompts~~ DONE — 5 new research prompts in `.prompts/`
+- [x] `CL-54` ~~Evaluate Gemini-12 + create agent-model-map.json~~ DONE
 - [x] `CL-46` ~~Evaluate Grok R23 specs + write Kimi R23 sprint~~ DONE — R23+R24 combined into mega-sprint `.prompts/kimi-r22-r24-mega-sprint.md` (7 tasks, 440+ tests; 4 cut as premature)
 - [x] `CL-47` ~~Evaluate Kimi R21 test files~~ DONE — 317 tests (97 MCP + 110 ACP + 110 compliance), all pass, ESM .js imports, no `any`
 - [x] `CL-48` ~~KIRO-06-07 structural audit~~ DONE — 95→0 failures, 18 files fixed (INDEX, 14 pattern files, scan-utils.ts, audit report)

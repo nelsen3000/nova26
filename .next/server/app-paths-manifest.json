@@ -1,0 +1,12 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/sitemap.xml/route": "app/sitemap.xml/route.js",
+  "/dashboard/settings/page": "app/dashboard/settings/page.js",
+  "/dashboard/agents/page": "app/dashboard/agents/page.js",
+  "/dashboard/builds/[buildId]/page": "app/dashboard/builds/[buildId]/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/(landing)/page": "app/(landing)/page.js",
+  "/dashboard/builds/page": "app/dashboard/builds/page.js",
+  "/(auth)/sign-in/page": "app/(auth)/sign-in/page.js",
+  "/(auth)/sign-up/page": "app/(auth)/sign-up/page.js"
+}

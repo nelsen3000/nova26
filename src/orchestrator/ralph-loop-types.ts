@@ -33,6 +33,8 @@ import type { WellbeingConfig } from '../wellbeing/signal-detector.js';
 import type { AdvancedRecoveryConfig } from '../recovery/recovery-index.js';
 import type { AdvancedInitConfig } from '../init/init-index.js';
 import type { AutonomyLevel } from '../config/autonomy.js';
+// R22-01 Model Routing
+import type { ModelRoutingConfig } from '../model-routing/index.js';
 
 // Placeholder configs for modules without dedicated config types
 export interface MigrationModuleConfig {
@@ -148,6 +150,9 @@ export interface RalphLoopOptions {
   // R20: Orchestrator Hierarchy (R20-01)
   orchestratorHierarchyEnabled?: boolean;
   orchestratorHierarchy?: OrchestratorHierarchyConfig;
+  // R22: Agent Model Routing (R22-01)
+  modelRoutingEnabled?: boolean;
+  modelRoutingConfig?: ModelRoutingConfig;
 }
 
 // Re-export HookRegistry from lifecycle-hooks

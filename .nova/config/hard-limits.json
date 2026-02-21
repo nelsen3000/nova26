@@ -114,6 +114,30 @@
           "pattern": "<(button|a|input|select|textarea)(?![^>]*aria-)(?![^>]*id=)",
           "severity": "WARNING",
           "message": "Interactive elements should have aria-label or associated label for accessibility"
+        },
+        {
+          "name": "NO_DIV_BUTTON",
+          "pattern": "<div[^>]*onClick",
+          "severity": "SEVERE",
+          "message": "Interactive elements must use <button> not <div onClick> for accessibility and keyboard navigation"
+        },
+        {
+          "name": "REQUIRE_ARIA_LIVE",
+          "pattern": "(streaming|dynamic|real-time|live)(?![^<]*aria-live)",
+          "severity": "SEVERE",
+          "message": "Streaming/dynamic content sections must have aria-live attribute for screen reader announcements"
+        },
+        {
+          "name": "REQUIRE_SEMANTIC_HTML",
+          "check": "has_semantic_html",
+          "severity": "SEVERE",
+          "message": "Page-level layouts must use semantic HTML (<main>, <nav>, <header>, <footer>, <section>) not just divs"
+        },
+        {
+          "name": "REQUIRE_FOCUS_MANAGEMENT",
+          "pattern": "(modal|Modal|dialog|Dialog)(?![^<]*autoFocus)(?![^<]*focus)",
+          "severity": "SEVERE",
+          "message": "Modals and dialogs must trap focus and set initial focus for keyboard accessibility"
         }
       ]
     },

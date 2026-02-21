@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12",
+  "description": "Nova26 agent-to-model routing table. Source: Gemini-12 (Feb 2026). Update when new models arrive.",
+  "generated": "2026-02-20",
+  "version": "12.0",
+  "agents": {
+    "EARTH": {
+      "role": "Orchestrator",
+      "quality": "gemini-3.1-pro",
+      "fallback": "qwen-3.5-full",
+      "speed": "gpt-4.1-mini",
+      "budget": "deepseek-v3.2"
+    },
+    "MERCURY": {
+      "role": "Code Review",
+      "quality": "claude-sonnet-4-6",
+      "fallback": "qwen-3.5-coder",
+      "speed": "mimo-v2-flash",
+      "budget": "deepseek-r1"
+    },
+    "VENUS": {
+      "role": "UI/UX Design",
+      "quality": "kimi-k2.5",
+      "fallback": "qwen-3.5-vl",
+      "speed": "gemini-3-flash",
+      "budget": "gpt-4o-mini"
+    },
+    "MARS": {
+      "role": "Deployment & DevOps",
+      "quality": "qwen-3.5-coder",
+      "fallback": "deepseek-coder",
+      "speed": "phi-4",
+      "budget": "nemotron-3-nano"
+    },
+    "JUPITER": {
+      "role": "Architecture",
+      "quality": "claude-opus-4-6",
+      "fallback": "glm-5",
+      "speed": "gpt-5.2-high",
+      "budget": "qwen-3.5-397b"
+    },
+    "SATURN": {
+      "role": "Sprint Planning",
+      "quality": "glm-5",
+      "fallback": "minimax-m2.5",
+      "speed": "gpt-4.1-mini",
+      "budget": "deepseek-v3.2"
+    },
+    "URANUS": {
+      "role": "Innovation Research",
+      "quality": "gemini-3.1-pro",
+      "fallback": "kimi-k2-thinking",
+      "speed": "grok-4.1-fast",
+      "budget": "deepseek-v3.1"
+    },
+    "NEPTUNE": {
+      "role": "Data Pipeline",
+      "quality": "qwen3-embedding",
+      "fallback": "bge-m3",
+      "speed": "mimo-v2-flash",
+      "budget": "nomic-embed-v2"
+    },
+    "PLUTO": {
+      "role": "Security",
+      "quality": "qwen-3.5-coder",
+      "fallback": "deepseek-r1",
+      "speed": "nemotron-3-nano",
+      "budget": "phi-4",
+      "notes": "Sovereign tier: force local-only models for air-gapped deployments"
+    },
+    "SUN": {
+      "role": "PRD Generation",
+      "quality": "claude-opus-4-6",
+      "fallback": "glm-4.7-thinking",
+      "speed": "claude-haiku-4-5",
+      "budget": "gpt-4o-mini"
+    },
+    "ATLAS": {
+      "role": "Memory & Learning",
+      "quality": "voyage-3.5",
+      "fallback": "qwen3-embedding",
+      "speed": "mimo-v2-flash",
+      "budget": "jina-embed-v3",
+      "notes": "Embedding model — not a generation model. Voyage 3.5 for enterprise RAG."
+    },
+    "CALLISTO": {
+      "role": "Portfolio Intelligence",
+      "quality": "gemini-3-pro",
+      "fallback": "claude-sonnet-4-6",
+      "speed": "gemini-3-flash",
+      "budget": "gpt-4o-mini"
+    },
+    "ENCELADUS": {
+      "role": "Performance Optimization",
+      "quality": "gpt-5.2-codex",
+      "fallback": "qwen-3.5-coder",
+      "speed": "nemotron-3-nano",
+      "budget": "phi-4"
+    },
+    "GANYMEDE": {
+      "role": "Testing",
+      "quality": "minimax-m2.5",
+      "fallback": "deepseek-v3.2",
+      "speed": "gpt-4.1-mini",
+      "budget": "deepseek-r1"
+    },
+    "IO": {
+      "role": "Real-Time Processing",
+      "quality": "mimo-v2-flash",
+      "fallback": "nemotron-3-nano",
+      "speed": "xiaomi-mimo-v2",
+      "budget": "nova-micro",
+      "notes": "Latency-critical: <200ms target. MiMo-V2-Flash is primary."
+    },
+    "MIMAS": {
+      "role": "Database & Migration",
+      "quality": "gemini-3-pro",
+      "fallback": "llama-4-scout",
+      "speed": "claude-haiku-4-5",
+      "budget": "gemini-2.5-flash",
+      "notes": "10M context window for large codebase analysis."
+    },
+    "TITAN": {
+      "role": "Infrastructure Scaling",
+      "quality": "gpt-5.2-high",
+      "fallback": "glm-5",
+      "speed": "gpt-4.1-mini",
+      "budget": "deepseek-v3.2"
+    },
+    "TRITON": {
+      "role": "Collaboration & Realtime",
+      "quality": "grok-4.1",
+      "fallback": "qwen-3.5-vl",
+      "speed": "grok-4.1-fast",
+      "budget": "claude-haiku-4-5"
+    },
+    "CHARON": {
+      "role": "Debug & Fix",
+      "quality": "minimax-m2.5",
+      "fallback": "qwen-3.5-coder",
+      "speed": "gpt-4.1-mini",
+      "budget": "deepseek-r1"
+    },
+    "ANDROMEDA": {
+      "role": "Generative UI",
+      "quality": "kimi-k2.5",
+      "fallback": "qwen-3.5-vl",
+      "speed": "gemini-3-flash",
+      "budget": "gpt-4o-mini"
+    },
+    "EUROPA": {
+      "role": "Integration Layer",
+      "quality": "claude-sonnet-4-6",
+      "fallback": "glm-4.7-thinking",
+      "speed": "gpt-4.1-mini",
+      "budget": "claude-haiku-4-5"
+    }
+  },
+  "speculativeDecoding": {
+    "draftModel": "nemotron-3-nano",
+    "verifyModels": ["qwen-3.5-coder", "claude-sonnet-4-6", "gpt-4.1-mini"],
+    "targetSpeedup": 2.5
+  },
+  "priorityOrder": [
+    "qwen-3.5-coder",
+    "claude-opus-4-6",
+    "gemini-3.1-pro",
+    "minimax-m2.5",
+    "nemotron-3-nano"
+  ]
+}
