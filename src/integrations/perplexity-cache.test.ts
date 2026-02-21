@@ -103,14 +103,20 @@ describe('PerplexityCache', () => {
     };
 
     it('returns expired entries as undefined', () => {
-      const shortCache = new PerplexityCache({ defaultTTL: 1 }); // 1ms TTL
-      shortCache.set('query', {}, mockResult);
+      vi.useFakeTimers();
 
-      // Wait for expiry
-      vi.advanceTimersByTime(2);
+      try {
+        const shortCache = new PerplexityCache({ defaultTTL: 1 }); // 1ms TTL
+        shortCache.set('query', {}, mockResult);
 
-      const retrieved = shortCache.get('query', {});
-      expect(retrieved).toBeUndefined();
+        // Wait for expiry
+        vi.advanceTimersByTime(2);
+
+        const retrieved = shortCache.get('query', {});
+        expect(retrieved).toBeUndefined();
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     it('uses longer TTL for fact checks', () => {
