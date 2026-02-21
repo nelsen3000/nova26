@@ -6,8 +6,8 @@ Remediate 87 structural audit failures, extract 21 agent template patterns, buil
 
 ## Tasks
 
-- [-] 1. KIRO-06-01: Fix Nova26 INDEX.md (49 gaps)
-  - [ ] 1.1 Enumerate all `.md` pattern files across all subdirectories of `.nova/nova26-patterns/` (excluding INDEX.md, EXTRACTION-TASK-LIST.md, and .gitkeep files)
+- [x] 1. KIRO-06-01: Fix Nova26 INDEX.md (49 gaps)
+  - [x] 1.1 Enumerate all `.md` pattern files across all subdirectories of `.nova/nova26-patterns/` (excluding INDEX.md, EXTRACTION-TASK-LIST.md, and .gitkeep files)
     - Compare enumerated files against current INDEX.md entries
     - Identify all files not currently listed in the INDEX
     - _Requirements: 1.1, 1.2_
@@ -16,13 +16,13 @@ Remediate 87 structural audit failures, extract 21 agent template patterns, buil
     - Update the summary count table so each category count matches actual file count on disk
     - Verify total pattern count in INDEX equals total pattern files on disk
     - _Requirements: 1.3, 1.4, 1.5_
-  - [-] 1.3 Verify INDEX completeness (Property 1)
+  - [x] 1.3 Verify INDEX completeness (Property 1)
     - **Property 1: INDEX completeness**
     - For every `.md` pattern file on disk, confirm it appears in INDEX.md and per-category counts match
     - **Validates: Requirements 1.3, 1.4**
 
-- [ ] 2. KIRO-06-02: Fix 7 Intelligence Pattern Files (28 section gaps)
-  - [ ] 2.1 Audit each of the 7 files in `.nova/nova26-patterns/02-intelligence/` for missing sections
+- [-] 2. KIRO-06-02: Fix 7 Intelligence Pattern Files (28 section gaps)
+  - [-] 2.1 Audit each of the 7 files in `.nova/nova26-patterns/02-intelligence/` for missing sections
     - Check each file for all 8 required sections: Title (H1), Overview/Problem, Source, Pattern/Solution, Usage/Example, Anti-Patterns, When to Use, Benefits
     - Record which sections are missing per file
     - _Requirements: 2.1_

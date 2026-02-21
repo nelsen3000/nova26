@@ -90,6 +90,37 @@ export type {
 } from './audit.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// ATLAS Integration
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  RLMATLASIntegration,
+  createRLMATLASIntegration,
+  DEFAULT_CONFIG as ATLAS_INTEGRATION_DEFAULT_CONFIG,
+} from './atlas-integration.js';
+
+export type {
+  ATLASIntegrationConfig,
+  ATLASStorage,
+} from './atlas-integration.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CRDT Integration
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  RLMCRDTIntegration,
+  createRLMCRDTIntegration,
+  DEFAULT_CONFIG as CRDT_INTEGRATION_DEFAULT_CONFIG,
+} from './crdt-integration.js';
+
+export type {
+  CRDTIntegrationConfig,
+  CompressedCRDTMessage,
+  CompressedContext,
+} from './crdt-integration.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // Default Configurations
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -112,5 +143,15 @@ export const DEFAULTS = {
     driftThreshold: 0.3,
     maxHistorySize: 1000,
     enableWarnings: true,
+  },
+  atlasIntegration: {
+    enabled: true,
+    storageKey: 'rlm_context_windows',
+    maxRetainedWindows: 100,
+  },
+  crdtIntegration: {
+    compressionRatio: 0.5,
+    maxBroadcastSize: 10000,
+    includeMetadata: true,
   },
 };

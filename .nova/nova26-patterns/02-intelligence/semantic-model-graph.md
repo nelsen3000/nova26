@@ -1,14 +1,20 @@
 # Deep Project Semantic Model
 
-> Source: `src/atlas/semantic-model.ts`, `src/atlas/impact-analyzer.ts`, `src/atlas/semantic-differ.ts`, `src/atlas/context-compactor.ts`, `src/atlas/types.ts`
-
-## Description
+## Overview
 
 The Deep Project Semantic Model builds a persistent CodeGraph that maps every file, function, class, interface, type, export, component, hook, and page in the codebase as CodeNode entries, connected by typed CodeEdge relationships (imports, calls, extends, implements, uses-type, renders, depends-on). The graph powers three downstream capabilities: impact analysis (which files and tests are affected by a change), semantic diff summaries (PR intent analysis with safe-to-merge confidence), and context compaction (shrinking the full graph to fit within an LLM token budget while preserving the most relevant modules). The graph is built and refreshed using ts-morph, persisted to Convex with a local cache, and injected into every agent's context by the Ralph Loop before task execution.
 
 ---
 
-## Code Examples
+## Source
+
+- `src/atlas/semantic-model.ts` — CodeGraph builder and query engine
+- `src/atlas/impact-analyzer.ts` — Impact analysis with Mermaid visualization
+- `src/atlas/semantic-differ.ts` — Semantic diff summary for PRs
+- `src/atlas/context-compactor.ts` — Token-budgeted context compaction for LLM consumption
+- `src/atlas/types.ts` — Shared type definitions (CodeNode, CodeEdge, CodeGraph)
+
+## Pattern
 
 ### Core Interfaces
 
@@ -210,6 +216,8 @@ export function compactForLLM(
   };
 }
 ```
+
+## Usage
 
 ### Key Concepts
 

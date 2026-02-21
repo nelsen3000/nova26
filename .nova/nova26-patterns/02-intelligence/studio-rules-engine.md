@@ -1,14 +1,20 @@
 # Studio Rules + Prompt Optimization
 
-> Source: `src/studio-rules/rule-engine.ts`, `src/studio-rules/taste-vault-learner.ts`, `src/optimization/prompt-optimizer.ts`, `src/optimization/eval-pipeline.ts`, `src/studio-rules/types.ts`
-
-## Description
+## Overview
 
 The Studio Rules engine enforces project-wide coding standards, security policies, architectural constraints, and user taste preferences at three enforcement levels: warn (advisory), block (fail the task), and auto-fix (silently correct). Rules are organized into categories -- code-style, security, architecture, ux, taste-vault, cinematic, and wellbeing -- and scoped to specific agents, file patterns, or R16+ features. On top of the rule engine sits a DSPy-based prompt optimizer that uses bayesian, genetic, or hill-climbing strategies to improve agent system prompts against golden sets. The Taste Vault Rule Learner closes the feedback loop: when a user corrects agent output, the learner extracts a candidate rule, clusters it with similar corrections, presents it for confirmation, and applies time-based decay to stale rules.
 
 ---
 
-## Code Examples
+## Source
+
+- `src/studio-rules/rule-engine.ts` — Rule engine with multi-scope targeting and three enforcement levels
+- `src/studio-rules/taste-vault-learner.ts` — Taste Vault feedback loop: correction → rule extraction → decay
+- `src/optimization/prompt-optimizer.ts` — DSPy-based prompt optimization with bayesian/genetic/hill-climbing strategies
+- `src/optimization/eval-pipeline.ts` — Golden set evaluation pipeline with regression detection
+- `src/studio-rules/types.ts` — Shared type definitions (StudioRule, RuleCategory, EnforcementLevel)
+
+## Pattern
 
 ### Core Interfaces
 
@@ -324,6 +330,8 @@ export class EvalPipeline {
   }
 }
 ```
+
+## Usage
 
 ### Key Concepts
 
