@@ -214,9 +214,13 @@ describe('CostOptimizer', () => {
     });
 
     it('includes alert at 50%', () => {
-      optimizer.setBudget({ daily: 0.001 });
-      // Spend around 50%
-      optimizer.recordSpend('model-1', 'SUN', 5000, 2500);
+      optimizer.setBudget({ daily: 1.0 });
+      // Spend around 50%:
+      // cost = (tokens * 0.000002) + (tokens * 0.00001) = tokens * 0.000012
+      // To hit 50% of 1.0, we need cost >= 0.5, so tokens >= 0.5 / 0.000012 ≈ 41667
+      // Use 50000 input + 25000 output = (50000 * 0.000002) + (25000 * 0.00001) = 0.1 + 0.25 = 0.35 (35%)
+      // Use 80000 input + 40000 output = (80000 * 0.000002) + (40000 * 0.00001) = 0.16 + 0.4 = 0.56 (56%)
+      optimizer.recordSpend('model-1', 'SUN', 80000, 40000);
 
       const status = optimizer.getBudgetStatus();
       const hasAlert = status.alerts.some(a => a.threshold === 50);
