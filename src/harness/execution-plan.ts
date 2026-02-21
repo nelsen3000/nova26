@@ -241,20 +241,38 @@ export function createExecutionPlan(
 /**
  * Create a simple linear plan from a task description.
  * Each step depends on the previous one.
+ * Builds the plan directly so dependency IDs correctly reference real step IDs.
  */
 export function createLinearPlan(
   config: HarnessConfig,
   stepDescriptions: string[]
 ): ExecutionPlanManager {
-  const stepIds: string[] = [];
-  const specs: StepSpec[] = stepDescriptions.map((desc, idx) => {
-    const id = `step-${idx + 1}`;
-    stepIds.push(id);
-    return {
-      description: desc,
-      dependencies: idx > 0 ? [stepIds[idx - 1]] : [],
-    };
-  });
+  const now = Date.now();
+  const planId = `plan-${now}-${Math.random().toString(36).slice(2, 8)}`;
 
-  return createExecutionPlan(config.task, specs, config.agentId);
+  // Generate all step IDs up front so dependencies can reference real IDs
+  const stepIds = stepDescriptions.map((_, idx) =>
+    `step-${idx + 1}-${Math.random().toString(36).slice(2, 6)}`
+  );
+
+  const steps: ExecutionStep[] = stepDescriptions.map((desc, idx) => ({
+    id: stepIds[idx],
+    description: desc,
+    agentId: config.agentId,
+    status: idx === 0 ? 'ready' : 'pending',
+    dependencies: idx > 0 ? [stepIds[idx - 1]] : [],
+    isCritical: false,
+    estimatedDurationMs: 60000,
+    toolCalls: [],
+  }));
+
+  const plan: ExecutionPlan = {
+    id: planId,
+    version: 1,
+    createdAt: now,
+    steps,
+    status: 'pending',
+  };
+
+  return new ExecutionPlanManager(plan);
 }

@@ -97,6 +97,63 @@ export type {
 } from './observability.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// Wave 5: Harness Advanced (K3-25 through K3-32)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  HarnessManager,
+  createHarnessManager,
+  getHarnessManager,
+  resetHarnessManager,
+} from './harness-manager.js';
+
+export {
+  HarnessSerializer,
+  createHarnessSerializer,
+} from './harness-serializer.js';
+
+export type { SerializedHarness } from './harness-serializer.js';
+
+export {
+  EternalEngineBridge,
+  createEternalEngineBridge,
+} from './eternal-engine-bridge.js';
+
+export type { PersistenceResult, RestoreResult } from './eternal-engine-bridge.js';
+
+export {
+  ToolCallManager,
+  createToolCallManager,
+  DEFAULT_TOOL_CONFIG,
+} from './tool-call-manager.js';
+
+export type {
+  ToolCallManagerConfig,
+  ToolCallOptions,
+  ToolCallResult,
+} from './tool-call-manager.js';
+
+export {
+  HumanInLoopGate,
+  createHumanInLoopGate,
+} from './human-in-loop-gate.js';
+
+export type { GateEntry } from './human-in-loop-gate.js';
+
+export {
+  ExecutionPlanManager,
+  createExecutionPlan,
+  createLinearPlan,
+} from './execution-plan.js';
+
+export type { StepSpec } from './execution-plan.js';
+
+export {
+  ObservabilityEmitter,
+  createObservabilityEmitter,
+} from './observability-emitter.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // Factory Functions
 // ═══════════════════════════════════════════════════════════════════════════════
 
