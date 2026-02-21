@@ -279,3 +279,32 @@ export function isDescendant(
   const ancestors = getLineage(potentialDescendant, lineageMap);
   return ancestors.includes(potentialAncestor);
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Mock Executor Factory
+// ═══════════════════════════════════════════════════════════════════════════════
+
+import type { CurriculumTask, CurriculumTaskResult } from './types.js';
+
+/**
+ * Creates a mock task executor for testing purposes.
+ * @param successRate - Probability of task success (0-1)
+ * @returns TaskExecutor function
+ */
+export function createMockExecutor(
+  successRate: number
+): (task: CurriculumTask) => Promise<CurriculumTaskResult> {
+  return async (task: CurriculumTask): Promise<CurriculumTaskResult> => {
+    const passed = Math.random() < successRate;
+    const duration = Math.floor(Math.random() * 1000);
+
+    return {
+      taskId: task.id,
+      objectiveId: task.objectiveId,
+      passed,
+      score: passed ? 0.7 + Math.random() * 0.3 : Math.random() * 0.5,
+      duration,
+      remedial: task.difficulty === 'remedial',
+    };
+  };
+}
