@@ -90,9 +90,9 @@ export interface EvalDatasetEntry {
 }
 
 /**
- * Individual evaluation result
+ * Individual cinematic evaluation result (used by CinematicObservability)
  */
-export interface EvalResult {
+export interface CinematicEvalResult {
   /** Score from 0-1 (higher is better) */
   score: number;
   /** Which evaluator produced this result */
@@ -104,13 +104,13 @@ export interface EvalResult {
 }
 
 // ============================================================================
-// Eval Suite Types
+// Cinematic Eval Suite Types
 // ============================================================================
 
 /**
- * Complete evaluation suite definition
+ * Complete cinematic evaluation suite definition (used by CinematicObservability)
  */
-export interface EvalSuite {
+export interface CinematicEvalSuite {
   /** Unique suite identifier */
   id: string;
   /** Human-readable suite name */
@@ -120,13 +120,13 @@ export interface EvalSuite {
   /** Test dataset entries */
   dataset: EvalDatasetEntry[];
   /** Optional: previous run results */
-  results?: EvalResult[];
+  results?: CinematicEvalResult[];
 }
 
 /**
- * Eval suite execution result
+ * Cinematic eval suite execution result
  */
-export interface EvalSuiteResult {
+export interface CinematicEvalSuiteResult {
   /** Whether all evaluators passed thresholds */
   passed: boolean;
   /** Aggregated scores by evaluator name */
@@ -275,3 +275,275 @@ export const DEFAULT_CINEMATIC_CONFIG: CinematicConfig = {
     cooldownMs: 60000, // 1 minute cooldown
   },
 };
+
+
+// ============================================================================
+// Eval Framework Types (used by eval-registry, eval-runner, eval-store, golden-sets)
+// ============================================================================
+
+import { z } from 'zod';
+
+/**
+ * Individual evaluation case
+ */
+export interface EvalCase {
+  id: string;
+  name: string;
+  input: unknown;
+  expectedOutput: unknown;
+  threshold: number;
+  tags?: string[];
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Eval framework result (from eval-runner)
+ */
+export interface EvalResult {
+  caseId: string;
+  success: boolean;
+  actualOutput?: unknown;
+  score: number;
+  latency: number;
+  error?: string;
+  timestamp: string;
+}
+
+/**
+ * Eval framework suite (used by eval-registry, eval-runner)
+ */
+export interface EvalSuite {
+  id: string;
+  name: string;
+  description?: string;
+  cases: EvalCase[];
+  scoringFunction: string;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Eval run (from eval-runner/eval-store)
+ */
+export interface EvalRun {
+  id: string;
+  suiteId: string;
+  targetFn: string;
+  results: EvalResult[];
+  startedAt: string;
+  completedAt: string;
+  summary: {
+    total: number;
+    passed: number;
+    failed: number;
+    avgScore: number;
+    avgLatency: number;
+    p50Latency: number;
+    p95Latency: number;
+  };
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Golden set — a versioned baseline evaluation set
+ */
+export interface GoldenSet extends EvalSuite {
+  version: number;
+  promotedAt: string;
+  promotedFromRunId?: string;
+  promotedBy?: string;
+  baselineScores?: Record<string, number>;
+}
+
+/**
+ * Run history entry for trend analysis
+ */
+export interface RunHistoryEntry {
+  runId: string;
+  suiteId: string;
+  timestamp: string;
+  passRate: number;
+  avgScore: number;
+  avgLatency: number;
+}
+
+/**
+ * Trend analysis result
+ */
+export interface TrendAnalysis {
+  suiteId: string;
+  window: number;
+  direction: 'improving' | 'degrading' | 'stable';
+  scoreChange: number;
+  latencyChange: number;
+  passRateChange: number;
+  confidence: number;
+}
+
+/**
+ * Eval store options
+ */
+export interface EvalStoreOptions {
+  directory?: string;
+  maxRunsPerSuite?: number;
+}
+
+/**
+ * Eval run options
+ */
+export interface EvalRunOptions {
+  concurrency?: number;
+  timeout?: number;
+  progressCallback?: (completed: number, total: number, caseName: string) => void;
+  stopOnFailure?: boolean;
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Report format types
+ */
+export type ReportFormat = 'markdown' | 'json' | 'html';
+
+/**
+ * Report generation options
+ */
+export interface ReportOptions {
+  format?: ReportFormat;
+  includeDetails?: boolean;
+  includeRecommendations?: boolean;
+}
+
+/**
+ * Diff report between two runs
+ */
+export interface DiffReport {
+  runA: string;
+  runB: string;
+  suiteId: string;
+  timestamp: string;
+  changes: Array<{
+    caseId: string;
+    caseName?: string;
+    scoreA: number;
+    scoreB: number;
+    delta: number;
+    statusA: boolean;
+    statusB: boolean;
+  }>;
+  summary: {
+    improved: number;
+    regressed: number;
+    unchanged: number;
+    avgDelta: number;
+  };
+}
+
+/**
+ * Regression report
+ */
+export interface RegressionReport {
+  suiteId: string;
+  runId: string;
+  comparedToGolden: string;
+  timestamp: string;
+  regressions: Array<{
+    caseId: string;
+    caseName: string;
+    goldenScore: number;
+    currentScore: number;
+    delta: number;
+  }>;
+  improvements: Array<{
+    caseId: string;
+    caseName: string;
+    goldenScore: number;
+    currentScore: number;
+    delta: number;
+  }>;
+  unchanged: Array<{
+    caseId: string;
+    caseName: string;
+    score: number;
+  }>;
+  summary: {
+    totalCases: number;
+    regressions: number;
+    improvements: number;
+    unchanged: number;
+    avgDelta: number;
+  };
+}
+
+// ============================================================================
+// Zod Schemas for Eval Framework
+// ============================================================================
+
+export const EvalCaseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  input: z.unknown(),
+  expectedOutput: z.unknown(),
+  threshold: z.number().default(0.8),
+  tags: z.array(z.string()).optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export const EvalResultSchema = z.object({
+  caseId: z.string(),
+  success: z.boolean(),
+  actualOutput: z.unknown().optional(),
+  score: z.number(),
+  latency: z.number(),
+  error: z.string().optional(),
+  timestamp: z.string(),
+});
+
+export const EvalSuiteSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  cases: z.array(EvalCaseSchema),
+  scoringFunction: z.string().default('exactMatch'),
+  tags: z.array(z.string()).default([]),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export const EvalRunSchema = z.object({
+  id: z.string(),
+  suiteId: z.string(),
+  targetFn: z.string(),
+  results: z.array(EvalResultSchema),
+  startedAt: z.string(),
+  completedAt: z.string(),
+  summary: z.object({
+    total: z.number(),
+    passed: z.number(),
+    failed: z.number(),
+    avgScore: z.number(),
+    avgLatency: z.number(),
+    p50Latency: z.number(),
+    p95Latency: z.number(),
+  }),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+export const GoldenSetSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  cases: z.array(EvalCaseSchema),
+  scoringFunction: z.string().default('exactMatch'),
+  tags: z.array(z.string()).default([]),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  metadata: z.record(z.unknown()).optional(),
+  version: z.number(),
+  promotedAt: z.string(),
+  promotedFromRunId: z.string().optional(),
+  promotedBy: z.string().optional(),
+  baselineScores: z.record(z.number()).optional(),
+});

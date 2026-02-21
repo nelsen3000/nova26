@@ -2,7 +2,7 @@
 // Braintrust integration for eval datasets and experiment tracking
 
 import {
-  type EvalSuite,
+  type CinematicEvalSuite,
   type BraintrustDataset,
   type EvaluatorConfig,
 } from './types.js';
@@ -341,7 +341,7 @@ export class BraintrustAdapter {
   /**
    * Convert a Nova26 EvalSuite to a Braintrust dataset
    */
-  convertEvalSuiteToDataset(suite: EvalSuite): Omit<BraintrustDataset, 'id'> {
+  convertEvalSuiteToDataset(suite: CinematicEvalSuite): Omit<BraintrustDataset, 'id'> {
     return {
       name: suite.name,
       projectId: this.config.projectId,
@@ -357,7 +357,7 @@ export class BraintrustAdapter {
   /**
    * Upload an EvalSuite as a Braintrust dataset
    */
-  async uploadEvalSuite(suite: EvalSuite): Promise<BraintrustDataset> {
+  async uploadEvalSuite(suite: CinematicEvalSuite): Promise<BraintrustDataset> {
     const datasetInput = this.convertEvalSuiteToDataset(suite);
     return this.client.upsertDataset(datasetInput);
   }
@@ -396,7 +396,7 @@ export class BraintrustAdapter {
    * Run a Nova26 EvalSuite as a Braintrust experiment
    */
   async runExperiment(
-    suite: EvalSuite,
+    suite: CinematicEvalSuite,
     runFn: (input: unknown) => Promise<unknown>,
     experimentName?: string
   ): Promise<BraintrustExperimentResult> {

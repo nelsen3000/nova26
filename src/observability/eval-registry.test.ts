@@ -195,7 +195,7 @@ describe('EvalRegistry', () => {
       expect(updated.name).toBe('New Name');
     });
 
-    it('updates timestamp', () => {
+    it('updates timestamp', async () => {
       registry.registerSuite({
         id: 'suite-1',
         name: 'Test Suite',
@@ -203,6 +203,7 @@ describe('EvalRegistry', () => {
       });
 
       const before = registry.getSuite('suite-1')?.updatedAt;
+      await new Promise(r => setTimeout(r, 5));
       const updated = registry.updateSuite('suite-1', { name: 'New Name' });
 
       expect(updated.updatedAt).not.toBe(before);

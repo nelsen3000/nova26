@@ -217,8 +217,9 @@ describe('AgentHarness', () => {
       const harness = createAgentHarness(createTestConfig());
       const executed: string[] = [];
 
-      // Start first, then enqueue
+      // Start, pause to control timing, then enqueue
       await harness.start();
+      await harness.pause();
 
       harness.enqueueTask({
         id: 'failing-task',
@@ -235,6 +236,8 @@ describe('AgentHarness', () => {
         execute: async () => { executed.push('success'); },
       });
 
+      // Resume to execute tasks
+      await harness.resume();
       await new Promise(resolve => setTimeout(resolve, 50));
 
       expect(executed).toContain('failing');

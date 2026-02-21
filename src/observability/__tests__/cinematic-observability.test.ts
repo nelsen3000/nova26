@@ -22,7 +22,7 @@ import {
 import {
   type CinematicSpan,
   type SpanInput,
-  type EvalSuite,
+  type CinematicEvalSuite,
   type EvalDatasetEntry,
   type EvaluatorConfig,
   type RemediationEvent,
@@ -58,7 +58,7 @@ const createMockEvaluator = (overrides: Partial<EvaluatorConfig> = {}): Evaluato
   ...overrides,
 });
 
-const createMockEvalSuite = (overrides: Partial<EvalSuite> = {}): EvalSuite => ({
+const createMockEvalSuite = (overrides: Partial<CinematicEvalSuite> = {}): CinematicEvalSuite => ({
   id: 'suite-001',
   name: 'Test Suite',
   evaluators: [createMockEvaluator()],

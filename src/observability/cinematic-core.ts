@@ -6,9 +6,9 @@ import {
   type CinematicSpan,
   type SpanInput,
   type SpanStatus,
-  type EvalSuite,
-  type EvalSuiteResult,
-  type EvalResult,
+  type CinematicEvalSuite,
+  type CinematicEvalSuiteResult,
+  type CinematicEvalResult,
   type EvaluatorConfig,
   type EvalDatasetEntry,
   type RemediationEvent,
@@ -27,7 +27,7 @@ import {
 function runHeuristicEvaluator(
   entry: EvalDatasetEntry,
   config: Record<string, unknown>
-): EvalResult {
+): CinematicEvalResult {
   const rules = config.rules as Array<{ field: string; expected: unknown; weight: number }> || [];
   let score = 0;
   const details: string[] = [];
@@ -63,7 +63,7 @@ function runHeuristicEvaluator(
 async function runLLMJudgeEvaluator(
   entry: EvalDatasetEntry,
   config: Record<string, unknown>
-): Promise<EvalResult> {
+): Promise<CinematicEvalResult> {
   const criteria = config.criteria as string || 'quality and correctness';
   
   // Mock LLM evaluation - in production, this would call an LLM API
@@ -91,7 +91,7 @@ async function runLLMJudgeEvaluator(
 function runHumanLabeledEvaluator(
   entry: EvalDatasetEntry,
   _config: Record<string, unknown>
-): EvalResult {
+): CinematicEvalResult {
   // Exact match comparison for human-labeled ground truth
   const inputStr = JSON.stringify(entry.input);
   const expectedStr = JSON.stringify(entry.expectedOutput);
@@ -117,7 +117,7 @@ function runHumanLabeledEvaluator(
 function runTasteVaultEvaluator(
   entry: EvalDatasetEntry,
   config: Record<string, unknown>
-): EvalResult {
+): CinematicEvalResult {
   const tastePatterns = config.patterns as string[] || [];
   const input = entry.input as Record<string, unknown>;
   const inputStr = JSON.stringify(input).toLowerCase();
@@ -337,7 +337,7 @@ export class CinematicObservability {
    * @param suite - Eval suite configuration
    * @returns Aggregated results with pass/fail status
    */
-  async runEvalSuite(suite: EvalSuite): Promise<EvalSuiteResult> {
+  async runEvalSuite(suite: CinematicEvalSuite): Promise<CinematicEvalSuiteResult> {
     const scores: Record<string, number> = {};
     const details: string[] = [];
     const entryResults: Array<{ entryIndex: number; scores: Record<string, number>; passed: boolean }> = [];
@@ -402,7 +402,7 @@ export class CinematicObservability {
   private async runEvaluator(
     entry: EvalDatasetEntry,
     evaluator: EvaluatorConfig
-  ): Promise<EvalResult> {
+  ): Promise<CinematicEvalResult> {
     switch (evaluator.type) {
       case 'heuristic':
         return runHeuristicEvaluator(entry, evaluator.config);

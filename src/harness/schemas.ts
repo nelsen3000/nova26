@@ -129,7 +129,7 @@ export const HarnessStateSchema = z.object({
   subAgentIds: z.array(z.string()).default([]),
   toolCallCount: z.number().int().min(0).nullable().transform(v => v ?? 0),
   tokenCount: z.number().int().min(0).nullable().transform(v => v ?? 0),
-  cost: z.number().min(0).nullable().transform(v => v ?? 0),
+  cost: z.union([z.number().min(0), z.nan(), z.null()]).transform(v => (v === null || Number.isNaN(v)) ? 0 : v),
   retryCount: z.number().int().min(0).nullable().transform(v => v ?? 0),
   error: HarnessErrorSchema.nullable().optional(),
   lastCheckpointAt: z.number().int().nullable().optional(),
