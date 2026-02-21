@@ -54,7 +54,8 @@ class TFIDFIndex {
 
     this.idf.clear();
     for (const [token, freq] of docFreq) {
-      this.idf.set(token, Math.log(docCount / (freq + 1)));
+      // Use smoothing: log((N + 1) / df) to handle single-document case
+      this.idf.set(token, Math.log((docCount + 1) / freq));
     }
   }
 
@@ -251,11 +252,11 @@ export class RelevanceScorer {
 
 export class MemoryRetriever {
   private scorer: RelevanceScorer;
-  private index: MemoryIndex;
+  private memoryIndex: MemoryIndex;
 
   constructor(weights?: Partial<ScoringWeights>) {
     this.scorer = new RelevanceScorer(weights);
-    this.index = new MemoryIndex();
+    this.memoryIndex = new MemoryIndex();
   }
 
   /**
@@ -317,7 +318,7 @@ export class MemoryRetriever {
    */
   index(items: MemoryItem[]): void {
     for (const item of items) {
-      this.index.indexItem(item);
+      this.memoryIndex.indexItem(item);
       this.scorer.indexItem(item);
     }
   }
@@ -327,7 +328,7 @@ export class MemoryRetriever {
   // ═══════════════════════════════════════════════════════════════════════════════
 
   private keywordRetrieve(items: MemoryItem[], query: string): RetrievalResult[] {
-    const matches = this.index.searchKeywords(query);
+    const matches = this.memoryIndex.searchKeywords(query);
 
     return items
       .filter(item => matches.has(item.id))
@@ -341,7 +342,7 @@ export class MemoryRetriever {
   private semanticRetrieve(items: MemoryItem[], query: string): RetrievalResult[] {
     return items.map(item => ({
       item,
-      score: this.index.computeSimilarity(query, item),
+      score: this.memoryIndex.computeSimilarity(query, item),
       strategy: 'semantic' as const,
     }));
   }

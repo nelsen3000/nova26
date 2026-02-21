@@ -115,7 +115,7 @@ describe('PerplexityResearchAgent', () => {
       searchMock.mockResolvedValue({ ...mockSearchResult, tokensUsed: 100 });
 
       const agent = new PerplexityResearchAgent(mockClient);
-      await agent.researchTopic('test topic', 'medium');
+      const result = await agent.researchTopic('test topic', 'medium');
 
       expect(result.totalTokensUsed).toBeGreaterThan(0);
     });
@@ -199,7 +199,7 @@ describe('PerplexityResearchAgent', () => {
 
       const agent = new PerplexityResearchAgent(mockClient);
       const result = await agent.compareOptions(
-        ['Option A'],
+        ['Option A', 'Option B'],
         ['Criterion 1']
       );
 
@@ -252,7 +252,7 @@ describe('PerplexityResearchAgent', () => {
 
     it('requires at least 2 options', async () => {
       const agent = new PerplexityResearchAgent(mockClient);
-      await expect(agent.compareOptions(['Single'], ['Criterion'])).rejects.toThrow('at least 2');
+      await expect(agent.compareOptions(['Single'], ['Criterion'])).rejects.toThrow('At least 2');
     });
 
     it('validates options array is not empty', async () => {

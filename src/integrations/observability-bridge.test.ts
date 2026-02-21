@@ -127,7 +127,7 @@ describe('ObservabilityBridge', () => {
       expect(distribution).toHaveLength(2);
       expect(distribution[0].model).toBe('model-1');
       expect(distribution[0].count).toBe(2);
-      expect(distribution[0].percentage).toBe(66.67);
+      expect(distribution[0].percentage).toBeCloseTo(66.67, 2);
     });
   });
 

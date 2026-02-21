@@ -369,7 +369,11 @@ export class MemoryStore {
 
     if (lruItem) {
       // Move to lower level instead of deleting
-      this.demote(lruItem.id);
+      this.removeFromLevel(lruItem.id, level);
+      const newLevel: MemoryLevel = level === 'L1' ? 'L2' : 'L3';
+      lruItem.level = newLevel;
+      this.evictIfNeeded(newLevel);
+      this.getLevelMap(newLevel).set(lruItem.id, lruItem);
     }
   }
 

@@ -63,12 +63,13 @@ describe('MemoryStore', () => {
     it('updates access count and time', async () => {
       const item = store.store('test content');
       const beforeAccess = item.accessCount;
+      const beforeAccessedAt = item.accessedAt;
 
       await new Promise(r => setTimeout(r, 10));
       const retrieved = store.get(item.id);
 
       expect(retrieved?.accessCount).toBe(beforeAccess + 1);
-      expect(retrieved?.accessedAt).toBeGreaterThan(item.accessedAt);
+      expect(retrieved?.accessedAt).toBeGreaterThan(beforeAccessedAt);
     });
 
     it('returns undefined for unknown ID', () => {
