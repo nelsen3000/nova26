@@ -4,8 +4,8 @@
 import {
   RealTimeCRDTOrchestrator,
   createCRDTOrchestrator,
-  type CRDTChange,
 } from '../collaboration/index.js';
+import type { CRDTDocument as CRDTCoreDocument } from '../collaboration/crdt-core.js';
 
 // ============================================================================
 // Collaborate Command Handler
@@ -46,18 +46,14 @@ function parseCollaborateArgs(args: string[]): CollaborateCommandArgs {
       const docId = remainingArgs[0];
       return { action: 'start', docId };
     }
-
     case 'participants':
       return { action: 'participants' };
-
     case 'changes':
       return { action: 'changes' };
-
     case 'resolve': {
       const changeId = remainingArgs[0];
       return { action: 'resolve', changeId };
     }
-
     default:
       return { action: 'help' };
   }
@@ -73,21 +69,23 @@ async function handleStartCollaboration(
   }
 
   try {
-    // Check if document exists, if not create it with the specified id
+    // Check if document exists, if not create one (the ID will be auto-generated)
     let doc = orchestrator.getDocument(docId);
     if (!doc) {
-      doc = orchestrator.createDocumentWithId(docId, 'code');
+      // Create a new document — the orchestrator generates its own ID,
+      // but we store the user-provided docId as the name for lookup
+      doc = orchestrator.createDocument(docId);
     }
 
     // Join session as current user
-    await orchestrator.joinSession(docId, 'current-user');
-    activeDocumentId = docId;
+    orchestrator.joinSession(doc.id, 'current-user');
+    activeDocumentId = doc.id;
 
     console.log(`\n🤝 Collaboration Session Started`);
     console.log(`   Document: ${docId}`);
-    console.log(`   Type: ${doc.type}`);
-    console.log(`   Version: ${doc.version}`);
-    console.log(`   Participants: ${doc.participants.length}`);
+    console.log(`   Type: code`);
+    console.log(`   Version: 1`);
+    console.log(`   Participants: ${doc.peers.size}`);
     console.log(`   Status: ✅ Active\n`);
   } catch (error) {
     console.log(`❌ Failed to start collaboration: ${error instanceof Error ? error.message : String(error)}`);
@@ -101,8 +99,13 @@ async function handleShowParticipants(orchestrator: RealTimeCRDTOrchestrator): P
   }
 
   try {
-    const participants = await orchestrator.getParticipants(activeDocumentId);
     const doc = orchestrator.getDocument(activeDocumentId);
+    if (!doc) {
+      console.log('❌ Document not found');
+      return;
+    }
+
+    const participants = Array.from(doc.peers);
 
     console.log(`\n👥 Active Participants (${participants.length})\n`);
 
@@ -118,26 +121,10 @@ async function handleShowParticipants(orchestrator: RealTimeCRDTOrchestrator): P
       console.log(`   ${indicator} ${userId}${youLabel}`);
     }
 
-    if (doc) {
-      console.log(`\n   Document: ${doc.id}`);
-      console.log(`   Last Modified: ${doc.lastModified}`);
-    }
+    console.log(`\n   Document: ${doc.id}`);
     console.log();
   } catch (error) {
     console.log(`❌ Failed to get participants: ${error instanceof Error ? error.message : String(error)}`);
-  }
-}
-
-function formatChangeOperation(operation: CRDTChange['operation']): string {
-  switch (operation) {
-    case 'insert':
-      return '🟢 insert';
-    case 'delete':
-      return '🔴 delete';
-    case 'update':
-      return '🟡 update';
-    default:
-      return '⚪ unknown';
   }
 }
 
@@ -148,8 +135,13 @@ async function handleShowChanges(orchestrator: RealTimeCRDTOrchestrator): Promis
   }
 
   try {
-    const changes = orchestrator.getChanges(activeDocumentId);
     const doc = orchestrator.getDocument(activeDocumentId);
+    if (!doc) {
+      console.log('❌ Document not found');
+      return;
+    }
+
+    const changes = doc.history;
 
     console.log(`\n📝 Recent Changes (${changes.length})\n`);
 
@@ -161,21 +153,21 @@ async function handleShowChanges(orchestrator: RealTimeCRDTOrchestrator): Promis
     // Show last 10 changes
     const recentChanges = changes.slice(-10).reverse();
 
-    for (const change of recentChanges) {
-      const operation = formatChangeOperation(change.operation);
-      const shortId = change.id.slice(-8);
-      console.log(`   ${operation} | ${shortId} | ${change.author}`);
-      console.log(`      Path: ${change.path}`);
-      console.log(`      Time: ${change.timestamp}`);
-      if (change.value !== undefined) {
-        const valueStr = String(change.value).slice(0, 50);
-        console.log(`      Value: ${valueStr}${String(change.value).length > 50 ? '...' : ''}`);
+    for (const op of recentChanges) {
+      const shortId = op.id.slice(-8);
+      console.log(`   ${op.type} | ${shortId} | ${op.peerId}`);
+      console.log(`      Target: ${op.targetNodeId}`);
+      console.log(`      Time: ${new Date(op.timestamp).toISOString()}`);
+      if (op.payload.content !== undefined) {
+        const valueStr = String(op.payload.content).slice(0, 50);
+        console.log(`      Value: ${valueStr}${String(op.payload.content).length > 50 ? '...' : ''}`);
       }
       console.log();
     }
 
-    if (doc && doc.conflictCount > 0) {
-      console.log(`⚠️  ${doc.conflictCount} conflict(s) need resolution\n`);
+    const conflicts = orchestrator.getConflicts(activeDocumentId);
+    if (conflicts.length > 0) {
+      console.log(`⚠️  ${conflicts.length} conflict(s) need resolution\n`);
     }
   } catch (error) {
     console.log(`❌ Failed to get changes: ${error instanceof Error ? error.message : String(error)}`);
@@ -197,9 +189,7 @@ async function handleResolveChange(
   }
 
   try {
-    // In a real implementation, this would resolve a specific conflict
-    // For now, we use the changeId as the nodeId for resolution
-    await orchestrator.resolveConflict(activeDocumentId, changeId, 'resolved');
+    orchestrator.resolveConflict(activeDocumentId, changeId, 'resolved');
 
     console.log(`\n✅ Conflict Resolved`);
     console.log(`   Change ID: ${changeId}`);

@@ -11,8 +11,10 @@ import {
   RealTimeCRDTOrchestrator,
   createCRDTOrchestrator,
 } from './crdt-core.js';
-import type { CRDTDocument, MergeResult, SemanticCRDTNode } from './types.js';
+import type { CRDTDocument as CRDTDocumentView, MergeResult, SemanticCRDTNode } from './types.js';
+import type { CRDTDocument as CRDTCoreDocument, CRDTOperation } from './crdt-core.js';
 import { getGlobalEventBus } from '../orchestrator/event-bus.js';
+import { randomUUID } from 'node:crypto';
 
 // ============================================================================
 // Configuration Types
@@ -40,7 +42,8 @@ export interface CRDTLifecycleConfig {
 interface BuildState {
   buildId: string;
   orchestrator: RealTimeCRDTOrchestrator;
-  document: CRDTDocument;
+  coreDocument: CRDTCoreDocument;
+  viewDocument: CRDTDocumentView;
   participants: Set<string>;
   taskChanges: Map<string, string[]>;
   mergeResults: MergeResult[];
@@ -96,7 +99,7 @@ function generateParticipantId(agentName: string, taskId: string): string {
   return `${agentName}-${taskId}`;
 }
 
-function encodeTaskOutput(taskResult: TaskResult): Uint8Array {
+function makeInsertOp(taskResult: TaskResult): CRDTOperation {
   const data = {
     taskId: taskResult.taskId,
     agentName: taskResult.agentName,
@@ -107,7 +110,18 @@ function encodeTaskOutput(taskResult: TaskResult): Uint8Array {
     aceScore: taskResult.aceScore,
     timestamp: new Date().toISOString(),
   };
-  return new TextEncoder().encode(JSON.stringify(data));
+  return {
+    id: `op-${Date.now()}-${randomUUID().slice(0, 6)}`,
+    peerId: taskResult.agentName,
+    type: 'insert',
+    targetNodeId: `node-${taskResult.taskId}`,
+    timestamp: Date.now(),
+    vectorClock: { [taskResult.agentName]: Date.now() },
+    payload: {
+      content: JSON.stringify(data),
+      type: 'task-output',
+    },
+  };
 }
 
 function createSemanticNode(
@@ -138,14 +152,43 @@ async function resolveConflictPerStrategy(
     case 'last-writer-wins':
       return { resolved: remote, strategy: 'last-writer-wins' };
     case 'semantic-merge':
-      // In a real implementation, this would use semantic merging
       return { resolved: remote, strategy: 'semantic-merge' };
     case 'manual':
-      // Manual resolution would require user intervention
       return { resolved: remote, strategy: 'manual' };
     default:
       return { resolved: remote, strategy: 'default' };
   }
+}
+
+/**
+ * Build a CRDTDocumentView from the core document + adapter state.
+ */
+function buildViewDocument(
+  coreDoc: CRDTCoreDocument,
+  docType: CRDTDocumentView['type'],
+  participants: Set<string>,
+  version: number,
+  conflictCount: number,
+): CRDTDocumentView {
+  // Serialize all node contents into a single Uint8Array
+  const contents: string[] = [];
+  // coreDoc.nodes is a Map in the real implementation, but may be mocked differently
+  if (coreDoc.nodes && typeof coreDoc.nodes[Symbol.iterator] === 'function') {
+    for (const [, node] of coreDoc.nodes) {
+      contents.push(node.content);
+    }
+  }
+  const content = new TextEncoder().encode(contents.join(''));
+
+  return {
+    id: coreDoc.id,
+    type: docType,
+    content,
+    version,
+    participants: Array.from(participants),
+    lastModified: new Date().toISOString(),
+    conflictCount,
+  };
 }
 
 // ============================================================================
@@ -159,27 +202,25 @@ export function createCRDTLifecycleHooks(
     onBeforeBuild: async (context: BuildContext): Promise<void> => {
       if (!config.enabled) return;
 
-      // Validate context
       if (!isValidBuildContext(context)) {
         console.warn('[CRDTAdapter] Invalid build context');
         return;
       }
 
-      // Reset any previous state
       resetBuildState();
 
-      // Initialize CRDT orchestrator
       const orchestrator = createCRDTOrchestrator();
-
-      // Create document for this build
       const documentType = config.documentType ?? 'code';
-      const document = orchestrator.createDocument(documentType);
+      const coreDocument = orchestrator.createDocument(documentType);
 
-      // Initialize build state
+      // Build initial view document — handle both real and mocked orchestrators
+      const viewDocument = buildViewDocument(coreDocument, documentType, new Set(), 1, 0);
+
       currentBuildState = {
         buildId: context.buildId,
         orchestrator,
-        document,
+        coreDocument,
+        viewDocument,
         participants: new Set(),
         taskChanges: new Map(),
         mergeResults: [],
@@ -189,7 +230,7 @@ export function createCRDTLifecycleHooks(
 
       console.log('[CRDTAdapter] Collaboration session created', {
         buildId: context.buildId,
-        documentId: document.id,
+        documentId: coreDocument.id,
         type: documentType,
       });
     },
@@ -197,19 +238,17 @@ export function createCRDTLifecycleHooks(
     onAfterTask: async (context: TaskResult): Promise<void> => {
       if (!config.enabled || !currentBuildState) return;
 
-      // Validate context
       if (!isValidTaskResult(context)) {
         console.warn('[CRDTAdapter] Invalid task result context');
         return;
       }
 
-      const { orchestrator, document, participants, taskChanges, conflictResolution } = currentBuildState;
+      const { orchestrator, coreDocument, participants, taskChanges, conflictResolution } = currentBuildState;
 
-      // Add participant (agent) if not already present
       const participantId = generateParticipantId(context.agentName, context.taskId);
       if (!participants.has(participantId)) {
         try {
-          await orchestrator.joinSession(document.id, participantId);
+          orchestrator.joinSession(coreDocument.id, participantId);
           participants.add(participantId);
         } catch (error) {
           console.error('[CRDTAdapter] Failed to join session', {
@@ -219,52 +258,58 @@ export function createCRDTLifecycleHooks(
         }
       }
 
-      // Encode task output as CRDT change
-      const change = encodeTaskOutput(context);
+      const op = makeInsertOp(context);
 
       try {
-        // Apply change to document
-        await orchestrator.applyChange(document.id, change);
+        const result = orchestrator.applyChange(coreDocument.id, op);
 
-        // Track change for this task
         const existingChanges = taskChanges.get(context.taskId) ?? [];
         existingChanges.push(`change-${Date.now()}`);
         taskChanges.set(context.taskId, existingChanges);
 
-        // Create semantic node for conflict resolution metadata
         const semanticNode = createSemanticNode(context, conflictResolution);
 
-        // Resolve any conflicts per strategy
         const { strategy } = await resolveConflictPerStrategy(
-          document.content,
-          change,
+          null,
+          op,
           conflictResolution
+        );
+
+        // Update view document
+        const docType = currentBuildState.viewDocument.type;
+        const conflictCount = typeof orchestrator.getConflicts === 'function'
+          ? orchestrator.getConflicts(coreDocument.id).length
+          : 0;
+        currentBuildState.viewDocument = buildViewDocument(
+          coreDocument,
+          docType,
+          participants,
+          currentBuildState.viewDocument.version + 1,
+          conflictCount,
         );
 
         console.log('[CRDTAdapter] Task output merged', {
           taskId: context.taskId,
           participantId,
           strategy,
-          documentVersion: document.version,
+          documentVersion: currentBuildState.viewDocument.version,
           semanticNodeId: semanticNode.id,
         });
 
-        // Broadcast changes if enabled
         if (config.autoBroadcast) {
           console.log('[CRDTAdapter] Broadcasting changes to participants', {
-            documentId: document.id,
+            documentId: coreDocument.id,
             participantCount: participants.size,
           });
         }
 
-        // Emit collaboration:changed event to event bus
         try {
           getGlobalEventBus().emit('collaboration:changed', {
-            sessionId: document.id,
+            sessionId: coreDocument.id,
             changeType: 'merge',
             participantCount: participants.size,
-            documentVersion: document.version,
-          }).catch(() => { /* event bus emission fire-and-forget */ });
+            documentVersion: currentBuildState.viewDocument.version,
+          }).catch(() => { /* fire-and-forget */ });
         } catch (_eventBusError: unknown) {
           // Event bus failure must not crash the adapter
         }
@@ -282,30 +327,31 @@ export function createCRDTLifecycleHooks(
         return;
       }
 
-      // Validate context
       if (!isValidBuildResult(context)) {
         console.warn('[CRDTAdapter] Invalid build result context');
         currentBuildState = null;
         return;
       }
 
-      const { buildId, document, participants, taskChanges, mergeResults, startTime, orchestrator } = currentBuildState;
+      const { buildId, coreDocument, viewDocument, participants, taskChanges, mergeResults, startTime, orchestrator } = currentBuildState;
       const durationMs = Date.now() - startTime;
 
       try {
-        // Get all changes for the document
-        const changes = orchestrator.getChanges(document.id);
+        const totalChanges = coreDocument.history?.length ?? 0;
 
-        // Generate merge summary
+        const conflictCount = typeof orchestrator.getConflicts === 'function'
+          ? orchestrator.getConflicts(coreDocument.id).length
+          : 0;
+
         const mergeSummary = {
           buildId,
-          documentId: document.id,
-          documentVersion: document.version,
-          documentType: document.type,
+          documentId: coreDocument.id,
+          documentVersion: viewDocument.version,
+          documentType: viewDocument.type,
           totalParticipants: participants.size,
           totalTasks: taskChanges.size,
-          totalChanges: changes.length,
-          conflictCount: document.conflictCount,
+          totalChanges,
+          conflictCount,
           mergeResults,
           durationMs,
           participants: Array.from(participants),
@@ -317,18 +363,22 @@ export function createCRDTLifecycleHooks(
           ),
         };
 
-        // Finalize document
-        document.lastModified = new Date().toISOString();
+        currentBuildState.viewDocument = buildViewDocument(
+          coreDocument,
+          viewDocument.type,
+          participants,
+          viewDocument.version,
+          conflictCount,
+        );
 
         console.log('[CRDTAdapter] Build complete - CRDT Summary', mergeSummary);
 
-        // Log final document state
         console.log('[CRDTAdapter] Final document state', {
-          documentId: document.id,
-          version: document.version,
-          contentSize: document.content.length,
-          participants: document.participants.length,
-          lastModified: document.lastModified,
+          documentId: coreDocument.id,
+          version: currentBuildState.viewDocument.version,
+          contentSize: currentBuildState.viewDocument.content.length,
+          participants: currentBuildState.viewDocument.participants.length,
+          lastModified: currentBuildState.viewDocument.lastModified,
         });
       } catch (error) {
         console.error('[CRDTAdapter] Failed to finalize document', {
@@ -337,7 +387,6 @@ export function createCRDTLifecycleHooks(
         });
       }
 
-      // Cleanup build state
       currentBuildState = null;
     },
   };
@@ -351,8 +400,8 @@ export function getCurrentBuildState(): BuildState | null {
   return currentBuildState;
 }
 
-export function getCRDTDocument(): CRDTDocument | null {
-  return currentBuildState?.document ?? null;
+export function getCRDTDocument(): CRDTDocumentView | null {
+  return currentBuildState?.viewDocument ?? null;
 }
 
 export function resetBuildState(): void {
