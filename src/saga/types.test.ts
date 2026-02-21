@@ -437,14 +437,23 @@ describe('Curriculum generation', () => {
           const ids = curriculum.tasks.map(t => t.id);
           expect(new Set(ids).size).toBe(ids.length);
 
-          // Dependencies should come before dependent tasks
+          // All dependencies should point to tasks that exist in the curriculum
+          const taskIds = new Set(ids);
+          for (const task of curriculum.tasks) {
+            for (const predId of task.predecessorIds) {
+              expect(taskIds.has(predId)).toBe(true);
+            }
+          }
+
+          // Dependencies should come before dependent tasks (if they exist)
           const position = new Map(curriculum.tasks.map((t, i) => [t.id, i]));
           for (let i = 0; i < curriculum.tasks.length; i++) {
             const task = curriculum.tasks[i];
             for (const predId of task.predecessorIds) {
               const predPos = position.get(predId);
-              expect(predPos).toBeDefined();
-              expect(predPos).toBeLessThan(i);
+              if (predPos !== undefined) {
+                expect(predPos).toBeLessThan(i);
+              }
             }
           }
         }
