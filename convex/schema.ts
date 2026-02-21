@@ -203,4 +203,90 @@ export default defineSchema({
     timestamp: v.string(),
   }).index('by_user_and_time', ['userId', 'timestamp'])
     .index('by_user_and_agent', ['userId', 'agentName']),
+
+  // =====================
+  // Agent Harnesses Tables (2)
+  // =====================
+
+  // Long-running agent harness state persistence
+  agentHarnesses: defineTable({
+    harnessId: v.string(),
+    agentName: v.string(),
+    status: v.union(
+      v.literal('created'),
+      v.literal('running'),
+      v.literal('paused'),
+      v.literal('completed'),
+      v.literal('failed')
+    ),
+    parentHarnessId: v.optional(v.string()),
+    currentStepId: v.optional(v.string()),
+    checkpointData: v.optional(v.string()), // Serialized HarnessState
+    progressPercent: v.number(),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+    completedAt: v.optional(v.string()),
+    errorMessage: v.optional(v.string()),
+  }).index('by_harness_id', ['harnessId'])
+    .index('by_status', ['status'])
+    .index('by_agent', ['agentName'])
+    .index('by_parent', ['parentHarnessId']),
+
+  // Harness execution events for observability
+  harnessEvents: defineTable({
+    harnessId: v.string(),
+    eventType: v.union(
+      v.literal('state_transition'),
+      v.literal('tool_call'),
+      v.literal('human_gate'),
+      v.literal('sub_agent_spawned'),
+      v.literal('sub_agent_completed'),
+      v.literal('checkpoint_created'),
+      v.literal('step_completed'),
+      v.literal('step_failed'),
+      v.literal('plan_completed')
+    ),
+    stepId: v.optional(v.string()),
+    details: v.string(), // JSON string with event-specific data
+    timestamp: v.string(),
+  }).index('by_harness', ['harnessId'])
+    .index('by_harness_and_time', ['harnessId', 'timestamp'])
+    .index('by_event_type', ['eventType']),
+
+  // =====================
+  // RLM (Recursive Language Models) Tables (2)
+  // =====================
+
+  // RLM configuration per company/agent
+  rlmConfigs: defineTable({
+    companyId: v.string(),
+    agentId: v.optional(v.string()), // null = default for company
+    enabled: v.boolean(),
+    readerModelId: v.string(),
+    compressionThreshold: v.number(), // 0-1 relevance score threshold
+    maxTokens: v.number(),
+    fallbackOnError: v.boolean(),
+    updatedAt: v.string(),
+    updatedBy: v.string(),
+  }).index('by_company', ['companyId'])
+    .index('by_company_agent', ['companyId', 'agentId']),
+
+  // RLM audit logs for drift detection
+  rlmAuditLogs: defineTable({
+    companyId: v.string(),
+    sessionId: v.string(),
+    agentId: v.string(),
+    originalTokens: v.number(),
+    compressedTokens: v.number(),
+    compressionRatio: v.number(),
+    driftScore: v.number(), // semantic similarity score
+    fallbackUsed: v.boolean(),
+    segmentsCount: v.number(),
+    timestamp: v.string(),
+    warningIssued: v.boolean(),
+  }).index('by_company', ['companyId'])
+    .index('by_session', ['sessionId'])
+    .index('by_agent', ['agentId'])
+    .index('by_timestamp', ['timestamp'])
+    .index('by_company_time', ['companyId', 'timestamp']),
 });

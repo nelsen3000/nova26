@@ -94,12 +94,12 @@
 ---
 
 ## Wave 5: SAGA Engine Integration (K3-25 to K3-28) ✅ COMPLETE
-**Status**: 4/4 tasks complete | **Tests**: 5 property-based tests
+**Status**: 4/4 tasks complete | **Tests**: 7 tests
 
 | Task | Status | File | Description |
 |------|--------|------|-------------|
 | K3-25 | ✅ | `saga-engine.ts` | Unified engine: loop orchestration + ATLAS persistence |
-| K3-26 | ✅ | `saga-engine.test.ts` | 5 property tests for engine |
+| K3-26 | ✅ | `saga-engine.test.ts` | 7 tests for engine functionality |
 | K3-27 | ✅ | `index.ts` | Complete module exports |
 | K3-28 | ✅ | - | README documentation |
 
@@ -109,6 +109,7 @@
 - Integration with Inner/Outer loops
 - ATLAS persistence integration
 - Complete TypeScript exports
+- `createMockExecutor` for testing
 
 ---
 
@@ -121,7 +122,7 @@
 | 3: Curriculum & Evolution | 3 | ✅ Complete | 10 |
 | 4: SAGA Advanced | 12 | ✅ Complete | 36 |
 | 5: SAGA Engine | 4 | ✅ Complete | 5 |
-| **Total** | **28** | **✅ 100%** | **94** |
+| **Total** | **28** | **✅ 100%** | **96** |
 
 ---
 

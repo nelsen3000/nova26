@@ -65,7 +65,7 @@ Remediate 87 structural audit failures, extract 21 agent template patterns, buil
     - **Validates: Requirements 3.2, 3.3, 3.4**
 
 - [-] 5. KIRO-06-04: Fix Stale Reference in AI_COORDINATION.md
-  - [-] 5.1 Identify and fix stale references in `.nova/AI_COORDINATION.md`
+  - [ ] 5.1 Identify and fix stale references in `.nova/AI_COORDINATION.md`
     - Scan the entire document for file path references
     - For each reference, check if the file exists on disk
     - The known stale reference is `sun-prd-generator.js` around line 215 — search `src/` for the replacement
