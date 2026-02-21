@@ -75,6 +75,138 @@ export type {
 } from './curriculum-generator.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// Inner Loop
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  executeInnerLoop,
+  createMockExecutor,
+  DEFAULT_CONFIG as INNER_LOOP_DEFAULT_CONFIG,
+} from './inner-loop.js';
+
+export type {
+  InnerLoopConfig,
+  TaskExecutor,
+  InnerLoopOptions,
+} from './inner-loop.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Outer Loop
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  executeOuterLoop,
+  getLineage,
+  isDescendant,
+  DEFAULT_CONFIG as OUTER_LOOP_DEFAULT_CONFIG,
+} from './outer-loop.js';
+
+export type {
+  OuterLoopConfig,
+  OuterLoopState,
+  OuterLoopOptions,
+  OuterLoopResult,
+} from './outer-loop.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Session Manager
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  createSession,
+  pauseSession,
+  resumeSession,
+  stopSession,
+  getSession,
+  listSessions,
+  checkBudget,
+  checkpointSession,
+  restoreFromCheckpoint,
+  updateSessionGeneration,
+  updateSessionMetrics,
+  clearSessions,
+  DEFAULT_CONFIG as SESSION_DEFAULT_CONFIG,
+} from './session-manager.js';
+
+export type {
+  SessionManagerConfig,
+} from './session-manager.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Autonomy Gating
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  shouldPauseAfterGeneration,
+  shouldTriggerOnDeviation,
+  isSwarmDebateEnabled,
+  getApprovalRequirements,
+  evaluateGate,
+  DEFAULT_CONFIG as AUTONOMY_DEFAULT_CONFIG,
+} from './autonomy-gating.js';
+
+export type {
+  AutonomyGatingConfig,
+  GateDecision,
+} from './autonomy-gating.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Swarm Debate
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  conductDebate,
+  conductBatchDebate,
+  incorporateDebateScore,
+  createMockParticipant,
+  DEFAULT_CONFIG as SWARM_DEBATE_DEFAULT_CONFIG,
+} from './swarm-debate.js';
+
+export type {
+  SwarmDebateConfig,
+  DebateParticipant,
+  FitnessWithDebate,
+} from './swarm-debate.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ATLAS Goal Store
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  persistGenome,
+  persistGeneration,
+  getLatestPopulation,
+  getGenomesByFitness,
+  getGenomeByGeneration,
+  getGenomeLineage,
+  getPortfolioSeeds,
+  pruneOldGenomes,
+  persistSessionState,
+  restoreSessionState,
+  getStatistics,
+  clearStore,
+} from './atlas-goal-store.js';
+
+export type {
+  StoreStatistics,
+} from './atlas-goal-store.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SAGA Engine
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export {
+  createSAGAEngine,
+  resetSAGAEngine,
+  DEFAULT_ENGINE_CONFIG,
+} from './saga-engine.js';
+
+export type {
+  SAGAEngine,
+  SAGAEngineConfig,
+} from './saga-engine.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // Default Configurations
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -104,5 +236,35 @@ export const DEFAULTS = {
     checkpointIntervalMs: 600000, // 10 minutes
     enableSwarmDebate: false,
     notableFitnessThreshold: 0.85,
+  },
+  innerLoop: {
+    maxIterations: 100,
+    timeoutMs: 300000, // 5 minutes
+    enableRemedial: true,
+  },
+  outerLoop: {
+    tournamentSize: 3,
+    mutationRate: 0.3,
+    diversityBoostThreshold: 0.2,
+  },
+  session: {
+    autoCheckpointIntervalMs: 600000, // 10 minutes
+  },
+  autonomy: {
+    deviationThreshold: 0.2,
+    pauseInterval: 1,
+  },
+  swarmDebate: {
+    minParticipants: 3,
+    maxParticipants: 7,
+    consensusThreshold: 0.7,
+    rejectionThreshold: 0.3,
+    timeoutMs: 30000,
+  },
+  engine: {
+    autonomyLevel: 3,
+    tastePatterns: [],
+    enableOvernight: false,
+    overnightDurationMs: 8 * 60 * 60 * 1000, // 8 hours
   },
 };

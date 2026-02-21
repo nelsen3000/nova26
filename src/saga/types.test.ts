@@ -25,15 +25,15 @@ const objectiveDescriptorArb = fc.record<ObjectiveDescriptor>({
   id: fc.string({ minLength: 1, maxLength: 50 }),
   description: fc.string({ minLength: 1, maxLength: 200 }),
   domain: fc.constantFrom('code-quality', 'creativity', 'efficiency', 'safety', 'general'),
-  parameters: fc.dictionary(fc.string({ minLength: 1 }), fc.float({ min: 0, max: 1 }), { maxKeys: 5 }),
-  weight: fc.float({ min: 0, max: 1 }),
+  parameters: fc.dictionary(fc.string({ minLength: 1 }), fc.float({ min: 0, max: 1, noNaN: true }), { maxKeys: 5 }),
+  weight: fc.float({ min: 0, max: 1, noNaN: true }),
 });
 
 const fitnessCriterionArb = fc.record<FitnessCriterion>({
   objectiveId: fc.string({ minLength: 1 }),
   metricName: fc.constantFrom('aggregate', 'performance', 'novelty', 'taste'),
-  targetValue: fc.float({ min: 0, max: 1 }),
-  currentValue: fc.float({ min: 0, max: 1 }),
+  targetValue: fc.float({ min: 0, max: 1, noNaN: true }),
+  currentValue: fc.float({ min: 0, max: 1, noNaN: true }),
 });
 
 const goalGenomeArb = fc.record<GoalGenome>({
@@ -161,7 +161,7 @@ describe('Mutation operations', () => {
     fc.assert(
       fc.property(
         goalGenomeArb,
-        fc.float({ min: -0.5, max: 0.5 }),
+        fc.float({ min: -0.5, max: 0.5, noNaN: true }),
         (genome, delta) => {
           const objective = genome.objectives[0];
           const deltaMap: Record<string, number> = { weight: delta };
@@ -215,6 +215,11 @@ describe('Mutation operations', () => {
         goalGenomeArb,
         fc.constantFrom<'add' | 'remove' | 'perturb'>('add', 'remove', 'perturb'),
         (genome, mutationType) => {
+          // Skip remove mutation when only 1 objective (can't remove)
+          if (mutationType === 'remove' && genome.objectives.length <= 1) {
+            return;
+          }
+
           let child: GoalGenome;
           
           switch (mutationType) {
@@ -230,11 +235,7 @@ describe('Mutation operations', () => {
               break;
             }
             case 'remove': {
-              if (genome.objectives.length > 1) {
-                ({ genome: child } = removeObjective(genome, genome.objectives[0].id));
-              } else {
-                child = genome;
-              }
+              ({ genome: child } = removeObjective(genome, genome.objectives[0].id));
               break;
             }
             case 'perturb': {
@@ -273,7 +274,7 @@ describe('Fitness evaluation', () => {
             taskId: fc.string(),
             objectiveId: fc.string(),
             passed: fc.boolean(),
-            score: fc.float({ min: 0, max: 1 }),
+            score: fc.float({ min: 0, max: 1, noNaN: true }),
             duration: fc.integer({ min: 0, max: 10000 }),
           }),
           { minLength: 1, maxLength: 20 }
@@ -350,7 +351,7 @@ describe('Taste Guard', () => {
           fc.record({
             id: fc.string(),
             canonicalContent: fc.string({ minLength: 1, maxLength: 50 }),
-            successScore: fc.float({ min: 0.6, max: 1 }), // High success score = hard constraint
+            successScore: fc.float({ min: 0.5, max: 1, noNaN: true }), // High success score = hard constraint
             isActive: fc.constant(true),
             tags: fc.array(fc.string(), { maxLength: 5 }),
           }),

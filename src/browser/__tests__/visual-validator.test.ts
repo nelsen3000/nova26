@@ -133,23 +133,15 @@ describe('Visual Validator', () => {
 
   describe('validateVisually', () => {
     it('should pass validation for component with all best practices', async () => {
-      const componentCode = `
-        export function Button() {
-          return (
-            <button 
-              className="sm:w-full md:w-auto transition-all animate-fade"
-              aria-label="Submit"
-              role="button"
-              onClick={() => {}}
-            >
-              <img src="icon.png" alt="Icon" loading="lazy" />
-              <span>Loading...</span>
-              <span>Error occurred</span>
-              <span>No data available</span>
-            </button>
-          );
-        }
-      `;
+      const componentCode = `export function Btn() {
+  return (<button className="sm:w-full md:w-auto transition-all animate-fade"
+    aria-label={t('go')} role="button" tabIndex={0} onKeyDown={handleKey} onClick={handle}>
+    <img src="i.png" alt="Icon" loading="lazy" />
+    <span>{isLoading && 'loading...'}</span>
+    <span>{hasError && 'error state'}</span>
+    <span>No items yet</span>
+  </button>);
+}`;
 
       const result = await validateVisually(componentCode, 'test-task');
 

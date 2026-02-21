@@ -336,3 +336,10 @@ export class RealTimeCRDTOrchestrator {
     return { forkId, forkDocument };
   }
 }
+
+/**
+ * Factory function to create a RealTimeCRDTOrchestrator instance
+ */
+export function createCRDTOrchestrator(peerId: string = 'local-peer'): RealTimeCRDTOrchestrator {
+  return new RealTimeCRDTOrchestrator(peerId);
+}

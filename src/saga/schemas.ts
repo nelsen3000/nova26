@@ -11,15 +11,15 @@ export const ObjectiveDescriptorSchema = z.object({
   id: z.string(),
   description: z.string(),
   domain: z.string(),
-  parameters: z.record(z.number()),
-  weight: z.number().min(0).max(1),
+  parameters: z.record(z.union([z.number(), z.nan()]).transform(v => Number.isNaN(v) ? 0 : v)),
+  weight: z.union([z.number().min(0).max(1), z.nan()]).transform(v => Number.isNaN(v) ? 0 : Math.max(0, Math.min(1, v))),
 });
 
 export const FitnessCriterionSchema = z.object({
   objectiveId: z.string(),
   metricName: z.string(),
-  targetValue: z.number(),
-  currentValue: z.number(),
+  targetValue: z.union([z.number(), z.nan()]).transform(v => Number.isNaN(v) ? 0 : v),
+  currentValue: z.union([z.number(), z.nan()]).transform(v => Number.isNaN(v) ? 0 : v),
 });
 
 export const GoalGenomeSchema = z.object({
@@ -61,6 +61,54 @@ export const InnerLoopResultSchema = z.object({
   totalDuration: z.number().int().min(0),
   iterationsCompleted: z.number().int().min(0),
   partial: z.boolean(),
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Session & Configuration Schemas
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const EvolutionConfigSchema = z.object({
+  maxIterations: z.number().int().positive(),
+  maxComputeTimeMs: z.number().int().positive(),
+  maxMemoryBytes: z.number().int().positive(),
+  populationSize: z.number().int().positive(),
+  minFitnessThreshold: z.number().min(0).max(1),
+  portfolioSeedPercent: z.number().min(0).max(1),
+  checkpointIntervalMs: z.number().int().positive(),
+  enableSwarmDebate: z.boolean(),
+  notableFitnessThreshold: z.number().min(0).max(1),
+});
+
+export const SessionMetricsSchema = z.object({
+  outerLoopIterations: z.number().int().min(0),
+  innerLoopExecutions: z.number().int().min(0),
+  totalComputeTimeMs: z.number().int().min(0),
+  peakMemoryBytes: z.number().int().min(0),
+  candidatesGenerated: z.number().int().min(0),
+  candidatesRejectedByTaste: z.number().int().min(0),
+  swarmDebatesRun: z.number().int().min(0),
+});
+
+export const SessionStatusSchema = z.union([
+  z.literal('running'),
+  z.literal('paused'),
+  z.literal('completed'),
+  z.literal('stopped'),
+  z.literal('budget_exceeded'),
+]);
+
+export const EvolutionSessionSchema = z.object({
+  id: z.string(),
+  agentName: z.string(),
+  status: SessionStatusSchema,
+  config: EvolutionConfigSchema,
+  currentGeneration: z.number().int().min(0),
+  population: z.array(GoalGenomeSchema),
+  bestGenome: GoalGenomeSchema.nullable(),
+  fitnessHistory: z.array(z.array(FitnessScoreSchema)),
+  startedAt: z.string(),
+  lastCheckpointAt: z.string().nullable(),
+  metrics: SessionMetricsSchema,
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
