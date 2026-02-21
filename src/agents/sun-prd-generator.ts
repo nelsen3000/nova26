@@ -130,19 +130,39 @@ function parsePRDResponse(content: string, description: string): PRD {
 /**
  * Normalize PRD structure
  */
-function normalizePRD(parsed: any, description: string): PRD {
+interface ParsedPRD {
+  meta?: {
+    name?: string;
+    version?: string;
+    createdAt?: string;
+  };
+  tasks?: ParsedTask[];
+}
+
+interface ParsedTask {
+  id?: string;
+  title?: string;
+  description?: string;
+  agent?: string;
+  status?: 'pending' | 'ready' | 'running' | 'done' | 'failed' | 'blocked';
+  dependencies?: string[];
+  phase?: number;
+  createdAt?: string;
+}
+
+function normalizePRD(parsed: ParsedPRD, description: string): PRD {
   const now = new Date().toISOString();
   
   // Ensure meta exists
-  const meta = parsed.meta || {
-    name: generateProjectName(description),
-    version: '1.0.0',
-    createdAt: now
+  const meta = {
+    name: parsed.meta?.name ?? generateProjectName(description),
+    version: parsed.meta?.version ?? '1.0.0',
+    createdAt: parsed.meta?.createdAt ?? now
   };
   
   // Ensure tasks is an array
   const tasks: Task[] = Array.isArray(parsed.tasks) 
-    ? parsed.tasks.map((t: any, index: number) => normalizeTask(t, index))
+    ? parsed.tasks.map((t: ParsedTask, index: number) => normalizeTask(t, index))
     : [];
   
   return { meta, tasks };
@@ -151,7 +171,7 @@ function normalizePRD(parsed: any, description: string): PRD {
 /**
  * Normalize a single task
  */
-function normalizeTask(task: any, index: number): Task {
+function normalizeTask(task: ParsedTask, index: number): Task {
   return {
     id: task.id || `task-${index.toString().padStart(3, '0')}`,
     title: task.title || 'Untitled Task',

@@ -30,170 +30,15 @@ import { getAceCurator } from '../ace/curator.js';
 import { getSelfImprovementProtocol } from '../agents/self-improvement.js';
 import { getRehearsalStage } from '../rehearsal/stage.js';
 import type { RehearsalSession } from '../rehearsal/stage.js';
-import type { DreamModeConfig } from '../dream/dream-engine.js';
-import type { ParallelUniverseConfig } from '../universe/parallel-universe.js';
-import type { OvernightEvolutionConfig } from '../evolution/overnight-engine.js';
-import type { SymbiontConfig } from '../symbiont/symbiont-core.js';
-import type { TasteRoomConfig } from '../taste-room/taste-room.js';
-import type { AgentMemoryConfig } from '../memory/agent-memory.js';
-import type { WellbeingConfig } from '../wellbeing/signal-detector.js';
-import type { AdvancedRecoveryConfig } from '../recovery/recovery-index.js';
-import type { AdvancedInitConfig } from '../init/init-index.js';
+// RalphLoopOptions — single source of truth is ralph-loop-types.ts
+import type { RalphLoopOptions } from './ralph-loop-types.js';
+export type { RalphLoopOptions };
 
-// R16-01 Portfolio
-import type { PortfolioEngineConfig } from '../portfolio/index.js';
-import { createPortfolioEngine } from '../portfolio/index.js';
-// R16-03 Generative UI
-import type { LivePreviewConfig } from '../generative-ui/live-preview.js';
-import { createLivePreview } from '../generative-ui/live-preview.js';
-// R16-04 Autonomous Testing
-import type { TestRunConfig } from '../testing/autonomous-runner.js';
-import { createTestRunner } from '../testing/autonomous-runner.js';
-// R17-03 Code Review
-import type { ReviewConfig } from '../review/pr-intelligence.js';
-import { createPRIntelligence } from '../review/pr-intelligence.js';
-// R17-04 Migration
-import { createMigrationEngine } from '../migration/migration-engine.js';
-// R17-05 Debug
-import { createDebugger } from '../debug/debugger.js';
-// R17-06 Accessibility
-import type { A11yConfig } from '../a11y/wcag-engine.js';
-import { createWCAGEngine } from '../a11y/wcag-engine.js';
-// R17-07 Technical Debt
-import type { DebtConfig } from '../debt/technical-debt.js';
-import { createDebtTracker } from '../debt/technical-debt.js';
-// R17-08 Dependency Management
-import { createDependencyAnalyzer } from '../dependency/dependency-analyzer.js';
-// R17-09 Production Feedback
-import type { FeedbackLoopConfig } from '../prod-feedback/feedback-loop.js';
-import { createFeedbackLoop } from '../prod-feedback/feedback-loop.js';
-// R17-10 Health Dashboard
-import type { HealthConfig } from '../health/health-dashboard.js';
-import { createHealthMonitor } from '../health/health-dashboard.js';
-// R17-11 Environment Management
-import { createEnvironmentManager } from '../env/environment-manager.js';
-// R17-12 Orchestration Optimization
-import { createOrchestrationOptimizer } from '../orchestration-opt/optimizer.js';
-
-// Placeholder configs for modules without dedicated config types
-export interface MigrationModuleConfig {
-  maxStepsPerRun?: number;
-  autoRollback?: boolean;
-}
-
-export interface DebugModuleConfig {
-  maxSessionHistory?: number;
-  autoRegressionTests?: boolean;
-}
-
-export interface DependencyModuleConfig {
-  autoUpdateMinor?: boolean;
-  vulnerabilityScanOnBuild?: boolean;
-}
-
-export interface EnvModuleConfig {
-  secretDetection?: boolean;
-  envDiffOnSwitch?: boolean;
-}
-
-export interface OrchestrationModuleConfig {
-  metaLearningEnabled?: boolean;
-  retrospectiveAfterBuild?: boolean;
-}
-
-export interface ModuleContext {
-  portfolioEngine?: ReturnType<typeof createPortfolioEngine>;
-  livePreview?: ReturnType<typeof createLivePreview>;
-  testRunner?: ReturnType<typeof createTestRunner>;
-  codeReviewer?: ReturnType<typeof createPRIntelligence>;
-  migrationEngine?: ReturnType<typeof createMigrationEngine>;
-  debugger?: ReturnType<typeof createDebugger>;
-  wcagEngine?: ReturnType<typeof createWCAGEngine>;
-  debtTracker?: ReturnType<typeof createDebtTracker>;
-  depAnalyzer?: ReturnType<typeof createDependencyAnalyzer>;
-  feedbackLoop?: ReturnType<typeof createFeedbackLoop>;
-  healthMonitor?: ReturnType<typeof createHealthMonitor>;
-  envManager?: ReturnType<typeof createEnvironmentManager>;
-  orchestrationOpt?: ReturnType<typeof createOrchestrationOptimizer>;
-}
-
-export interface RalphLoopOptions {
-  parallelMode?: boolean;
-  concurrency?: number;
-  autoTestFix?: boolean;       // Auto test→fix→retest loop
-  maxTestRetries?: number;     // Max retries for test loop (default: 3)
-  planApproval?: boolean;      // Require plan approval before execution
-  eventStore?: boolean;        // Enable event-sourced session logging
-  sessionMemory?: boolean;     // Enable cross-session memory (learn from tasks)
-  gitWorkflow?: boolean;       // Enable auto branch/commit/PR workflow
-  costTracking?: boolean;      // Enable per-call cost tracking (C-04)
-  budgetLimit?: number;        // Daily budget limit in USD — halt builds when exceeded (C-05)
-  convexSync?: boolean;        // Enable real-time Convex cloud dashboard sync (MEGA-04)
-  agenticMode?: boolean;       // Enable agentic inner loop with tools
-  autonomyLevel?: AutonomyLevel;  // Autonomy level for agent behavior (1-5)
-  // Visionary engine configs (KIMI-VISIONARY)
-  dreamModeEnabled?: boolean;
-  dreamConfig?: DreamModeConfig;
-  parallelUniverseEnabled?: boolean;
-  parallelUniverseConfig?: ParallelUniverseConfig;
-  overnightEvolutionEnabled?: boolean;
-  overnightConfig?: OvernightEvolutionConfig;
-  symbiontEnabled?: boolean;
-  symbiontConfig?: SymbiontConfig;
-  tasteRoomEnabled?: boolean;
-  tasteRoomConfig?: TasteRoomConfig;
-  // Agent memory (R16-02)
-  agentMemoryEnabled?: boolean;
-  memoryConfig?: AgentMemoryConfig;
-  // Developer wellbeing (R16-05)
-  wellbeingEnabled?: boolean;
-  wellbeingConfig?: WellbeingConfig;
-  // Advanced Recovery (R17-01)
-  advancedRecoveryEnabled?: boolean;
-  advancedRecoveryConfig?: AdvancedRecoveryConfig;
-  // Advanced Init (R17-02)
-  advancedInitEnabled?: boolean;
-  advancedInitConfig?: AdvancedInitConfig;
-  // Portfolio Intelligence (R16-01)
-  portfolioEnabled?: boolean;
-  portfolioConfig?: PortfolioEngineConfig;
-  // Generative UI (R16-03)
-  generativeUIEnabled?: boolean;
-  generativeUIConfig?: LivePreviewConfig;
-  // Autonomous Testing (R16-04)
-  autonomousTestingEnabled?: boolean;
-  testRunConfig?: TestRunConfig;
-  // Code Review (R17-03)
-  codeReviewEnabled?: boolean;
-  codeReviewConfig?: ReviewConfig;
-  // Migration Engine (R17-04)
-  migrationEnabled?: boolean;
-  migrationConfig?: MigrationModuleConfig;
-  // Debugging (R17-05)
-  debugEngineEnabled?: boolean;
-  debugConfig?: DebugModuleConfig;
-  // Accessibility (R17-06)
-  accessibilityEnabled?: boolean;
-  accessibilityConfig?: A11yConfig;
-  // Technical Debt (R17-07)
-  debtScoringEnabled?: boolean;
-  debtConfig?: DebtConfig;
-  // Dependency Management (R17-08)
-  dependencyManagementEnabled?: boolean;
-  dependencyConfig?: DependencyModuleConfig;
-  // Production Feedback (R17-09)
-  productionFeedbackEnabled?: boolean;
-  productionFeedbackConfig?: FeedbackLoopConfig;
-  // Health Dashboard (R17-10)
-  healthDashboardEnabled?: boolean;
-  healthConfig?: HealthConfig;
-  // Environment Management (R17-11)
-  envManagementEnabled?: boolean;
-  envConfig?: EnvModuleConfig;
-  // Orchestration Optimization (R17-12)
-  orchestrationOptimizationEnabled?: boolean;
-  orchestrationConfig?: OrchestrationModuleConfig;
-}
+// Lifecycle hooks system (MX-02)
+import { HookRegistry } from './lifecycle-hooks.js';
+import type { BuildContext, TaskContext, TaskResult, BuildResult } from './lifecycle-hooks.js';
+import { wireFeatureHooks } from './lifecycle-wiring.js';
+import { wireAdaptersLive } from './adapter-wiring.js';
 
 // --- Planning phases (pre-execution plan approval) ---
 
@@ -405,96 +250,37 @@ export async function ralphLoop(
     }
   }
 
-  // --- Initialize Convex Bridge (S6 — dashboard persistence layer) ---
-  const bridge = getConvexBridge();
-  if (bridge) {
-    await bridge.logActivity({
-      type: 'build_started',
-      buildId: convexClient?.buildId ?? undefined,
-      timestamp: new Date().toISOString(),
-    });
+  // --- Initialize lifecycle hooks (MX-02) ---
+  const hookRegistry = new HookRegistry();
+  const buildId = crypto.randomUUID();
+  const buildStartTime = Date.now();
+
+  if (options) {
+    // Wire R16/R17 feature stubs
+    const featureResult = wireFeatureHooks(hookRegistry, options);
+    if (featureResult.wiredCount > 0) {
+      console.log(`Lifecycle hooks: ${featureResult.wiredCount} features wired (${featureResult.totalHooks} hooks)`);
+    }
+
+    // Wire R22-R24 real adapters
+    const adapterResult = wireAdaptersLive(hookRegistry, options);
+    if (adapterResult.wiredCount > 0) {
+      console.log(`Live adapters: ${adapterResult.wiredCount} modules wired (${adapterResult.totalHooks} hooks)`);
+    }
+    for (const err of adapterResult.errors) {
+      console.error(`  Adapter wiring error [${err.module}]: ${err.error}`);
+    }
   }
 
-  // --- Initialize R16/R17 Modules ---
-  const moduleContext: ModuleContext = {};
-
-  // R16-01 Portfolio Intelligence
-  if (options?.portfolioEnabled) {
-    moduleContext.portfolioEngine = createPortfolioEngine(options.portfolioConfig);
-    console.log('Portfolio Intelligence: enabled');
-  }
-
-  // R16-03 Generative UI
-  if (options?.generativeUIEnabled) {
-    moduleContext.livePreview = createLivePreview(options.generativeUIConfig);
-    console.log('Generative UI: enabled');
-  }
-
-  // R16-04 Autonomous Testing
-  if (options?.autonomousTestingEnabled) {
-    moduleContext.testRunner = createTestRunner(options.testRunConfig);
-    console.log('Autonomous Testing: enabled');
-  }
-
-  // R17-03 Code Review
-  if (options?.codeReviewEnabled) {
-    moduleContext.codeReviewer = createPRIntelligence(options.codeReviewConfig);
-    console.log('Code Review: enabled');
-  }
-
-  // R17-04 Migration Engine
-  if (options?.migrationEnabled) {
-    moduleContext.migrationEngine = createMigrationEngine(options.migrationConfig);
-    console.log('Migration Engine: enabled');
-  }
-
-  // R17-05 Debug Engine
-  if (options?.debugEngineEnabled) {
-    moduleContext.debugger = createDebugger(options.debugConfig);
-    console.log('Debug Engine: enabled');
-  }
-
-  // R17-06 Accessibility (WCAG)
-  if (options?.accessibilityEnabled) {
-    moduleContext.wcagEngine = createWCAGEngine(options.accessibilityConfig);
-    console.log('Accessibility (WCAG): enabled');
-  }
-
-  // R17-07 Technical Debt
-  if (options?.debtScoringEnabled) {
-    moduleContext.debtTracker = createDebtTracker(options.debtConfig);
-    console.log('Technical Debt: enabled');
-  }
-
-  // R17-08 Dependency Management
-  if (options?.dependencyManagementEnabled) {
-    moduleContext.depAnalyzer = createDependencyAnalyzer(options.dependencyConfig);
-    console.log('Dependency Management: enabled');
-  }
-
-  // R17-09 Production Feedback
-  if (options?.productionFeedbackEnabled) {
-    moduleContext.feedbackLoop = createFeedbackLoop(options.productionFeedbackConfig);
-    console.log('Production Feedback: enabled');
-  }
-
-  // R17-10 Health Dashboard
-  if (options?.healthDashboardEnabled) {
-    moduleContext.healthMonitor = createHealthMonitor(options.healthConfig);
-    console.log('Health Dashboard: enabled');
-  }
-
-  // R17-11 Environment Management
-  if (options?.envManagementEnabled) {
-    moduleContext.envManager = createEnvironmentManager(options.envConfig);
-    console.log('Environment Management: enabled');
-  }
-
-  // R17-12 Orchestration Optimization
-  if (options?.orchestrationOptimizationEnabled) {
-    moduleContext.orchestrationOpt = createOrchestrationOptimizer(options.orchestrationConfig);
-    console.log('Orchestration Optimization: enabled');
-  }
+  // Execute onBeforeBuild hooks
+  const buildContext: BuildContext = {
+    buildId,
+    prdId: prd.meta.name,
+    prdName: prd.meta.name,
+    startedAt: new Date().toISOString(),
+    options: (options ?? {}) as Record<string, unknown>,
+  };
+  await hookRegistry.executePhase('onBeforeBuild', buildContext);
 
   let maxIterations = prd.tasks.length * 3; // Prevent infinite loops
   let iteration = 0;
@@ -562,7 +348,7 @@ export async function ralphLoop(
         
         // Process tasks in parallel
         const taskResults = await parallelRunner.runPhase(independentTasks, async (task) => {
-          await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient, moduleContext);
+          await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient, hookRegistry);
         });
         
         // Check results and promote tasks
@@ -587,7 +373,7 @@ export async function ralphLoop(
     console.log(`\n--- Processing: ${task.id} (${task.title}) [Phase ${task.phase}] ---`);
     
     try {
-      await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient, moduleContext);
+      await processTask(task, prd, prdPath, llmCaller, useStructuredOutput, tracer, sessionId, options, eventStore, gitWf, convexClient, hookRegistry);
 
       // Promote pending tasks after each task completes
       promotePendingTasks(prd);
@@ -608,21 +394,17 @@ export async function ralphLoop(
   // Convex sync: complete build at session end (MEGA-04)
   await convexClient?.completeBuild(allDone);
 
-  // Bridge: log final build result + completion activity
-  if (bridge) {
-    await bridge.logBuild({
-      prdId: prd.meta.name,
-      prdName: prd.meta.name,
-      status: allDone ? 'completed' : 'failed',
-      startedAt: new Date().toISOString(),
-      completedAt: new Date().toISOString(),
-    });
-    await bridge.logActivity({
-      type: allDone ? 'build_completed' : 'build_failed',
-      buildId: convexClient?.buildId ?? undefined,
-      timestamp: new Date().toISOString(),
-    });
-  }
+  // Execute onBuildComplete hooks (MX-02)
+  const buildResult: BuildResult = {
+    buildId,
+    prdId: prd.meta.name,
+    totalTasks: prd.tasks.length,
+    successfulTasks: prd.tasks.filter(t => t.status === 'done').length,
+    failedTasks: prd.tasks.filter(t => t.status === 'failed').length,
+    totalDurationMs: Date.now() - buildStartTime,
+    averageAceScore: 0,
+  };
+  await hookRegistry.executePhase('onBuildComplete', buildResult);
 
   // Git workflow: finalize (create PR if all tasks done)
   if (gitWf && allDone) {
@@ -917,6 +699,56 @@ function formatTodos(task: Task): string {
   return lines.join('\n');
 }
 
+// --- Shared failure handler for processTask() failure paths ---
+
+interface TaskFailureParams {
+  task: Task;
+  prd: PRD;
+  prdPath: string;
+  response: LLMResponse;
+  tracer: ReturnType<typeof getTracer>;
+  trace: ReturnType<ReturnType<typeof getTracer>['startTrace']>;
+  failedMessage: string;
+  sessionId: string | null;
+  recordVaultFailure?: boolean;
+}
+
+async function handleTaskFailure({
+  task, prd, prdPath, response, tracer, trace,
+  failedMessage, sessionId, recordVaultFailure = true,
+}: TaskFailureParams): Promise<never> {
+  updateTaskStatus(prd, task.id, 'failed', failedMessage);
+  savePRD(prd, prdPath);
+
+  recordTaskResult(
+    task.agent, task.id, false, response.tokens, response.duration,
+    task.attempts, failedMessage, sessionId || undefined,
+  );
+
+  if (recordVaultFailure) {
+    try {
+      const vault = getTasteVault();
+      await vault.learnFromBuildResult(task.title, task.description, '', task.agent, false);
+    } catch {
+      // Vault unavailable — skip silently
+    }
+  }
+
+  const appliedRuleIds = getInjectedPlaybookRuleIds(task.id);
+  await getSelfImprovementProtocol().recordOutcome(task.agent, {
+    taskId: task.id,
+    taskTitle: task.title,
+    taskType: String(task.phase ?? task.title.split(' ')[0]),
+    success: false,
+    appliedRuleIds,
+  });
+  clearInjectedPlaybookRuleIds(task.id);
+  await getPlaybookManager().recordTaskApplied(task.agent);
+
+  tracer.endTrace(trace, 'failed', failedMessage);
+  throw new Error(failedMessage);
+}
+
 async function processTask(
   task: Task,
   prd: PRD,
@@ -929,16 +761,28 @@ async function processTask(
   eventStore?: EventStore,
   gitWf?: ReturnType<typeof initWorkflow>,
   convexClient?: ConvexSyncClient,
-  moduleContext?: ModuleContext
+  hookRegistry?: HookRegistry
 ): Promise<void> {
   const trace = tracer.startTrace(sessionId, task.id, task.agent);
+  const taskStartTime = Date.now();
 
   // Event store: task_start
   eventStore?.emit('task_start', { title: task.title, agent: task.agent, phase: task.phase }, task.id, task.agent);
   
   // Convex sync: log task as running (MEGA-04)
   await convexClient?.logTask(task, 'running');
-  
+
+  // Execute onBeforeTask lifecycle hooks (MX-02)
+  if (hookRegistry) {
+    const taskContext: TaskContext = {
+      taskId: task.id,
+      title: task.title,
+      agentName: task.agent,
+      dependencies: task.dependencies,
+    };
+    await hookRegistry.executePhase('onBeforeTask', taskContext);
+  }
+
   // Initialize todos for complex tasks
   if (shouldCreateTodos(task) && !task.todos) {
     task.todos = createInitialTodos(task);
@@ -1098,6 +942,19 @@ async function processTask(
     console.log(`LLM call failed: ${llmError.message}`);
     eventStore?.emit('llm_call_fail', { error: llmError.message }, task.id, task.agent);
     if (loopOptions?.sessionMemory) learnFromFailure(task.agent, task.title, llmError.message);
+
+    // Execute onTaskError lifecycle hooks (MX-02)
+    if (hookRegistry) {
+      const errorResult: TaskResult = {
+        taskId: task.id,
+        agentName: task.agent,
+        success: false,
+        error: llmError.message,
+        durationMs: Date.now() - taskStartTime,
+      };
+      await hookRegistry.executePhase('onTaskError', errorResult);
+    }
+
     updateTaskStatus(prd, task.id, 'failed', llmError.message);
     savePRD(prd, prdPath);
     // MEGA-05: Record failed task result for analytics
@@ -1140,25 +997,11 @@ async function processTask(
           response = await callLLM(systemPrompt, retryPrompt, task.agent);
         }
       } catch {
-        const failedMessage = `Gates failed after retry: ${getGatesSummary(gateResults)}`;
-        updateTaskStatus(prd, task.id, 'failed', failedMessage);
-        savePRD(prd, prdPath);
-        // MEGA-05: Record failed task result for analytics
-        recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
-        
-        // ACE: record failure outcome
-        await getSelfImprovementProtocol().recordOutcome(task.agent, {
-          taskId: task.id,
-          taskTitle: task.title,
-          taskType: String(task.phase ?? task.title.split(' ')[0]),
-          success: false,
-          appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+        await handleTaskFailure({
+          task, prd, prdPath, response, tracer, trace,
+          failedMessage: `Gates failed after retry: ${getGatesSummary(gateResults)}`,
+          sessionId, recordVaultFailure: false,
         });
-        clearInjectedPlaybookRuleIds(task.id);
-        await getPlaybookManager().recordTaskApplied(task.agent);
-        
-        tracer.endTrace(trace, 'failed', failedMessage);
-        throw new Error(failedMessage);
       }
       
       const retryGateResults = await runGates(task, response, {
@@ -1169,62 +1012,18 @@ async function processTask(
       console.log(getGatesSummary(retryGateResults));
       
       if (!allGatesPassed(retryGateResults)) {
-        const failedMessage = `Gates failed after retry: ${getGatesSummary(retryGateResults)}`;
-        updateTaskStatus(prd, task.id, 'failed', failedMessage);
-        savePRD(prd, prdPath);
-        // MEGA-05: Record failed task result for analytics
-        recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
-        
-        // Taste Vault: record failure as Mistake node
-        try {
-          const vault = getTasteVault();
-          await vault.learnFromBuildResult(task.title, task.description, '', task.agent, false);
-        } catch {
-          // Vault unavailable — skip silently
-        }
-        
-        // ACE: record failure outcome
-        await getSelfImprovementProtocol().recordOutcome(task.agent, {
-          taskId: task.id,
-          taskTitle: task.title,
-          taskType: String(task.phase ?? task.title.split(' ')[0]),
-          success: false,
-          appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+        await handleTaskFailure({
+          task, prd, prdPath, response, tracer, trace,
+          failedMessage: `Gates failed after retry: ${getGatesSummary(retryGateResults)}`,
+          sessionId,
         });
-        clearInjectedPlaybookRuleIds(task.id);
-        await getPlaybookManager().recordTaskApplied(task.agent);
-        
-        tracer.endTrace(trace, 'failed', failedMessage);
-        throw new Error(failedMessage);
       }
     } else {
-      const failedMessage = `Gates failed: ${getGatesSummary(gateResults)}`;
-      updateTaskStatus(prd, task.id, 'failed', failedMessage);
-      savePRD(prd, prdPath);
-      // MEGA-05: Record failed task result for analytics
-      recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, failedMessage, sessionId || undefined);
-      
-      // Taste Vault: record failure as Mistake node
-      try {
-        const vault = getTasteVault();
-        await vault.learnFromBuildResult(task.title, task.description, '', task.agent, false);
-      } catch {
-        // Vault unavailable — skip silently
-      }
-      
-      // ACE: record failure outcome
-      await getSelfImprovementProtocol().recordOutcome(task.agent, {
-        taskId: task.id,
-        taskTitle: task.title,
-        taskType: String(task.phase ?? task.title.split(' ')[0]),
-        success: false,
-        appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+      await handleTaskFailure({
+        task, prd, prdPath, response, tracer, trace,
+        failedMessage: `Gates failed: ${getGatesSummary(gateResults)}`,
+        sessionId,
       });
-      clearInjectedPlaybookRuleIds(task.id);
-      await getPlaybookManager().recordTaskApplied(task.agent);
-      
-      tracer.endTrace(trace, 'failed', failedMessage);
-      throw new Error(failedMessage);
     }
   }
   
@@ -1245,39 +1044,30 @@ async function processTask(
     
     if (councilDecision.finalVerdict === 'rejected') {
       console.log(`Council rejected: ${councilDecision.summary}`);
-      updateTaskStatus(prd, task.id, 'failed', `Council rejected: ${councilDecision.summary}`);
-      savePRD(prd, prdPath);
-      // MEGA-05: Record failed task result for analytics
-      recordTaskResult(task.agent, task.id, false, response.tokens, response.duration, task.attempts, `Council rejected: ${councilDecision.summary}`, sessionId || undefined);
-      
-      // Taste Vault: record failure as Mistake node
-      try {
-        const vault = getTasteVault();
-        await vault.learnFromBuildResult(task.title, task.description, '', task.agent, false);
-      } catch {
-        // Vault unavailable — skip silently
-      }
-      
-      // ACE: record failure outcome
-      await getSelfImprovementProtocol().recordOutcome(task.agent, {
-        taskId: task.id,
-        taskTitle: task.title,
-        taskType: String(task.phase ?? task.title.split(' ')[0]),
-        success: false,
-        appliedRuleIds: getInjectedPlaybookRuleIds(task.id),
+      await handleTaskFailure({
+        task, prd, prdPath, response, tracer, trace,
+        failedMessage: `Council rejected: ${councilDecision.summary}`,
+        sessionId,
       });
-      clearInjectedPlaybookRuleIds(task.id);
-      await getPlaybookManager().recordTaskApplied(task.agent);
-      
-      tracer.endTrace(trace, 'failed', councilDecision.summary);
-      throw new Error(`Council rejected: ${councilDecision.summary}`);
     }
   }
   
+  // Execute onAfterTask lifecycle hooks (MX-02)
+  if (hookRegistry) {
+    const taskResult: TaskResult = {
+      taskId: task.id,
+      agentName: task.agent,
+      success: true,
+      output: response.content.substring(0, 500),
+      durationMs: Date.now() - taskStartTime,
+    };
+    await hookRegistry.executePhase('onAfterTask', taskResult);
+  }
+
   // Save output
   const outputPath = await saveTaskOutput(task, response);
   setTaskOutput(prd, task.id, outputPath);
-  
+
   // Mark all todos as completed
   if (task.todos) {
     for (const todo of task.todos) {

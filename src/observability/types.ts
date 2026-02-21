@@ -1,231 +1,277 @@
-// Eval Framework Types - Core type definitions for evaluation framework
-// Spec: .nova/specs/grok-r23-eternal-symphony.md (R23-05)
+// KIMI-R23-05: Cinematic Observability & Eval Suite - Core Types
+// Type definitions for distributed tracing and evaluation framework
 
-import { z } from 'zod';
+// ============================================================================
+// Span Types
+// ============================================================================
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// Core Type Schemas
-// ═══════════════════════════════════════════════════════════════════════════════
+/**
+ * Span type categories for classification
+ */
+export type SpanType = 
+  | 'agent-call' 
+  | 'llm-inference' 
+  | 'tool-use' 
+  | 'gate-check' 
+  | 'user-interaction';
 
-export const EvalCaseSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string().optional(),
-  input: z.union([z.string(), z.object({}).passthrough()]),
-  expectedOutput: z.union([z.string(), z.object({}).passthrough(), z.array(z.any())]),
-  tags: z.array(z.string()).default([]),
-  threshold: z.number().min(0).max(1).default(0.8),
-  timeout: z.number().default(30000),
-  metadata: z.record(z.any()).optional(),
-});
+/**
+ * Span execution status
+ */
+export type SpanStatus = 'running' | 'success' | 'failure';
 
-export const EvalResultSchema = z.object({
-  caseId: z.string(),
-  success: z.boolean(),
-  actualOutput: z.any(),
-  score: z.number().min(0).max(1),
-  latency: z.number(),
-  error: z.string().optional(),
-  timestamp: z.string().datetime(),
-  tokensUsed: z.number().optional(),
-  metadata: z.record(z.any()).optional(),
-});
+/**
+ * Cinematic span - atomic unit of observability
+ * Captures every agent call, LLM inference, tool use, gate check, and user interaction
+ */
+export interface CinematicSpan {
+  /** Unique span identifier (UUID v4) */
+  id: string;
+  /** Trace ID for grouping related spans */
+  traceId: string;
+  /** Parent span ID for hierarchical traces */
+  parentId?: string;
+  /** Human-readable span name */
+  name: string;
+  /** Agent that created this span */
+  agentId: string;
+  /** Span classification type */
+  type: SpanType;
+  /** ISO 8601 timestamp when span started */
+  startTime: string;
+  /** ISO 8601 timestamp when span ended (undefined if running) */
+  endTime?: string;
+  /** Duration in milliseconds (undefined if running) */
+  durationMs?: number;
+  /** Arbitrary metadata for extensibility */
+  metadata: Record<string, unknown>;
+  /** Taste vault relevance score (0-1, higher = more relevant to user taste) */
+  tasteVaultScore?: number;
+  /** Current execution status */
+  status: SpanStatus;
+}
 
-export const EvalSuiteSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string().optional(),
-  cases: z.array(EvalCaseSchema),
-  scoringFunction: z.string().default('exactMatch'),
-  tags: z.array(z.string()).default([]),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  metadata: z.record(z.any()).optional(),
-});
+/**
+ * Span creation input (omits auto-generated fields)
+ */
+export type SpanInput = Omit<CinematicSpan, 'id'>;
 
-export const ScoringFunctionSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  scorer: z.function(
-    z.tuple([z.any(), z.any()]),
-    z.number().min(0).max(1)
-  ),
-});
+// ============================================================================
+// Evaluator Types
+// ============================================================================
 
-export const EvalRunSchema = z.object({
-  id: z.string(),
-  suiteId: z.string(),
-  targetFn: z.string(), // Function identifier/name
-  results: z.array(EvalResultSchema),
-  startedAt: z.string().datetime(),
-  completedAt: z.string().datetime(),
-  summary: z.object({
-    total: z.number(),
-    passed: z.number(),
-    failed: z.number(),
-    avgScore: z.number(),
-    avgLatency: z.number(),
-    p50Latency: z.number(),
-    p95Latency: z.number(),
-  }),
-  metadata: z.record(z.any()).optional(),
-});
+/**
+ * Evaluator algorithm types
+ */
+export type EvaluatorType = 'llm-judge' | 'heuristic' | 'human-labeled' | 'taste-vault';
 
-export const EvalSummarySchema = z.object({
-  suiteId: z.string(),
-  runId: z.string(),
-  timestamp: z.string().datetime(),
-  stats: z.object({
-    total: z.number(),
-    passed: z.number(),
-    failed: z.number(),
-    passRate: z.number(),
-    avgScore: z.number(),
-    avgLatency: z.number(),
-  }),
-  topFailures: z.array(z.object({
-    caseId: z.string(),
-    caseName: z.string(),
-    score: z.number(),
-    error: z.string().optional(),
-  })).optional(),
-});
+/**
+ * Individual evaluator configuration
+ */
+export interface EvaluatorConfig {
+  /** Evaluator name for identification */
+  name: string;
+  /** Evaluation algorithm type */
+  type: EvaluatorType;
+  /** Type-specific configuration */
+  config: Record<string, unknown>;
+}
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// TypeScript Types
-// ═══════════════════════════════════════════════════════════════════════════════
+/**
+ * Dataset entry for evaluation
+ */
+export interface EvalDatasetEntry {
+  /** Input data for the test case */
+  input: unknown;
+  /** Expected/ground truth output */
+  expectedOutput: unknown;
+  /** Classification tags for filtering */
+  tags: string[];
+}
 
-export type EvalCase = z.infer<typeof EvalCaseSchema>;
-export type EvalResult = z.infer<typeof EvalResultSchema>;
-export type EvalSuite = z.infer<typeof EvalSuiteSchema>;
-export type ScoringFunctionType = z.infer<typeof ScoringFunctionSchema>;
-export type EvalRun = z.infer<typeof EvalRunSchema>;
-export type EvalSummary = z.infer<typeof EvalSummarySchema>;
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// Additional Types for Runner
-// ═══════════════════════════════════════════════════════════════════════════════
-
-export interface EvalRunOptions {
-  concurrency?: number;
-  timeout?: number;
-  progressCallback?: (completed: number, total: number, currentCase: string) => void;
-  stopOnFailure?: boolean;
+/**
+ * Individual evaluation result
+ */
+export interface EvalResult {
+  /** Score from 0-1 (higher is better) */
+  score: number;
+  /** Which evaluator produced this result */
+  evaluator: string;
+  /** Human-readable details */
+  details: string;
+  /** Optional metadata from evaluation */
   metadata?: Record<string, unknown>;
 }
 
-export interface EvalProgress {
-  completed: number;
-  total: number;
-  currentCase: string;
-  currentScore: number;
+// ============================================================================
+// Eval Suite Types
+// ============================================================================
+
+/**
+ * Complete evaluation suite definition
+ */
+export interface EvalSuite {
+  /** Unique suite identifier */
+  id: string;
+  /** Human-readable suite name */
+  name: string;
+  /** Configured evaluators for this suite */
+  evaluators: EvaluatorConfig[];
+  /** Test dataset entries */
+  dataset: EvalDatasetEntry[];
+  /** Optional: previous run results */
+  results?: EvalResult[];
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// Golden Set Types
-// ═══════════════════════════════════════════════════════════════════════════════
+/**
+ * Eval suite execution result
+ */
+export interface EvalSuiteResult {
+  /** Whether all evaluators passed thresholds */
+  passed: boolean;
+  /** Aggregated scores by evaluator name */
+  scores: Record<string, number>;
+  /** Detailed result messages */
+  details: string[];
+  /** Per-entry detailed results */
+  entryResults?: Array<{
+    entryIndex: number;
+    scores: Record<string, number>;
+    passed: boolean;
+  }>;
+}
 
-export const GoldenSetSchema = EvalSuiteSchema.extend({
-  version: z.number().default(1),
-  promotedFromRunId: z.string().optional(),
-  promotedAt: z.string().datetime(),
-  promotedBy: z.string().optional(),
-  baselineScores: z.record(z.number()).optional(),
-});
+// ============================================================================
+// Remediation Types
+// ============================================================================
 
-export type GoldenSet = z.infer<typeof GoldenSetSchema>;
+/**
+ * Remediation action types
+ */
+export type RemediationAction = 
+  | 'alert' 
+  | 'rollback' 
+  | 'circuit-break' 
+  | 'retry' 
+  | 'escalate';
 
-export interface RegressionReport {
-  suiteId: string;
-  runId: string;
-  comparedToGolden: string;
+/**
+ * Auto-remediation configuration
+ */
+export interface RemediationConfig {
+  /** Taste score drop threshold (0-1) that triggers remediation */
+  tasteScoreDropThreshold: number;
+  /** Actions to take when threshold is breached */
+  actions: RemediationAction[];
+  /** Cooldown period in ms between remediations */
+  cooldownMs: number;
+}
+
+/**
+ * Remediation event record
+ */
+export interface RemediationEvent {
+  /** Event timestamp */
   timestamp: string;
-  regressions: Array<{
-    caseId: string;
-    caseName: string;
-    goldenScore: number;
-    currentScore: number;
-    delta: number;
+  /** Triggering span/trace ID */
+  triggerId: string;
+  /** Detected score drop (0-1) */
+  scoreDrop: number;
+  /** Actions taken */
+  actionsTaken: RemediationAction[];
+  /** Whether remediation succeeded */
+  resolved: boolean;
+}
+
+// ============================================================================
+// Integration Types
+// ============================================================================
+
+/**
+ * Braintrust dataset format
+ */
+export interface BraintrustDataset {
+  /** Dataset identifier */
+  id: string;
+  /** Dataset name */
+  name: string;
+  /** Project identifier */
+  projectId: string;
+  /** Dataset entries */
+  data: Array<{
+    id: string;
+    input: unknown;
+    expected?: unknown;
+    metadata?: Record<string, unknown>;
   }>;
-  improvements: Array<{
-    caseId: string;
-    caseName: string;
-    goldenScore: number;
-    currentScore: number;
-    delta: number;
-  }>;
-  unchanged: Array<{
-    caseId: string;
-    caseName: string;
-    score: number;
-  }>;
-  summary: {
-    totalCases: number;
-    regressions: number;
-    improvements: number;
-    unchanged: number;
-    avgDelta: number;
+}
+
+/**
+ * LangSmith trace run format
+ */
+export interface LangSmithTrace {
+  /** Run ID */
+  id: string;
+  /** Trace/session ID */
+  traceId: string;
+  /** Run name */
+  name: string;
+  /** Run type */
+  runType: string;
+  /** Start time */
+  startTime: string;
+  /** End time */
+  endTime?: string;
+  /** Inputs */
+  inputs: Record<string, unknown>;
+  /** Outputs */
+  outputs?: Record<string, unknown>;
+  /** Error info */
+  error?: string;
+  /** Child runs */
+  childRuns: LangSmithTrace[];
+}
+
+// ============================================================================
+// Configuration Types
+// ============================================================================
+
+/**
+ * Cinematic observability configuration
+ */
+export interface CinematicConfig {
+  /** Enable 100% span capture */
+  fullCapture: boolean;
+  /** Sampling rate (1.0 = 100%, used when fullCapture is false) */
+  sampleRate: number;
+  /** Maximum spans to retain in memory */
+  maxInMemorySpans: number;
+  /** Auto-remediation configuration */
+  remediation: RemediationConfig;
+  /** Braintrust integration config */
+  braintrust?: {
+    apiKey: string;
+    projectName: string;
+    enabled: boolean;
+  };
+  /** LangSmith integration config */
+  langsmith?: {
+    apiKey: string;
+    endpoint: string;
+    enabled: boolean;
   };
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// Store Types
-// ═══════════════════════════════════════════════════════════════════════════════
-
-export interface EvalStoreOptions {
-  directory?: string;
-  maxRunsPerSuite?: number;
-}
-
-export interface RunHistoryEntry {
-  runId: string;
-  suiteId: string;
-  timestamp: string;
-  passRate: number;
-  avgScore: number;
-  avgLatency: number;
-}
-
-export interface TrendAnalysis {
-  suiteId: string;
-  window: number;
-  direction: 'improving' | 'degrading' | 'stable';
-  scoreChange: number;
-  latencyChange: number;
-  passRateChange: number;
-  confidence: number;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// Report Types
-// ═══════════════════════════════════════════════════════════════════════════════
-
-export type ReportFormat = 'markdown' | 'json' | 'html';
-
-export interface ReportOptions {
-  format: ReportFormat;
-  includePassedCases?: boolean;
-  includeDetails?: boolean;
-  maxFailures?: number;
-}
-
-export interface DiffReport {
-  runA: string;
-  runB: string;
-  suiteId: string;
-  timestamp: string;
-  differences: Array<{
-    caseId: string;
-    caseName: string;
-    scoreA: number;
-    scoreB: number;
-    delta: number;
-    significant: boolean;
-  }>;
-  summary: {
-    totalCases: number;
-    improved: number;
-    regressed: number;
-    unchanged: number;
-  };
-}
+/**
+ * Default configuration values
+ */
+export const DEFAULT_CINEMATIC_CONFIG: CinematicConfig = {
+  fullCapture: true,
+  sampleRate: 1.0,
+  maxInMemorySpans: 10000,
+  remediation: {
+    tasteScoreDropThreshold: 0.08, // 8% drop threshold
+    actions: ['alert', 'escalate'],
+    cooldownMs: 60000, // 1 minute cooldown
+  },
+};

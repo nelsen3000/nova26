@@ -1,131 +1,292 @@
-// Persistent Visual Workflow Engine — Type Definitions
-// KIMI-R23-01 | Feb 2026
+// Visual Workflow Engine - Type Definitions (KIMI-R23-01)
 
-export type NodeStatus = 'pending' | 'running' | 'completed' | 'failed' | 'skipped' | 'rewound';
-export type NodeType = 'agent' | 'condition' | 'parallel' | 'join' | 'checkpoint' | 'human-in-loop';
-export type WorkflowStatus = 'idle' | 'running' | 'paused' | 'completed' | 'failed' | 'rewound';
-export type EventType =
-  | 'workflow.started'
-  | 'workflow.completed'
-  | 'workflow.failed'
-  | 'workflow.paused'
-  | 'workflow.rewound'
-  | 'node.started'
-  | 'node.completed'
-  | 'node.failed'
-  | 'node.skipped'
-  | 'checkpoint.created'
-  | 'human.intervention';
+/**
+ * Node types supported by the visual workflow engine
+ */
+export type VisualNodeType = 'agent' | 'gate' | 'decision' | 'parallel' | 'merge';
 
-export interface VisualPosition {
+/**
+ * Node status during workflow execution
+ */
+export type VisualNodeStatus = 'pending' | 'running' | 'complete' | 'failed' | 'skipped';
+
+/**
+ * Event types for temporal tracking
+ */
+export type TemporalEventType = 'node-start' | 'node-complete' | 'node-fail' | 'rewind' | 'fork';
+
+/**
+ * Represents a persistent workflow with full state management
+ */
+export interface PersistentWorkflow {
+  /** Unique workflow identifier */
+  id: string;
+  /** Human-readable workflow name */
+  name: string;
+  /** Visual nodes in the workflow */
+  nodes: VisualNode[];
+  /** Edges connecting nodes */
+  edges: WorkflowEdge[];
+  /** Current workflow state */
+  state: WorkflowState;
+  /** Temporal event log for replay/rewind */
+  timeline: TemporalEvent[];
+  /** Creation timestamp */
+  createdAt: string;
+  /** Last modification timestamp */
+  lastModified: string;
+}
+
+/**
+ * Edge connecting two nodes in the workflow graph
+ */
+export interface WorkflowEdge {
+  /** Source node ID */
+  from: string;
+  /** Target node ID */
+  to: string;
+  /** Optional condition expression for conditional edges */
+  condition?: string;
+}
+
+/**
+ * A visual node in the workflow graph
+ */
+export interface VisualNode {
+  /** Unique node identifier */
+  id: string;
+  /** Node type determining behavior */
+  type: VisualNodeType;
+  /** Associated agent ID (for agent nodes) */
+  agentId?: string;
+  /** LangGraph-compatible configuration */
+  config: LangGraphNodeConfig;
+  /** Visual position in the editor */
+  position: NodePosition;
+  /** Current execution status */
+  status: VisualNodeStatus;
+  /** Optional node label */
+  label?: string;
+  /** Node metadata */
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * 2D position for visual rendering
+ */
+export interface NodePosition {
   x: number;
   y: number;
 }
 
+/**
+ * LangGraph-compatible node configuration
+ */
 export interface LangGraphNodeConfig {
-  channelBindings: Record<string, string>;  // maps node output → channel name
-  conditionalEdges?: Record<string, string>; // conditionKey → nextNodeId
-  maxRetries?: number;
+  /** Entry function name for this node */
+  entryFunction: string;
+  /** State schema defining input/output structure */
+  stateSchema: Record<string, unknown>;
+  /** Optional retry policy for failed executions */
+  retryPolicy?: RetryPolicy;
+  /** Timeout in milliseconds */
   timeoutMs?: number;
-  checkpointAfter?: boolean;
 }
 
-export interface VisualNode {
-  id: string;
-  label: string;
-  type: NodeType;
-  agentId?: string;        // which Nova26 agent handles this node
-  status: NodeStatus;
-  position: VisualPosition;
-  config: LangGraphNodeConfig;
-  inputChannels: string[];
-  outputChannels: string[];
-  startedAt?: number;
-  completedAt?: number;
-  error?: string;
-  metadata: Record<string, unknown>;
+/**
+ * Retry policy for node execution
+ */
+export interface RetryPolicy {
+  /** Maximum number of retry attempts */
+  maxRetries: number;
+  /** Backoff delay in milliseconds between retries */
+  backoffMs: number;
+  /** Maximum backoff delay */
+  maxBackoffMs?: number;
+  /** Retry strategy */
+  strategy?: 'linear' | 'exponential' | 'fixed';
 }
 
-export interface WorkflowEdge {
-  id: string;
-  fromNodeId: string;
-  toNodeId: string;
-  channel: string;
-  label?: string;
-  conditional?: boolean;
-}
-
-export interface TemporalEvent {
-  id: string;
-  workflowId: string;
-  eventType: EventType;
-  nodeId?: string;
-  timestamp: number;
-  sequenceNumber: number;
-  payload: Record<string, unknown>;
-  checkpointId?: string;
-}
-
-export interface WorkflowCheckpoint {
-  id: string;
-  workflowId: string;
-  sequenceNumber: number;
-  timestamp: number;
-  nodeStates: Record<string, NodeStatus>;
-  channelValues: Record<string, unknown>;
-  activeNodeIds: string[];
-  label?: string;  // user-defined label (e.g. "Before deployment")
-}
-
+/**
+ * Workflow execution state
+ */
 export interface WorkflowState {
-  workflowId: string;
-  name: string;
-  status: WorkflowStatus;
-  nodes: Map<string, VisualNode>;
-  edges: WorkflowEdge[];
-  checkpoints: WorkflowCheckpoint[];
-  events: TemporalEvent[];
-  channelValues: Map<string, unknown>;
-  startedAt?: number;
-  completedAt?: number;
-  currentSequenceNumber: number;
-  tasteVaultScore: number;  // 0-1 — alignment with user preferences
+  /** ID of the currently executing node */
+  currentNodeId: string;
+  /** Saved checkpoints for rewind capability */
+  checkpoints: Checkpoint[];
+  /** Workflow variables accessible to all nodes */
+  variables: Record<string, unknown>;
+  /** Global workflow status */
+  globalStatus: WorkflowGlobalStatus;
+  /** Started timestamp */
+  startedAt?: string;
+  /** Completed timestamp */
+  completedAt?: string;
 }
 
-export interface PersistentWorkflow {
+/**
+ * Global workflow status
+ */
+export type WorkflowGlobalStatus = 'idle' | 'running' | 'paused' | 'completed' | 'failed' | 'rewinding';
+
+/**
+ * Checkpoint for state restoration
+ */
+export interface Checkpoint {
+  /** Unique checkpoint ID */
   id: string;
-  name: string;
-  description?: string;
-  nodes: VisualNode[];
-  edges: WorkflowEdge[];
-  initialChannelValues?: Record<string, unknown>;
-  metadata?: Record<string, unknown>;
+  /** Node ID at time of checkpoint */
+  nodeId: string;
+  /** Timestamp when checkpoint was created */
+  timestamp: string;
+  /** Serialized state snapshot */
+  stateSnapshot: unknown;
+  /** Optional label for the checkpoint */
+  label?: string;
 }
 
-export interface RewindTarget {
-  checkpointId?: string;
-  sequenceNumber?: number;
-  timestamp?: number;
+/**
+ * Temporal event for timeline tracking and replay
+ */
+export interface TemporalEvent {
+  /** Unique event ID */
+  id: string;
+  /** Event type classification */
+  type: TemporalEventType;
+  /** Associated node ID */
+  nodeId: string;
+  /** Event timestamp */
+  timestamp: string;
+  /** Event payload data */
+  data: unknown;
+  /** Previous event ID for chain reconstruction */
+  previousEventId?: string;
 }
 
-export interface VisualWorkflowEngineConfig {
-  persistenceEnabled: boolean;
-  maxCheckpoints: number;
-  autoCheckpointEveryN: number;    // Create checkpoint every N completed nodes
-  rewindEnabled: boolean;
-  tasteVaultEnabled: boolean;
-  langGraphSimulatorEnabled: boolean;
-  maxConcurrentNodes: number;
+/**
+ * Workflow execution context passed to nodes
+ */
+export interface NodeExecutionContext {
+  /** Current workflow state */
+  state: WorkflowState;
+  /** Input data from previous node */
+  input: unknown;
+  /** Workflow variables */
+  variables: Record<string, unknown>;
+  /** Signal for cancellation */
+  signal?: AbortSignal;
 }
 
-export interface WorkflowExecutionResult {
+/**
+ * Result from node execution
+ */
+export interface NodeExecutionResult {
+  /** Success status */
+  success: boolean;
+  /** Output data for next node */
+  output: unknown;
+  /** Updated variables */
+  variables?: Record<string, unknown>;
+  /** Error information if failed */
+  error?: NodeExecutionError;
+  /** Next node ID override (for conditional routing) */
+  nextNodeId?: string;
+}
+
+/**
+ * Node execution error details
+ */
+export interface NodeExecutionError {
+  /** Error code */
+  code: string;
+  /** Error message */
+  message: string;
+  /** Stack trace */
+  stack?: string;
+  /** Retryable flag */
+  retryable: boolean;
+}
+
+/**
+ * Workflow engine configuration options
+ */
+export interface WorkflowEngineOptions {
+  /** Enable persistent storage */
+  persistent?: boolean;
+  /** Storage adapter for persistence */
+  storageAdapter?: StorageAdapter;
+  /** Auto-save interval in milliseconds */
+  autoSaveIntervalMs?: number;
+  /** Maximum execution time per node */
+  nodeTimeoutMs?: number;
+  /** Enable checkpoint creation */
+  enableCheckpoints?: boolean;
+  /** Maximum number of checkpoints to retain */
+  maxCheckpoints?: number;
+}
+
+/**
+ * Storage adapter interface for persistence
+ */
+export interface StorageAdapter {
+  /** Save workflow state */
+  save(workflow: PersistentWorkflow): Promise<void>;
+  /** Load workflow by ID */
+  load(workflowId: string): Promise<PersistentWorkflow | null>;
+  /** List all workflows */
+  list(): Promise<PersistentWorkflow[]>;
+  /** Delete workflow */
+  delete(workflowId: string): Promise<void>;
+  /** Archive workflow */
+  archive(workflowId: string): Promise<void>;
+}
+
+/**
+ * Workflow statistics
+ */
+export interface WorkflowStats {
+  /** Total nodes in workflow */
+  totalNodes: number;
+  /** Nodes completed */
+  completedNodes: number;
+  /** Nodes failed */
+  failedNodes: number;
+  /** Average execution time per node */
+  avgExecutionTimeMs: number;
+  /** Total execution time */
+  totalExecutionTimeMs: number;
+  /** Number of rewinds performed */
+  rewindCount: number;
+}
+
+/**
+ * Event emitted by the workflow engine
+ */
+export interface WorkflowEngineEvent {
+  /** Event type */
+  type: 'node-start' | 'node-complete' | 'node-fail' | 'checkpoint-created' | 'rewind' | 'workflow-complete' | 'workflow-fail';
+  /** Timestamp */
+  timestamp: string;
+  /** Event payload */
+  payload: unknown;
+  /** Workflow ID */
   workflowId: string;
-  status: WorkflowStatus;
-  completedNodes: string[];
-  failedNodes: string[];
-  skippedNodes: string[];
-  durationMs: number;
-  checkpointCount: number;
-  tasteVaultScore: number;
-  outputChannelValues: Record<string, unknown>;
 }
+
+/**
+ * Event handler type
+ */
+export type WorkflowEventHandler = (event: WorkflowEngineEvent) => void | Promise<void>;
+
+/**
+ * Map of task status from RalphLoop to visual node status
+ */
+export const TaskToNodeStatusMap: Record<string, VisualNodeStatus> = {
+  pending: 'pending',
+  ready: 'pending',
+  running: 'running',
+  done: 'complete',
+  failed: 'failed',
+  blocked: 'skipped',
+} as const;

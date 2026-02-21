@@ -120,8 +120,13 @@ export async function detectOllama(host: string = DEFAULT_OLLAMA_HOST): Promise<
       };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = await response.json() as any;
+    interface OllamaModel {
+      name: string;
+    }
+    interface OllamaTagsResponse {
+      models?: OllamaModel[];
+    }
+    const data = await response.json() as OllamaTagsResponse;
     const models: string[] = [];
 
     if (data.models && Array.isArray(data.models)) {

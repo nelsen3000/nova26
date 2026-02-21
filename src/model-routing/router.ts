@@ -1,151 +1,347 @@
-// Agent Model Router — Confidence-based escalation
-// KIMI-R22-01 | Feb 2026
+/**
+ * Nova26 Model Routing & Speculative Decoding Module
+ * KIMI-R22-01 - Model Router
+ */
 
-import type {
-  AgentModelMapping,
+import {
   ModelProfile,
-  ModelRoutingConfig,
-  InferenceResult,
+  AgentModelMapping,
+  ModelRouteResult,
+  InferenceMetrics,
   HardwareTier,
 } from './types.js';
-import { DEFAULT_AGENT_MAPPINGS, getAgentMapping } from './model-registry.js';
-import { detectHardware } from './hardware-detector.js';
-import { MetricsTracker } from './metrics-tracker.js';
+import { ModelRegistry } from './model-registry.js';
+import { HardwareDetector } from './hardware-detector.js';
 
-export interface RouterContext {
-  agentId: string;
-  prompt: string;
-  tasteVaultWeight?: number;  // User preference boost (0-1)
-  urgency?: number;           // 0-1; high urgency → prefer speed over quality
-  maxBudget?: number;         // costFactor ceiling
+/**
+ * Configuration options for the ModelRouter.
+ */
+export interface RouterConfig {
+  enableSpeculativeDecoding: boolean;
+  enableDynamicEscalation: boolean;
+  enableQueueing: boolean;
+  defaultConfidenceThreshold: number;
+  maxFallbackDepth: number;
 }
 
-export interface RouteDecision {
-  model: ModelProfile;
-  reason: 'primary' | 'fallback' | 'hardware-limit' | 'budget-limit';
-  mapping: AgentModelMapping;
-  hardwareTier: HardwareTier;
-}
+/**
+ * Default router configuration.
+ */
+const DEFAULT_CONFIG: RouterConfig = {
+  enableSpeculativeDecoding: true,
+  enableDynamicEscalation: true,
+  enableQueueing: true,
+  defaultConfidenceThreshold: 0.75,
+  maxFallbackDepth: 3,
+};
 
-export class AgentModelRouter {
-  private config: ModelRoutingConfig;
-  private hardware: HardwareTier;
-  private metrics: MetricsTracker;
+/**
+ * Main routing logic for selecting appropriate models based on
+ * agent requirements, task characteristics, and system hardware.
+ */
+export class ModelRouter {
+  private registry: ModelRegistry;
+  private hardwareDetector: HardwareDetector;
+  private config: RouterConfig;
+  private metrics: InferenceMetrics[] = [];
+  private activeInferences: Map<string, number> = new Map();
 
-  constructor(config: ModelRoutingConfig, metrics: MetricsTracker) {
-    this.config = config;
-    this.metrics = metrics;
-
-    const detection = detectHardware(config.forceTier);
-    this.hardware = detection.tier;
+  constructor(
+    registry: ModelRegistry,
+    hardwareDetector: HardwareDetector,
+    config: Partial<RouterConfig> = {}
+  ) {
+    this.registry = registry;
+    this.hardwareDetector = hardwareDetector;
+    this.config = { ...DEFAULT_CONFIG, ...config };
   }
 
-  getHardwareTier(): HardwareTier {
-    return this.hardware;
+  /**
+   * Routes a task to the most appropriate model based on agent ID,
+   * task description, and confidence level.
+   */
+  route(
+    agentId: string,
+    taskDescription: string,
+    confidence: number
+  ): ModelRouteResult {
+    const mapping = this.registry.getForAgent(agentId);
+    
+    if (!mapping) {
+      throw new Error(`No model mapping found for agent: ${agentId}`);
+    }
+
+    const hardware = this.hardwareDetector.detect();
+    const currentConcurrent = this.activeInferences.get(agentId) ?? 0;
+
+    // Check if we need to queue due to concurrency limits
+    if (currentConcurrent >= mapping.maxConcurrent) {
+      return this.createQueuedResult(mapping, hardware, confidence);
+    }
+
+    // Determine if we should use primary or fallback model
+    const selectedModel = this.selectModel(mapping, confidence, hardware);
+    const useSpeculative = this.shouldUseSpeculativeDecoding(selectedModel);
+    const fallbackChain = this.buildFallbackChain(mapping, selectedModel);
+
+    // Calculate estimates
+    const estimatedTokensPerSec = this.estimateTokensPerSec(selectedModel, hardware);
+    const estimatedCost = this.estimateCost(selectedModel, taskDescription);
+
+    const result: ModelRouteResult = {
+      agentId,
+      selectedModel,
+      fallbackChain,
+      useSpeculativeDecoding: useSpeculative,
+      estimatedTokensPerSec,
+      estimatedCost,
+      confidence,
+    };
+
+    // Track active inference
+    this.activeInferences.set(agentId, currentConcurrent + 1);
+
+    return result;
   }
 
-  route(ctx: RouterContext): RouteDecision {
-    const mapping = this.resolveMapping(ctx.agentId);
-    const urgency = ctx.urgency ?? 0.5;
-    const maxBudget = ctx.maxBudget ?? Infinity;
+  /**
+   * Determines if the current model should be escalated to a more
+   * powerful model based on confidence threshold.
+   */
+  shouldEscalate(currentModel: string, confidence: number): boolean {
+    if (!this.config.enableDynamicEscalation) {
+      return false;
+    }
 
-    // If urgency is very high, prefer fast models regardless of quality
-    if (urgency > 0.85) {
-      const fastModel = this.findFastModel(mapping, maxBudget);
-      if (fastModel) {
-        return { model: fastModel, reason: 'primary', mapping, hardwareTier: this.hardware };
+    const model = this.registry.get(currentModel);
+    if (!model) {
+      return false;
+    }
+
+    // Escalate if confidence is below threshold and model has draft model
+    // (indicating there's a more powerful version available)
+    const shouldEscalate = confidence < this.config.defaultConfidenceThreshold && 
+                          model.strength !== 'power' &&
+                          model.strength !== 'reasoning';
+
+    return shouldEscalate;
+  }
+
+  /**
+   * Gets the fallback models for a specific agent.
+   */
+  getFallbackModels(agentId: string): ModelProfile[] {
+    const mapping = this.registry.getForAgent(agentId);
+    return mapping?.fallback ?? [];
+  }
+
+  /**
+   * Records inference metrics for future routing optimization.
+   */
+  recordMetrics(metrics: InferenceMetrics): void {
+    this.metrics.push(metrics);
+    
+    // Trim metrics history to prevent unbounded growth
+    const MAX_METRICS = 1000;
+    if (this.metrics.length > MAX_METRICS) {
+      this.metrics = this.metrics.slice(-MAX_METRICS);
+    }
+
+    // Update active inference count
+    const current = this.activeInferences.get(metrics.agentId) ?? 0;
+    if (current > 0) {
+      this.activeInferences.set(metrics.agentId, current - 1);
+    }
+  }
+
+  /**
+   * Gets historical metrics for analysis.
+   */
+  getMetrics(agentId?: string): InferenceMetrics[] {
+    if (agentId) {
+      return this.metrics.filter(m => m.agentId === agentId);
+    }
+    return [...this.metrics];
+  }
+
+  /**
+   * Clears all recorded metrics.
+   */
+  clearMetrics(): void {
+    this.metrics = [];
+  }
+
+  /**
+   * Releases an active inference slot for an agent.
+   */
+  releaseSlot(agentId: string): void {
+    const current = this.activeInferences.get(agentId) ?? 0;
+    if (current > 0) {
+      this.activeInferences.set(agentId, current - 1);
+    }
+  }
+
+  // Private helper methods
+
+  private selectModel(
+    mapping: AgentModelMapping,
+    confidence: number,
+    hardware: HardwareTier
+  ): ModelProfile {
+    // If confidence is high and hardware supports it, use primary
+    if (confidence >= mapping.confidenceThreshold) {
+      if (this.canRunOnHardware(mapping.primary, hardware)) {
+        return mapping.primary;
       }
     }
 
-    // Check if primary model fits hardware
-    if (this.modelFitsHardware(mapping.primary) && mapping.primary.costFactor <= maxBudget) {
-      return { model: mapping.primary, reason: 'primary', mapping, hardwareTier: this.hardware };
-    }
-
-    // Try fallbacks in order
+    // Find first fallback that fits on hardware
     for (const fallback of mapping.fallback) {
-      if (this.modelFitsHardware(fallback) && fallback.costFactor <= maxBudget) {
-        const reason = !this.modelFitsHardware(mapping.primary) ? 'hardware-limit' : 'budget-limit';
-        return { model: fallback, reason, mapping, hardwareTier: this.hardware };
+      if (this.canRunOnHardware(fallback, hardware)) {
+        return fallback;
       }
     }
 
-    // Last resort: smallest fallback regardless of hardware (will be slow)
-    const cheapest = [...mapping.fallback].sort((a, b) => a.costFactor - b.costFactor)[0];
+    // Fallback to primary even if it might not fit (will use CPU offloading)
+    return mapping.primary;
+  }
+
+  private canRunOnHardware(model: ModelProfile, hardware: HardwareTier): boolean {
+    // Rough VRAM estimation: 1B params ~ 0.5GB for Q4_K_M quantized
+    const estimatedVRAM = this.estimateModelVRAM(model);
+    
+    if (hardware.gpuVendor === null) {
+      // CPU-only mode - check RAM
+      return estimatedVRAM <= hardware.ramGB * 0.75;
+    }
+
+    return estimatedVRAM <= hardware.vramGB;
+  }
+
+  private estimateModelVRAM(model: ModelProfile): number {
+    // Extract size from model name (e.g., "70b" -> 70)
+    const sizeMatch = model.name.match(/(\d+)b/i);
+    const sizeInB = sizeMatch ? parseInt(sizeMatch[1], 10) : 7;
+    
+    // Quantization factor mapping
+    const quantFactors: Record<string, number> = {
+      'Q2_K': 0.3,
+      'Q3_K': 0.4,
+      'Q4_K_M': 0.5,
+      'Q4_K_S': 0.45,
+      'Q5_K_M': 0.6,
+      'Q5_K_S': 0.55,
+      'Q6_K': 0.7,
+      'Q8_0': 0.75,
+      'FP16': 2.0,
+    };
+
+    const factor = quantFactors[model.quant] ?? 0.5;
+    return sizeInB * factor;
+  }
+
+  private shouldUseSpeculativeDecoding(model: ModelProfile): boolean {
+    if (!this.config.enableSpeculativeDecoding) {
+      return false;
+    }
+
+    // Use speculative decoding if model has a draft model defined
+    return model.speculativeDraft !== undefined;
+  }
+
+  private buildFallbackChain(
+    mapping: AgentModelMapping,
+    selectedModel: ModelProfile
+  ): ModelProfile[] {
+    const chain: ModelProfile[] = [];
+    
+    // If selected model is primary, use defined fallbacks
+    if (selectedModel.name === mapping.primary.name) {
+      chain.push(...mapping.fallback.slice(0, this.config.maxFallbackDepth));
+      return chain;
+    }
+
+    // If a fallback is selected, include primary first, then remaining fallbacks
+    const selectedIndex = mapping.fallback.findIndex(f => f.name === selectedModel.name);
+    if (selectedIndex >= 0) {
+      // Primary is always the first fallback option
+      chain.push(mapping.primary);
+      // Then include remaining fallbacks after the selected one
+      chain.push(...mapping.fallback.slice(selectedIndex + 1, selectedIndex + 1 + this.config.maxFallbackDepth - 1));
+    }
+
+    return chain;
+  }
+
+  private estimateTokensPerSec(model: ModelProfile, hardware: HardwareTier): number {
+    let baseTokens = model.tokensPerSec;
+
+    // Adjust for hardware tier
+    const hardwareMultiplier: Record<string, number> = {
+      'low': 0.3,
+      'mid': 0.7,
+      'high': 1.0,
+      'ultra': 1.5,
+      'apple-silicon': 0.9,
+    };
+
+    baseTokens *= hardwareMultiplier[hardware.id] ?? 0.5;
+
+    // Adjust for speculative decoding
+    if (model.speculativeDraft) {
+      baseTokens *= 1.5; // ~50% speedup with speculative decoding
+    }
+
+    return Math.round(baseTokens);
+  }
+
+  private estimateCost(model: ModelProfile, taskDescription: string): number {
+    // Estimate based on model cost factor and estimated task complexity
+    const baseCost = model.costFactor;
+    
+    // Estimate complexity from description length and keywords
+    const complexityMultiplier = this.estimateComplexity(taskDescription);
+    
+    return Math.round(baseCost * complexityMultiplier * 100) / 100;
+  }
+
+  private estimateComplexity(taskDescription: string): number {
+    const length = taskDescription.length;
+    let multiplier = 1.0;
+
+    // Length-based adjustment
+    if (length > 1000) multiplier += 0.3;
+    if (length > 5000) multiplier += 0.5;
+
+    // Keyword-based complexity detection
+    const complexityKeywords = [
+      'refactor', 'optimize', 'architecture', 'design pattern',
+      'security audit', 'performance', 'scalability', 'distributed'
+    ];
+
+    for (const keyword of complexityKeywords) {
+      if (taskDescription.toLowerCase().includes(keyword)) {
+        multiplier += 0.2;
+      }
+    }
+
+    return multiplier;
+  }
+
+  private createQueuedResult(
+    mapping: AgentModelMapping,
+    _hardware: HardwareTier,
+    _confidence: number
+  ): ModelRouteResult {
     return {
-      model: cheapest ?? mapping.primary,
-      reason: 'fallback',
-      mapping,
-      hardwareTier: this.hardware,
+      agentId: mapping.agentId,
+      selectedModel: mapping.primary,
+      fallbackChain: mapping.fallback,
+      useSpeculativeDecoding: false,
+      estimatedTokensPerSec: 0,
+      estimatedCost: 0,
+      confidence: _confidence,
+      queuePosition: -1, // Indicates queued state
     };
   }
-
-  async escalate(
-    ctx: RouterContext,
-    currentModel: ModelProfile,
-    currentConfidence: number,
-    executeInference: (model: ModelProfile, prompt: string) => Promise<InferenceResult>,
-  ): Promise<InferenceResult> {
-    const mapping = this.resolveMapping(ctx.agentId);
-
-    if (currentConfidence >= mapping.confidenceThreshold) {
-      // Already good enough — return a "mock" escalation result that indicates no escalation
-      return executeInference(currentModel, ctx.prompt);
-    }
-
-    // Find a better model than the current one
-    const candidates = [mapping.primary, ...mapping.fallback].filter(
-      m => m.costFactor > currentModel.costFactor && this.modelFitsHardware(m),
-    );
-
-    if (!candidates.length) {
-      // No better model available — return with current
-      return executeInference(currentModel, ctx.prompt);
-    }
-
-    const escalatedModel = candidates.sort((a, b) => b.costFactor - a.costFactor)[0]!;
-    const result = await executeInference(escalatedModel, ctx.prompt);
-
-    this.metrics.record({
-      agentId: ctx.agentId,
-      modelUsed: escalatedModel.name,
-      tokensIn: result.tokensIn,
-      tokensOut: result.tokensOut,
-      durationMs: result.durationMs,
-      confidence: result.confidence,
-      energyWh: estimateEnergy(result.durationMs, escalatedModel),
-      timestamp: Date.now(),
-      wasEscalated: true,
-    });
-
-    return { ...result, escalated: true };
-  }
-
-  private resolveMapping(agentId: string): AgentModelMapping {
-    // Custom config takes precedence over defaults
-    const custom = this.config.agentMappings.find(m => m.agentId === agentId);
-    if (custom) return custom;
-    const def = getAgentMapping(agentId);
-    if (def) return def;
-
-    // Unknown agent — use a safe default
-    return DEFAULT_AGENT_MAPPINGS.find(m => m.agentId === 'EARTH')!;
-  }
-
-  private modelFitsHardware(model: ModelProfile): boolean {
-    const available = this.hardware.vramGB > 0 ? this.hardware.vramGB : this.hardware.ramGB * 0.5;
-    return model.vramRequiredGB <= available;
-  }
-
-  private findFastModel(mapping: AgentModelMapping, maxBudget: number): ModelProfile | undefined {
-    return [...mapping.fallback, mapping.primary]
-      .filter(m => m.costFactor <= maxBudget && this.modelFitsHardware(m))
-      .sort((a, b) => b.tokensPerSec - a.tokensPerSec)[0];
-  }
-}
-
-function estimateEnergy(durationMs: number, model: ModelProfile): number {
-  // Rough: 50W base + 5W per GB VRAM
-  const watts = 50 + model.vramRequiredGB * 5;
-  return (watts * durationMs) / (1000 * 3600); // Wh
 }

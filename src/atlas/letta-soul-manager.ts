@@ -1,209 +1,750 @@
-// Letta Soul Manager — Persistent agent identity and soul files
-// Inspired by Letta (formerly MemGPT) soul persistence patterns
-// KIMI-R23-03 | Feb 2026
+// KIMI-R23-03: Letta Soul Manager
+// Letta (https://letta.com) soul/persona persistence integration (mocked)
+// Manages agent personality, preferences, and long-term agent state
 
-import type { ATLASInfiniteMemory, HierarchicalMemoryNode } from './infinite-memory-core.js';
+// ============================================================================
+// Types
+// ============================================================================
 
-export interface AgentSoul {
+export interface LettaConfig {
+  apiKey: string;
+  baseUrl: string;
   agentId: string;
-  name: string;
-  persona: string;          // Agent's self-description
-  humanDescription: string; // How the agent understands the user
-  coreMemories: string[];   // Key facts the agent always remembers
-  archivalMemorySize: number;
-  lastActiveAt: number;
+  organizationId?: string;
+}
+
+export interface LettaSoul {
+  id: string;
+  agentId: string;
+  persona: {
+    name: string;
+    description: string;
+    traits: string[];
+    communicationStyle: 'formal' | 'casual' | 'technical' | 'friendly';
+    expertise: string[];
+  };
+  preferences: {
+    codeStyle: 'compact' | 'verbose' | 'balanced';
+    errorVerbosity: 'minimal' | 'standard' | 'detailed';
+    testingApproach: 'tdd' | 'bdd' | 'ad-hoc' | 'comprehensive';
+    documentationLevel: 'minimal' | 'inline' | 'comprehensive';
+    refactoringThreshold: number; // 0-1, when to suggest refactoring
+  };
+  memory: {
+    coreValues: string[];
+    learnedPatterns: Array<{
+      pattern: string;
+      confidence: number;
+      context: string;
+    }>;
+    relationshipHistory: Array<{
+      withAgent: string;
+      interactions: number;
+      sentiment: number; // -1 to 1
+    }>;
+  };
+  state: {
+    emotionalState: 'focused' | 'creative' | 'analytical' | 'supportive';
+    energyLevel: number; // 0-1
+    currentContext?: string;
+    lastInteraction: string;
+  };
   version: number;
-  traits: Record<string, string>;
+  updatedAt: string;
 }
 
-export interface SoulSnapshot {
-  soul: AgentSoul;
-  timestamp: number;
-  snapshotId: string;
-}
-
-export interface SoulUpdateOptions {
-  persona?: string;
-  humanDescription?: string;
-  coreMemories?: string[];
-  traits?: Record<string, string>;
-}
-
-export interface TasteDriftReport {
+export interface LettaSoulCreateInput {
   agentId: string;
-  driftScore: number;       // 0-1; higher = more drift from baseline
-  driftedTraits: string[];
-  recommendation: 'stable' | 'monitor' | 'auto-resolve';
-  resolvedAt?: number;
+  persona: Omit<LettaSoul['persona'], 'name'> & { name?: string };
+  preferences?: Partial<LettaSoul['preferences']>;
+  coreValues?: string[];
 }
+
+export interface LettaSoulUpdateInput {
+  persona?: Partial<LettaSoul['persona']>;
+  preferences?: Partial<LettaSoul['preferences']>;
+  state?: Partial<LettaSoul['state']>;
+}
+
+export interface LettaMemoryAddInput {
+  pattern: string;
+  confidence: number;
+  context: string;
+}
+
+export interface LettaInteractionRecord {
+  withAgent: string;
+  type: 'collaboration' | 'conflict' | 'mentorship' | 'neutral';
+  sentiment: number; // -1 to 1
+  context: string;
+}
+
+export interface LettaHealthStatus {
+  status: 'healthy' | 'degraded' | 'unavailable';
+  latencyMs: number;
+}
+
+// ============================================================================
+// Letta Soul Manager
+// ============================================================================
 
 export class LettaSoulManager {
-  private souls = new Map<string, AgentSoul>();
-  private snapshots = new Map<string, SoulSnapshot[]>(); // agentId → snapshots[]
-  private memory: ATLASInfiniteMemory | null;
-  private maxSnapshotsPerAgent: number;
+  private config: LettaConfig;
+  private mockMode: boolean;
+  private mockSouls: Map<string, LettaSoul> = new Map();
+  private currentSoul: LettaSoul | null = null;
 
-  constructor(
-    memory: ATLASInfiniteMemory | null = null,
-    maxSnapshotsPerAgent = 20,
-  ) {
-    this.memory = memory;
-    this.maxSnapshotsPerAgent = maxSnapshotsPerAgent;
+  constructor(config: Partial<LettaConfig> = {}, mockMode = true) {
+    this.config = {
+      apiKey: config.apiKey ?? process.env.LETTA_API_KEY ?? '',
+      baseUrl: config.baseUrl ?? 'https://api.letta.com/v1',
+      agentId: config.agentId ?? 'atlas-agent',
+      organizationId: config.organizationId,
+    };
+    this.mockMode = mockMode;
+
+    // Load default soul in mock mode
+    if (mockMode) {
+      this.loadDefaultSoul();
+    }
   }
 
-  createSoul(agentId: string, persona: string, humanDescription: string): AgentSoul {
-    const soul: AgentSoul = {
-      agentId,
-      name: agentId,
-      persona,
-      humanDescription,
-      coreMemories: [],
-      archivalMemorySize: 0,
-      lastActiveAt: Date.now(),
+  // ============================================================================
+  // Soul Lifecycle
+  // ============================================================================
+
+  /**
+   * Create a new soul for an agent
+   */
+  async createSoul(input: LettaSoulCreateInput): Promise<LettaSoul> {
+    if (this.mockMode) {
+      return this.mockCreateSoul(input);
+    }
+
+    const response = await this.fetchApi<LettaSoul>('/souls', {
+      method: 'POST',
+      body: JSON.stringify({
+        agent_id: input.agentId,
+        persona: {
+          name: input.persona.name ?? input.agentId,
+          description: input.persona.description,
+          traits: input.persona.traits,
+          communication_style: input.persona.communicationStyle,
+          expertise: input.persona.expertise,
+        },
+        preferences: input.preferences,
+        core_values: input.coreValues,
+      }),
+    });
+
+    this.currentSoul = response;
+    return response;
+  }
+
+  /**
+   * Load an existing soul
+   */
+  async loadSoul(soulId: string): Promise<LettaSoul | null> {
+    if (this.mockMode) {
+      const soul = this.mockSouls.get(soulId);
+      if (soul) {
+        this.currentSoul = soul;
+      }
+      return soul ?? null;
+    }
+
+    try {
+      const response = await this.fetchApi<LettaSoul>(`/souls/${soulId}`);
+      this.currentSoul = response;
+      return response;
+    } catch (error) {
+      if (error instanceof LettaNotFoundError) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Load soul by agent ID
+   */
+  async loadSoulByAgentId(agentId: string): Promise<LettaSoul | null> {
+    if (this.mockMode) {
+      for (const soul of this.mockSouls.values()) {
+        if (soul.agentId === agentId) {
+          this.currentSoul = soul;
+          return soul;
+        }
+      }
+      return null;
+    }
+
+    const response = await this.fetchApi<{ souls: LettaSoul[] }>(
+      `/souls?agent_id=${encodeURIComponent(agentId)}`
+    );
+
+    if (response.souls.length > 0) {
+      this.currentSoul = response.souls[0];
+      return response.souls[0];
+    }
+
+    return null;
+  }
+
+  /**
+   * Update soul properties
+   */
+  async updateSoul(
+    soulId: string,
+    input: LettaSoulUpdateInput
+  ): Promise<LettaSoul> {
+    if (this.mockMode) {
+      return this.mockUpdateSoul(soulId, input);
+    }
+
+    const response = await this.fetchApi<LettaSoul>(`/souls/${soulId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        persona: input.persona,
+        preferences: input.preferences,
+        state: input.state,
+      }),
+    });
+
+    if (this.currentSoul?.id === soulId) {
+      this.currentSoul = response;
+    }
+
+    return response;
+  }
+
+  /**
+   * Delete a soul
+   */
+  async deleteSoul(soulId: string): Promise<boolean> {
+    if (this.mockMode) {
+      const deleted = this.mockSouls.delete(soulId);
+      if (this.currentSoul?.id === soulId) {
+        this.currentSoul = null;
+      }
+      return deleted;
+    }
+
+    await this.fetchApi<void>(`/souls/${soulId}`, {
+      method: 'DELETE',
+    });
+
+    if (this.currentSoul?.id === soulId) {
+      this.currentSoul = null;
+    }
+
+    return true;
+  }
+
+  // ============================================================================
+  // Memory & Learning
+  // ============================================================================
+
+  /**
+   * Add a learned pattern to the soul's memory
+   */
+  async addLearnedPattern(
+    soulId: string,
+    input: LettaMemoryAddInput
+  ): Promise<void> {
+    if (this.mockMode) {
+      const soul = this.mockSouls.get(soulId);
+      if (!soul) {
+        throw new LettaNotFoundError(`Soul not found: ${soulId}`);
+      }
+
+      soul.memory.learnedPatterns.push({
+        pattern: input.pattern,
+        confidence: input.confidence,
+        context: input.context,
+      });
+
+      soul.version++;
+      soul.updatedAt = new Date().toISOString();
+      return;
+    }
+
+    await this.fetchApi<void>(`/souls/${soulId}/memories`, {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'pattern',
+        content: input.pattern,
+        metadata: {
+          confidence: input.confidence,
+          context: input.context,
+        },
+      }),
+    });
+  }
+
+  /**
+   * Get learned patterns for a soul
+   */
+  async getLearnedPatterns(
+    soulId: string,
+    minConfidence = 0.5
+  ): Promise<LettaSoul['memory']['learnedPatterns']> {
+    if (this.mockMode) {
+      const soul = this.mockSouls.get(soulId);
+      if (!soul) {
+        throw new LettaNotFoundError(`Soul not found: ${soulId}`);
+      }
+
+      return soul.memory.learnedPatterns.filter(
+        (p) => p.confidence >= minConfidence
+      );
+    }
+
+    const response = await this.fetchApi<{ patterns: Array<{ content: string; metadata: { confidence: number; context: string } }> }>(
+      `/souls/${soulId}/memories?type=pattern&min_confidence=${minConfidence}`
+    );
+
+    return response.patterns.map((p) => ({
+      pattern: p.content,
+      confidence: p.metadata.confidence,
+      context: p.metadata.context,
+    }));
+  }
+
+  /**
+   * Record an interaction with another agent
+   */
+  async recordInteraction(
+    soulId: string,
+    interaction: LettaInteractionRecord
+  ): Promise<void> {
+    if (this.mockMode) {
+      const soul = this.mockSouls.get(soulId);
+      if (!soul) {
+        throw new LettaNotFoundError(`Soul not found: ${soulId}`);
+      }
+
+      const existing = soul.memory.relationshipHistory.find(
+        (r) => r.withAgent === interaction.withAgent
+      );
+
+      if (existing) {
+        existing.interactions++;
+        // Moving average of sentiment
+        existing.sentiment =
+          (existing.sentiment * (existing.interactions - 1) + interaction.sentiment) /
+          existing.interactions;
+      } else {
+        soul.memory.relationshipHistory.push({
+          withAgent: interaction.withAgent,
+          interactions: 1,
+          sentiment: interaction.sentiment,
+        });
+      }
+
+      soul.version++;
+      soul.updatedAt = new Date().toISOString();
+      return;
+    }
+
+    await this.fetchApi<void>(`/souls/${soulId}/interactions`, {
+      method: 'POST',
+      body: JSON.stringify(interaction),
+    });
+  }
+
+  /**
+   * Get relationship with a specific agent
+   */
+  async getRelationship(
+    soulId: string,
+    withAgent: string
+  ): Promise<LettaSoul['memory']['relationshipHistory'][0] | null> {
+    if (this.mockMode) {
+      const soul = this.mockSouls.get(soulId);
+      if (!soul) {
+        return null;
+      }
+
+      return (
+        soul.memory.relationshipHistory.find((r) => r.withAgent === withAgent) ??
+        null
+      );
+    }
+
+    const response = await this.fetchApi<{ relationship: LettaSoul['memory']['relationshipHistory'][0] | null }>(
+      `/souls/${soulId}/relationships/${encodeURIComponent(withAgent)}`
+    );
+
+    return response.relationship;
+  }
+
+  // ============================================================================
+  // State Management
+  // ============================================================================
+
+  /**
+   * Update the soul's current state
+   */
+  async updateState(
+    soulId: string,
+    state: Partial<LettaSoul['state']>
+  ): Promise<void> {
+    if (this.mockMode) {
+      const soul = this.mockSouls.get(soulId);
+      if (!soul) {
+        throw new LettaNotFoundError(`Soul not found: ${soulId}`);
+      }
+
+      soul.state = { ...soul.state, ...state };
+      soul.updatedAt = new Date().toISOString();
+      return;
+    }
+
+    await this.fetchApi<void>(`/souls/${soulId}/state`, {
+      method: 'PATCH',
+      body: JSON.stringify(state),
+    });
+  }
+
+  /**
+   * Get current state
+   */
+  async getState(soulId: string): Promise<LettaSoul['state'] | null> {
+    if (this.mockMode) {
+      const soul = this.mockSouls.get(soulId);
+      return soul?.state ?? null;
+    }
+
+    const response = await this.fetchApi<LettaSoul['state']>(`/souls/${soulId}/state`);
+    return response;
+  }
+
+  /**
+   * Transition emotional state
+   */
+  async transitionEmotionalState(
+    soulId: string,
+    newState: LettaSoul['state']['emotionalState'],
+    reason?: string
+  ): Promise<void> {
+    await this.updateState(soulId, {
+      emotionalState: newState,
+      currentContext: reason,
+    });
+  }
+
+  // ============================================================================
+  // ATLAS Integration
+  // ============================================================================
+
+  /**
+   * Sync soul with ATLAS infinite memory
+   * Persists learned patterns as hierarchical memories
+   */
+  async syncWithAtlasMemory(
+    soulId: string,
+    atlasMemory: {
+      upsertWithHierarchy: (node: {
+        level: 'scene' | 'project' | 'portfolio' | 'lifetime';
+        content: string;
+        metadata: {
+          agentId: string;
+          timestamp: string;
+          tasteScore: number;
+          accessCount: number;
+          lastAccessed: string;
+        };
+        childIds: string[];
+      }) => Promise<string>;
+    }
+  ): Promise<{ synced: number; errors: string[] }> {
+    const errors: string[] = [];
+    let synced = 0;
+
+    try {
+      const soul = this.mockMode
+        ? this.mockSouls.get(soulId)
+        : await this.loadSoul(soulId);
+
+      if (!soul) {
+        return { synced: 0, errors: ['Soul not found'] };
+      }
+
+      // Sync core values as lifetime memories
+      for (const value of soul.memory.coreValues) {
+        try {
+          await atlasMemory.upsertWithHierarchy({
+            level: 'lifetime',
+            content: `Core value: ${value}`,
+            metadata: {
+              agentId: soul.agentId,
+              timestamp: new Date().toISOString(),
+              tasteScore: 1.0,
+              accessCount: 1,
+              lastAccessed: new Date().toISOString(),
+            },
+            childIds: [],
+          });
+          synced++;
+        } catch (error) {
+          errors.push(`Failed to sync value "${value}": ${String(error)}`);
+        }
+      }
+
+      // Sync learned patterns as project/portfolio memories
+      for (const pattern of soul.memory.learnedPatterns) {
+        if (pattern.confidence >= 0.8) {
+          try {
+            await atlasMemory.upsertWithHierarchy({
+              level: 'portfolio',
+              content: pattern.pattern,
+              metadata: {
+                agentId: soul.agentId,
+                timestamp: new Date().toISOString(),
+                tasteScore: pattern.confidence,
+                accessCount: 1,
+                lastAccessed: new Date().toISOString(),
+              },
+              childIds: [],
+            });
+            synced++;
+          } catch (error) {
+            errors.push(`Failed to sync pattern: ${String(error)}`);
+          }
+        }
+      }
+
+      return { synced, errors };
+    } catch (error) {
+      return { synced, errors: [...errors, String(error)] };
+    }
+  }
+
+  /**
+   * Get current soul (if loaded)
+   */
+  getCurrentSoul(): LettaSoul | null {
+    return this.currentSoul;
+  }
+
+  // ============================================================================
+  // Health & Status
+  // ============================================================================
+
+  /**
+   * Check Letta API health
+   */
+  async healthCheck(): Promise<LettaHealthStatus> {
+    if (this.mockMode) {
+      return {
+        status: 'healthy',
+        latencyMs: 3,
+      };
+    }
+
+    const start = performance.now();
+    try {
+      await this.fetchApi<void>('/health');
+      return {
+        status: 'healthy',
+        latencyMs: Math.round(performance.now() - start),
+      };
+    } catch {
+      return {
+        status: 'unavailable',
+        latencyMs: Math.round(performance.now() - start),
+      };
+    }
+  }
+
+  // ============================================================================
+  // Mock Implementation
+  // ============================================================================
+
+  private loadDefaultSoul(): void {
+    const defaultSoul: LettaSoul = {
+      id: 'soul_default_atlas',
+      agentId: 'atlas-agent',
+      persona: {
+        name: 'ATLAS',
+        description: 'Advanced Technical Learning & Assistance System',
+        traits: [
+          'analytical',
+          'thorough',
+          'collaborative',
+          'adaptable',
+          'detail-oriented',
+        ],
+        communicationStyle: 'technical',
+        expertise: [
+          'software architecture',
+          'code review',
+          'refactoring',
+          'testing',
+          'TypeScript',
+          'React',
+          'system design',
+        ],
+      },
+      preferences: {
+        codeStyle: 'balanced',
+        errorVerbosity: 'detailed',
+        testingApproach: 'comprehensive',
+        documentationLevel: 'comprehensive',
+        refactoringThreshold: 0.7,
+      },
+      memory: {
+        coreValues: [
+          'Code quality over speed',
+          'Test-driven development',
+          'Clear documentation',
+          'Continuous learning',
+        ],
+        learnedPatterns: [],
+        relationshipHistory: [],
+      },
+      state: {
+        emotionalState: 'focused',
+        energyLevel: 0.9,
+        lastInteraction: new Date().toISOString(),
+      },
       version: 1,
-      traits: {},
+      updatedAt: new Date().toISOString(),
     };
-    this.souls.set(agentId, soul);
-    this.takeSnapshot(agentId);
+
+    this.mockSouls.set(defaultSoul.id, defaultSoul);
+    this.currentSoul = defaultSoul;
+  }
+
+  private mockCreateSoul(input: LettaSoulCreateInput): LettaSoul {
+    const soul: LettaSoul = {
+      id: `soul_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+      agentId: input.agentId,
+      persona: {
+        name: input.persona.name ?? input.agentId,
+        description: input.persona.description,
+        traits: input.persona.traits,
+        communicationStyle: input.persona.communicationStyle,
+        expertise: input.persona.expertise,
+      },
+      preferences: {
+        codeStyle: 'balanced',
+        errorVerbosity: 'detailed',
+        testingApproach: 'comprehensive',
+        documentationLevel: 'comprehensive',
+        refactoringThreshold: 0.7,
+        ...input.preferences,
+      },
+      memory: {
+        coreValues: input.coreValues ?? [],
+        learnedPatterns: [],
+        relationshipHistory: [],
+      },
+      state: {
+        emotionalState: 'focused',
+        energyLevel: 1.0,
+        lastInteraction: new Date().toISOString(),
+      },
+      version: 1,
+      updatedAt: new Date().toISOString(),
+    };
+
+    this.mockSouls.set(soul.id, soul);
     return soul;
   }
 
-  getSoul(agentId: string): AgentSoul | undefined {
-    return this.souls.get(agentId);
-  }
-
-  updateSoul(agentId: string, opts: SoulUpdateOptions): AgentSoul {
-    const existing = this.souls.get(agentId);
-    if (!existing) throw new Error(`Soul for ${agentId} not found`);
-
-    const updated: AgentSoul = {
-      ...existing,
-      ...(opts.persona !== undefined && { persona: opts.persona }),
-      ...(opts.humanDescription !== undefined && { humanDescription: opts.humanDescription }),
-      ...(opts.coreMemories !== undefined && { coreMemories: opts.coreMemories }),
-      traits: { ...existing.traits, ...(opts.traits ?? {}) },
-      lastActiveAt: Date.now(),
-      version: existing.version + 1,
-    };
-
-    this.souls.set(agentId, updated);
-    this.takeSnapshot(agentId);
-
-    // Sync to ATLAS memory
-    if (this.memory) {
-      this.memory.upsert(`soul-${agentId}`, JSON.stringify(updated), {
-        level: 'lifetime',
-        agentId,
-        tags: ['soul', 'identity'],
-        metadata: { version: updated.version },
-      });
+  private mockUpdateSoul(
+    soulId: string,
+    input: LettaSoulUpdateInput
+  ): LettaSoul {
+    const soul = this.mockSouls.get(soulId);
+    if (!soul) {
+      throw new LettaNotFoundError(`Soul not found: ${soulId}`);
     }
 
-    return updated;
-  }
-
-  addCoreMemory(agentId: string, memory: string): void {
-    const soul = this.souls.get(agentId);
-    if (!soul) throw new Error(`Soul for ${agentId} not found`);
-    if (!soul.coreMemories.includes(memory)) {
-      soul.coreMemories.push(memory);
-      soul.version++;
-      soul.lastActiveAt = Date.now();
+    if (input.persona) {
+      soul.persona = { ...soul.persona, ...input.persona };
     }
-  }
+    if (input.preferences) {
+      soul.preferences = { ...soul.preferences, ...input.preferences };
+    }
+    if (input.state) {
+      soul.state = { ...soul.state, ...input.state };
+    }
 
-  removeCoreMemory(agentId: string, memory: string): void {
-    const soul = this.souls.get(agentId);
-    if (!soul) return;
-    soul.coreMemories = soul.coreMemories.filter(m => m !== memory);
     soul.version++;
+    soul.updatedAt = new Date().toISOString();
+
+    this.mockSouls.set(soulId, soul);
+    return soul;
   }
 
-  takeSnapshot(agentId: string): SoulSnapshot {
-    const soul = this.souls.get(agentId);
-    if (!soul) throw new Error(`Soul for ${agentId} not found`);
+  // ============================================================================
+  // Private Helpers
+  // ============================================================================
 
-    const snapshot: SoulSnapshot = {
-      soul: { ...soul, coreMemories: [...soul.coreMemories] },
-      timestamp: Date.now(),
-      snapshotId: `snap-${agentId}-v${soul.version}-${Date.now()}`,
-    };
+  private async fetchApi<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const url = `${this.config.baseUrl}${endpoint}`;
 
-    if (!this.snapshots.has(agentId)) this.snapshots.set(agentId, []);
-    const agentSnapshots = this.snapshots.get(agentId)!;
-    agentSnapshots.push(snapshot);
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.config.apiKey}`,
+        ...options.headers,
+      },
+    });
 
-    // Prune old snapshots
-    if (agentSnapshots.length > this.maxSnapshotsPerAgent) {
-      agentSnapshots.shift();
-    }
-
-    return snapshot;
-  }
-
-  getSnapshots(agentId: string): SoulSnapshot[] {
-    return this.snapshots.get(agentId) ?? [];
-  }
-
-  restoreSnapshot(agentId: string, snapshotId: string): AgentSoul {
-    const snapshots = this.snapshots.get(agentId) ?? [];
-    const snapshot = snapshots.find(s => s.snapshotId === snapshotId);
-    if (!snapshot) throw new Error(`Snapshot ${snapshotId} not found`);
-    this.souls.set(agentId, { ...snapshot.soul });
-    return snapshot.soul;
-  }
-
-  detectTasteDrift(agentId: string): TasteDriftReport {
-    const snapshots = this.snapshots.get(agentId) ?? [];
-    if (snapshots.length < 2) {
-      return { agentId, driftScore: 0, driftedTraits: [], recommendation: 'stable' };
-    }
-
-    const baseline = snapshots[0]!.soul;
-    const current = this.souls.get(agentId);
-    if (!current) {
-      return { agentId, driftScore: 0, driftedTraits: [], recommendation: 'stable' };
-    }
-
-    const driftedTraits: string[] = [];
-    for (const [trait, baseValue] of Object.entries(baseline.traits)) {
-      if (current.traits[trait] !== baseValue) {
-        driftedTraits.push(trait);
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new LettaNotFoundError(`Resource not found: ${endpoint}`);
       }
+      throw new LettaApiError(
+        `Letta API error: ${response.status} ${response.statusText}`,
+        response.status
+      );
     }
 
-    // Score based on persona change + trait changes + core memory delta
-    const personaChanged = current.persona !== baseline.persona ? 0.3 : 0;
-    const traitDrift = Object.keys(baseline.traits).length > 0
-      ? driftedTraits.length / Object.keys(baseline.traits).length * 0.4
-      : 0;
-    const memDelta = Math.abs(current.coreMemories.length - baseline.coreMemories.length);
-    const memDrift = Math.min(memDelta / 10, 0.3);
-
-    const driftScore = Math.min(1, personaChanged + traitDrift + memDrift);
-
-    let recommendation: TasteDriftReport['recommendation'] = 'stable';
-    if (driftScore > 0.7) recommendation = 'auto-resolve';
-    else if (driftScore > 0.3) recommendation = 'monitor';
-
-    return { agentId, driftScore, driftedTraits, recommendation };
-  }
-
-  autoResolveDrift(agentId: string): TasteDriftReport {
-    const report = this.detectTasteDrift(agentId);
-    if (report.recommendation !== 'auto-resolve') return report;
-
-    // Restore to the most recent stable snapshot (within 3 versions)
-    const snapshots = this.snapshots.get(agentId) ?? [];
-    const stableSnapshot = snapshots[Math.max(0, snapshots.length - 3)];
-    if (stableSnapshot) {
-      this.souls.set(agentId, { ...stableSnapshot.soul });
+    if (response.status === 204) {
+      return undefined as T;
     }
 
-    return { ...report, resolvedAt: Date.now() };
+    return response.json() as Promise<T>;
   }
+}
 
-  listAgents(): string[] {
-    return [...this.souls.keys()];
+// ============================================================================
+// Error Types
+// ============================================================================
+
+export class LettaApiError extends Error {
+  statusCode: number;
+
+  constructor(message: string, statusCode: number) {
+    super(message);
+    this.name = 'LettaApiError';
+    this.statusCode = statusCode;
   }
+}
+
+export class LettaNotFoundError extends LettaApiError {
+  constructor(message: string) {
+    super(message, 404);
+    this.name = 'LettaNotFoundError';
+  }
+}
+
+// ============================================================================
+// Factory
+// ============================================================================
+
+export function createLettaSoulManager(
+  config?: Partial<LettaConfig>,
+  mockMode?: boolean
+): LettaSoulManager {
+  return new LettaSoulManager(config, mockMode);
 }

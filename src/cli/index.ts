@@ -1,46 +1,14 @@
 // NOVA26 CLI - Main entry point
 // Integrates slash commands, swarm mode, model routing, and agent explanations
 
+import type { Task } from '../types/index.js';
 import { extendedSlashCommands } from './slash-commands-extended.js';
-import { executeSwarmMode, quickSwarm, fullSwarm, type SwarmTask } from '../swarm/swarm-mode.js';
 import { selectTier, selectModel, showModelComparison, getCurrentModel, getCurrentTier, AVAILABLE_MODELS } from '../llm/model-router.js';
 import { getAgentExplanation, formatExplanation, formatReasoning } from '../orchestrator/agent-explanations.js';
 
 // Combine all slash commands
 const allCommands = {
   ...extendedSlashCommands,
-  
-  // Swarm Mode Commands
-  '/swarm': {
-    name: '/swarm',
-    description: 'Enter swarm mode for task completion',
-    usage: '/swarm "task description" [--quick|--full]',
-    handler: async (args: string[]) => {
-      const taskDesc = args.filter(a => !a.startsWith('--')).join(' ');
-      const mode = args.find(a => a === '--full') ? 'full' : args.find(a => a === '--quick') ? 'quick' : 'adaptive';
-      
-      if (!taskDesc) {
-        console.log('❌ Usage: /swarm "your task description" [--quick|--full]');
-        return;
-      }
-      
-      if (mode === 'quick') {
-        await quickSwarm(taskDesc);
-      } else if (mode === 'full') {
-        await fullSwarm(taskDesc);
-      } else {
-        // Adaptive mode - choose based on complexity
-        const task: SwarmTask = {
-          id: `swarm-${Date.now()}`,
-          description: taskDesc,
-          complexity: taskDesc.length > 100 ? 'complex' : 'medium',
-          requiredAgents: ['SUN', 'EARTH', 'MARS', 'VENUS', 'MERCURY'],
-          deliverables: ['Implementation', 'Tests']
-        };
-        await executeSwarmMode(task);
-      }
-    }
-  },
   
   // Model Commands
   '/tier': {
@@ -99,14 +67,20 @@ const allCommands = {
       const showReasoning = args.includes('--reasoning');
       
       // Mock task for demonstration
-      const mockTask = {
+      const mockTask: Task = {
         id: 'demo-001',
         title: 'Sample Feature Implementation',
         agent: agentName === 'current' ? 'VENUS' : agentName.toUpperCase(),
-        context: { taskCount: 5 }
+        context: { taskCount: 5 },
+        description: 'Demonstration task for agent explanation',
+        status: 'ready',
+        dependencies: [],
+        phase: 0,
+        attempts: 0,
+        createdAt: new Date().toISOString(),
       };
       
-      const explanation = getAgentExplanation(mockTask as any);
+      const explanation = getAgentExplanation(mockTask);
       console.log(formatExplanation(explanation, true, showReasoning));
     }
   },
@@ -117,14 +91,20 @@ const allCommands = {
     usage: '/reasoning [agent-name]',
     handler: async (args: string[]) => {
       const agentName = args[0] || 'VENUS';
-      const mockTask = {
+      const mockTask: Task = {
         id: 'demo-001',
         title: 'Sample Feature',
         agent: agentName.toUpperCase(),
-        context: {}
+        context: {},
+        description: 'Demonstration task for agent reasoning',
+        status: 'ready',
+        dependencies: [],
+        phase: 0,
+        attempts: 0,
+        createdAt: new Date().toISOString(),
       };
       
-      const explanation = getAgentExplanation(mockTask as any);
+      const explanation = getAgentExplanation(mockTask);
       if (explanation.reasoning) {
         console.log(formatReasoning(explanation.reasoning));
       } else {
@@ -229,10 +209,7 @@ export function startCLI(): void {
       if (input.startsWith('/')) {
         await executeCommand(input);
       } else if (input.trim()) {
-        // Natural language input - treat as /swarm command
-        console.log(`🤔 Interpreting: "${input}"`);
-        console.log('Starting swarm mode...\n');
-        await quickSwarm(input);
+        console.log(`🤔 Unknown input: "${input}". Type /help for available commands.`);
       }
       
       prompt();

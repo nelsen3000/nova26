@@ -62,26 +62,19 @@
   GEMINI-04: Monetization ($12/$25/$45 tiers), GEMINI-05: EU AI Act compliance,
   GEMINI-06: Local SLM optimization (Qwen 3.5 king)
 - [x] Created 5 Gemini prompts (GEMINI-07→11), 5 Grok prompts (R20-03→R22-02)
-- [x] Implemented KIMI-R22-01: Agent Model Routing — `src/model-routing/` (10 files, 85 tests)
-  - types.ts, hardware-detector.ts, model-registry.ts, router.ts, speculative-decoder.ts
-  - inference-queue.ts, metrics-tracker.ts, ollama-modelfile-generator.ts
-  - benchmark/nova-bench.ts (42 tasks), __tests__/routing.test.ts (85 tests)
-  - Wired into ralph-loop-types.ts (modelRoutingEnabled + modelRoutingConfig)
-- [x] Implemented KIMI-R23-01: Persistent Visual Workflow Engine — `src/workflow-engine/` (4 files + `src/atlas/visual-memory-hook.ts`), 53 tests
-- [x] Implemented KIMI-R23-03: Infinite Hierarchical Memory — `src/atlas/infinite-memory-core.ts`, `mem0-adapter.ts`, `letta-soul-manager.ts`, `src/taste-vault/memory-taste-scorer.ts`, 64 tests
-- [x] Implemented KIMI-R23-05: Cinematic Observability & Eval Suite — `src/observability/cinematic-core.ts`, `braintrust-adapter.ts`, `langsmith-bridge.ts`, 47 tests
-- [x] Implemented KIMI-R24-01: AI Model Database — `src/models/ai-model-vault.ts`, `ensemble-engine.ts`, `src/atlas/model-taste-integrator.ts`, 50 tests
-- [x] Implemented KIMI-R24-03: Real-time CRDT Collaboration — `src/collaboration/crdt-core.ts`, `yjs-automerge-bridge.ts`, `semantic-resolver.ts`, `src/taste-vault/crdt-taste-sync.ts`, 71 tests, `crdtCollaborationEnabled` + `crdtSemanticResolverEnabled` wired into ralph-loop-types.ts
-- [x] Current state: 0 TS errors, 4,674 tests passing, 160 test files
+- [x] Sonnet S-01 Sprint (6 tasks): deduplicated RalphLoopOptions, wired 4 missing modules, deleted CUT sandbox, extracted handleTaskFailure(), 45 integration tests, evaluated Kimi deliveries
+- [x] Deleted 4 CUT module artifacts (CL-50): sandbox, swarm, engine, multimodal — 40 TS errors → 0
+- [x] Evaluated + committed 7 Kimi R22-R24 KEEP modules (CL-51): perplexity, model-routing, workflow-engine, atlas extensions, observability, models, collaboration
+- [x] Wired 7 new modules into RalphLoopOptions (CL-52): 14 new fields (7 enabled + 7 config)
+- [x] Wired 7 new modules into lifecycle hooks (CL-53): 24 total features in DEFAULT_FEATURE_HOOKS
+- [x] Verified barrel exports for all new modules (CL-54): 6 index.ts files already correct
+- [x] Cross-module integration tests (CL-55): 51 tests in r22-r24-integration.test.ts
+- [x] Updated TASK-BOARD.md + CLAUDE.md (CL-56)
+- [x] Current state: 0 TS errors, 4,603 tests passing, 159 test files
 
 ## In Progress
 
-- [x] Wire 13 unwired R16/R17 modules into ralph-loop.ts (R16-01, R16-03, R16-04, R17-03→R17-12)
-  ✅ COMPLETED (CL-57): Added factory imports for all 13 modules + ModuleContext interface
-  + initialization code with feature flag checks + pass-through to processTask function.
-  Zero TypeScript errors. All modules now available during task execution.
-- [x] Evaluated all pending KIMI deliverables (KIMI-R22-01, R23-01, R23-03, R23-05, R24-01, R24-03) — all DONE by Claude
-- [ ] Evaluate Grok R22-02 Shannon Patterns spec (when ready)
+(none)
 
 ## Queued
 

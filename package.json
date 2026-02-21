@@ -10,10 +10,14 @@
     "test": "vitest",
     "test:mock": "tsx src/test/mock-run.ts",
     "test:integration": "tsx src/test/integration-test.ts",
-    "next:dev": "next dev",
-    "next:build": "next build",
-    "next:start": "next start",
-    "next:lint": "next lint"
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test:changed": "vitest run --changed",
+    "test:coverage": "vitest run --coverage",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.test.ts": "vitest run"
   },
   "keywords": [
     "ai",
@@ -76,9 +80,8 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20.11.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "fast-check": "^4.5.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "tsx": "^4.7.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"

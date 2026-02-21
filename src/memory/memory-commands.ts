@@ -8,6 +8,8 @@ import {
   type MemoryType,
   type MemoryOutcome,
   type SemanticMemory,
+  type EpisodicMemory,
+  type ProceduralMemory,
 } from './agent-memory.js';
 import { MemoryRetrieval, type MemoryConfidenceLabel } from './memory-retrieval.js';
 
@@ -66,7 +68,7 @@ export const MemoryExportSchema = z.object({
   version: z.string(),
   exportedAt: z.string(),
   totalMemories: z.number().int().nonnegative(),
-  memories: z.array(z.any()), // AgentMemory validation done per-item
+  memories: z.array(z.custom<AgentMemory>()), // AgentMemory validation done per-item
 });
 
 // ============================================================================
@@ -404,22 +406,25 @@ export class MemoryCommands {
 
   private getTypeSpecificFields(memory: AgentMemory): Record<string, unknown> {
     if (memory.type === 'episodic') {
+      const episodicMemory = memory as EpisodicMemory;
       return {
-        eventDate: (memory as any).eventDate,
-        location: (memory as any).location,
-        decision: (memory as any).decision,
-        alternativesConsidered: (memory as any).alternativesConsidered,
+        eventDate: episodicMemory.eventDate,
+        location: episodicMemory.location,
+        decision: episodicMemory.decision,
+        alternativesConsidered: episodicMemory.alternativesConsidered,
       };
     } else if (memory.type === 'semantic') {
+      const semanticMemory = memory as SemanticMemory;
       return {
-        confidence: (memory as any).confidence ?? 0.7,
-        supportingMemoryIds: (memory as any).supportingMemoryIds ?? [],
+        confidence: semanticMemory.confidence ?? 0.7,
+        supportingMemoryIds: semanticMemory.supportingMemoryIds ?? [],
       };
     } else if (memory.type === 'procedural') {
+      const proceduralMemory = memory as ProceduralMemory;
       return {
-        triggerPattern: (memory as any).triggerPattern ?? '',
-        steps: (memory as any).steps ?? [],
-        successRate: (memory as any).successRate ?? 1.0,
+        triggerPattern: proceduralMemory.triggerPattern ?? '',
+        steps: proceduralMemory.steps ?? [],
+        successRate: proceduralMemory.successRate ?? 1.0,
       };
     }
     return {};

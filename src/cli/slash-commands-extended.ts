@@ -3,9 +3,9 @@
 
 import { execSync } from 'child_process';
 import { join } from 'path';
-import { quickSwarm, fullSwarm } from '../swarm/swarm-mode.js';
 import { analyzeDependencies } from '../dependency-analysis/analyzer.js';
 import { handleMarketplaceCommand } from '../skills/skill-marketplace.js';
+import { handleModelsCommand } from './models-commands.js';
 import type { } from '../orchestrator/task-decomposer.js';
 
 export const extendedSlashCommands = {
@@ -93,39 +93,6 @@ export const extendedSlashCommands = {
       console.log('   - Full context windows');
       console.log('   - Higher quality outputs');
       console.log('   - Better for production code');
-    }
-  },
-
-  // Swarm Mode Commands
-  '/swarm': {
-    name: '/swarm',
-    description: 'Enter swarm mode for task completion',
-    usage: '/swarm [--full] "task description"',
-    handler: async (args: string[]) => {
-      const isFull = args.includes('--full');
-      const taskArgs = args.filter(a => a !== '--full');
-      const task = taskArgs.join(' ');
-      
-      if (!task || task.trim().length === 0) {
-        console.log('❌ Error: Task description required');
-        console.log('Usage: /swarm [--full] "task description"');
-        console.log('  --full: Activate all 21 agents');
-        console.log('Example: /swarm "Build a user dashboard with charts"');
-        console.log('Example: /swarm --full "Redesign the entire authentication system"');
-        return;
-      }
-      
-      if (task.length < 10) {
-        console.log('❌ Error: Task description too short (min 10 characters)');
-        console.log('Please provide a more detailed description of what you want to build.');
-        return;
-      }
-      
-      if (isFull) {
-        await fullSwarm(task);
-      } else {
-        await quickSwarm(task);
-      }
     }
   },
 
@@ -527,6 +494,16 @@ export const extendedSlashCommands = {
       console.log('  p     - Pause/resume build');
       console.log('  q     - Quit');
       console.log('  Ctrl+C - Cancel current task');
+    }
+  },
+
+  // KMS-01: AI Model Database Commands
+  '/models': {
+    name: '/models',
+    description: 'AI Model Database — list, show, compare, debate',
+    usage: '/models <list|show|compare|debate> [args]',
+    handler: async (args: string[]) => {
+      await handleModelsCommand(args);
     }
   }
 };

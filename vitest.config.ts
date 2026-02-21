@@ -8,8 +8,14 @@ export default defineConfig({
     include: ['src/**/*.test.ts', 'src/**/*-tests.ts', 'convex/**/*.test.ts', 'tests/**/*.test.ts'],
     coverage: {
       provider: 'v8',
-      include: ['src/**/*.ts', 'convex/**/*.ts'],
-      exclude: ['src/test/**', 'src/**/*.test.ts', 'convex/**/*.test.ts'],
+      include: ['src/**/*.ts'],
+      exclude: ['src/test/**', 'src/**/*.test.ts'],
+      thresholds: {
+        statements: 70,
+        branches: 60,
+        functions: 70,
+        lines: 70,
+      },
     },
   },
 });

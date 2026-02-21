@@ -29,6 +29,7 @@ const AGENT_METADATA: Record<string, { emoji: string; tier: 'fast' | 'balanced' 
   'CALLISTO': { emoji: '📝', tier: 'fast' },
   'ANDROMEDA': { emoji: '🌌', tier: 'balanced' },
 };
+import type { Task } from '../types/index.js';
 import { generatePRD } from '../agents/sun-prd-generator.js';
 import { callLLM } from '../llm/ollama-client.js';
 import { listSkills } from '../skills/skill-loader.js';
@@ -299,12 +300,12 @@ export const slashCommands: Record<string, SlashCommand> = {
       const tasks = prd.tasks || [];
       const stats = {
         total: tasks.length,
-        pending: tasks.filter((t: any) => t.status === 'pending').length,
-        ready: tasks.filter((t: any) => t.status === 'ready').length,
-        running: tasks.filter((t: any) => t.status === 'running').length,
-        done: tasks.filter((t: any) => t.status === 'done').length,
-        failed: tasks.filter((t: any) => t.status === 'failed').length,
-        blocked: tasks.filter((t: any) => t.status === 'blocked').length,
+        pending: tasks.filter((t: Task) => t.status === 'pending').length,
+        ready: tasks.filter((t: Task) => t.status === 'ready').length,
+        running: tasks.filter((t: Task) => t.status === 'running').length,
+        done: tasks.filter((t: Task) => t.status === 'done').length,
+        failed: tasks.filter((t: Task) => t.status === 'failed').length,
+        blocked: tasks.filter((t: Task) => t.status === 'blocked').length,
       };
 
       // Get cost and cache stats
@@ -352,7 +353,10 @@ export const slashCommands: Record<string, SlashCommand> = {
       const hardLimitsPath = join(process.cwd(), '.nova', 'config', 'hard-limits.json');
       
       // Load hard limits if available
-      let hardLimits: Record<string, any> = {};
+      interface HardLimitEntry {
+        limits: Array<{ name: string; severity: string; message: string }>;
+      }
+      let hardLimits: Record<string, HardLimitEntry> = {};
       if (existsSync(hardLimitsPath)) {
         try {
           const limitsContent = readFileSync(hardLimitsPath, 'utf-8');

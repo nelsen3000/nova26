@@ -1,5 +1,7 @@
 # Nova26
 
+[![CI](https://github.com/nelsen3000/nova26/actions/workflows/ci.yml/badge.svg)](https://github.com/nelsen3000/nova26/actions/workflows/ci.yml)
+
 AI-powered IDE that uses 21 specialized agents to build software through orchestrated task execution.
 
 ## Architecture

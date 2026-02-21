@@ -113,7 +113,7 @@ export function getAgentStats(agent: string): AgentStats {
            CAST(SUM(CASE WHEN gate_retries = 0 THEN 1 ELSE 0 END) AS REAL) / COUNT(*) as gate_pass_rate
     FROM agent_results
     WHERE agent = ?
-  `).get(agent) as any;
+  `).get(agent) as { total: number; successes: number; avg_tokens: number; avg_duration: number; gate_pass_rate: number } | undefined;
 
   const topFailures = db.prepare(`
     SELECT failure_reason as reason, COUNT(*) as count
@@ -289,7 +289,7 @@ export function getTrends(agent: string, days: number): TrendData[] {
         SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) as successes
       FROM agent_results
       WHERE agent = ? AND date(timestamp) = date(?)
-    `).get(agent, dateStr) as any;
+    `).get(agent, dateStr) as { total: number; successes: number } | undefined;
     
     const total = row?.total || 0;
     const successes = row?.successes || 0;
@@ -328,7 +328,7 @@ export function getBuildStats(buildId: string): { total: number; success: number
       SUM(CASE WHEN success = 0 THEN 1 ELSE 0 END) as failures
     FROM agent_results
     WHERE build_id = ?
-  `).get(buildId) as any;
+  `).get(buildId) as { total: number; successes: number; failures: number } | undefined;
   
   return {
     total: row?.total || 0,
@@ -392,6 +392,12 @@ export function getWisdomImpactStats(
   const filterColumn = mode === 'agent' ? 'agent' : 'build_id';
 
   // Get stats for tasks with wisdom usage (vault_patterns_used > 0 OR global_wisdom_applied > 0)
+  interface WisdomRow {
+    total: number;
+    successes: number;
+    avg_vault_patterns: number;
+    avg_global_wisdom: number;
+  }
   const wisdomRow = db.prepare(`
     SELECT 
       COUNT(*) as total,
@@ -400,16 +406,20 @@ export function getWisdomImpactStats(
       AVG(global_wisdom_applied) as avg_global_wisdom
     FROM agent_results
     WHERE ${filterColumn} = ? AND (vault_patterns_used > 0 OR global_wisdom_applied > 0)
-  `).get(agentOrBuildId) as any;
+  `).get(agentOrBuildId) as WisdomRow | undefined;
 
   // Get stats for tasks without wisdom usage
+  interface BaselineRow {
+    total: number;
+    successes: number;
+  }
   const baselineRow = db.prepare(`
     SELECT 
       COUNT(*) as total,
       SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) as successes
     FROM agent_results
     WHERE ${filterColumn} = ? AND (vault_patterns_used = 0 OR vault_patterns_used IS NULL) AND (global_wisdom_applied = 0 OR global_wisdom_applied IS NULL)
-  `).get(agentOrBuildId) as any;
+  `).get(agentOrBuildId) as BaselineRow | undefined;
 
   const wisdomTotal = wisdomRow?.total || 0;
   const wisdomSuccesses = wisdomRow?.successes || 0;

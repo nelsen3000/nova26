@@ -1,40 +1,39 @@
-# Perplexity Studio Rules — Integration Guide
+# Perplexity Studio Rules — KIMI-PERP-01
 
-## When to invoke Perplexity
+## Rule: Research-First Intelligence
 
-| Scenario | Rule |
-|----------|------|
-| Competitive intelligence | ALWAYS invoke Perplexity before writing a spec |
-| Technology deep-dives | Invoke for any library > 6 months old (APIs change) |
-| EAS/mobile gotchas | Invoke for Expo submission limits, ASO keywords |
-| Security advisories | Invoke when PLUTO requests threat intel |
-| PRD market research | Invoke at SUN agent pre-flight |
-| API compatibility | Invoke when ENCELADUS detects performance regressions |
+**ID**: `perplexity-research-first`  
+**Category**: `intelligence`  
+**Enforcement**: `prefer`  
 
-## Caching policy
+### Condition
+```
+task.requiresCompetitiveIntel OR task.requiresDeepDive OR task.query.contains("latest"|"2024"|"2025"|"2026")
+```
 
-- Default TTL: 60 minutes
-- Security queries: bypass cache (always fresh)
-- Market research: 24h TTL acceptable
-- Dev tooling: 4h TTL
+### Action
+Invoke Perplexity Agent before proceeding with implementation.
 
-## Model selection
+### Examples
 
-| Task | Model |
-|------|-------|
-| Quick lookup | `sonar` |
-| Deep analysis | `sonar-pro` |
-| Multi-step reasoning | `sonar-reasoning` |
+**Good**:
+- Task: "Implement OAuth 2.0"
+  → Perplexity: "OAuth 2.0 PKCE best practices 2025"
+  → Implementation follows current standards
 
-## Output handling
+- Task: "Compare React vs Vue"
+  → Perplexity: "React vs Vue performance benchmarks 2025"
+  → Decision based on latest data
 
-1. Ingest brief into ATLAS GraphMemory via `onResearchBriefReceived` hook
-2. Attach `novaRelevanceScore` to task metadata
-3. Surface `suggestedNextActions` to the orchestrator (EARTH)
-4. Log sources for compliance audit trail (MIMAS)
+**Bad**:
+- Task: "Implement OAuth 2.0"
+  → Uses 2019 patterns without research
+  → Missing PKCE, insecure implementation
 
-## Cost guard
+### Scope
+- Agents: ALL
+- File Patterns: `*.ts`, `*.tsx`
+- R16 Features: `research`, `planning`
 
-- Budget alert at $0.50/day
-- Auto-downgrade to `sonar` if cost exceeds threshold
-- Enable `fallbackOnError: true` in production to prevent build failures
+### Rationale
+Real-time intelligence ensures Nova26 uses current best practices, not outdated patterns.

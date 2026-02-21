@@ -65,8 +65,8 @@ export class NovaTracer {
       });
       this.enabled = true;
       console.log('Langfuse observability enabled');
-    } catch (error: any) {
-      console.warn(`Failed to initialize Langfuse: ${error.message}`);
+    } catch (error: unknown) {
+      console.warn(`Failed to initialize Langfuse: ${error instanceof Error ? error.message : String(error)}`);
       this.enabled = false;
     }
   }
@@ -98,8 +98,8 @@ export class NovaTracer {
       });
       
       return session.id;
-    } catch (error: any) {
-      console.warn(`Failed to start Langfuse session: ${error.message}`);
+    } catch (error: unknown) {
+      console.warn(`Failed to start Langfuse session: ${error instanceof Error ? error.message : String(error)}`);
       return null;
     }
   }
@@ -130,8 +130,8 @@ export class NovaTracer {
         id: trace.id,
         name: `task-${taskId}`,
       };
-    } catch (error: any) {
-      console.warn(`Failed to start trace: ${error.message}`);
+    } catch (error: unknown) {
+      console.warn(`Failed to start trace: ${error instanceof Error ? error.message : String(error)}`);
       return null;
     }
   }
@@ -174,8 +174,8 @@ export class NovaTracer {
           tokens,
         },
       });
-    } catch (error: any) {
-      console.warn(`Failed to log LLM call: ${error.message}`);
+    } catch (error: unknown) {
+      console.warn(`Failed to log LLM call: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   
@@ -207,8 +207,8 @@ export class NovaTracer {
           message: message.substring(0, 500),
         },
       });
-    } catch (error: any) {
-      console.warn(`Failed to log gate result: ${error.message}`);
+    } catch (error: unknown) {
+      console.warn(`Failed to log gate result: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   
@@ -241,8 +241,8 @@ export class NovaTracer {
           summary: decision.summary.substring(0, 500),
         },
       });
-    } catch (error: any) {
-      console.warn(`Failed to log council vote: ${error.message}`);
+    } catch (error: unknown) {
+      console.warn(`Failed to log council vote: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   
@@ -271,8 +271,8 @@ export class NovaTracer {
           endedAt: new Date().toISOString(),
         },
       });
-    } catch (error: any) {
-      console.warn(`Failed to end trace: ${error.message}`);
+    } catch (error: unknown) {
+      console.warn(`Failed to end trace: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   
@@ -287,8 +287,8 @@ export class NovaTracer {
     
     try {
       await this.langfuse.flushAsync();
-    } catch (error: any) {
-      console.warn(`Failed to flush Langfuse: ${error.message}`);
+    } catch (error: unknown) {
+      console.warn(`Failed to flush Langfuse: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 }

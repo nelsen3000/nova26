@@ -70,8 +70,17 @@ export function saveCheckpoint(checkpoint: Omit<Checkpoint, 'timestamp'>): void 
   cleanupOldCheckpoints(checkpoint.buildId);
 }
 
+interface CheckpointRow {
+  id: string;
+  build_id: string;
+  timestamp: string;
+  tasks: string;
+  current_phase: number;
+  metadata: string;
+}
+
 export function getLatestCheckpoint(buildId: string): Checkpoint | null {
-  const row = db.prepare(`SELECT * FROM checkpoints WHERE build_id = ? ORDER BY timestamp DESC LIMIT 1`).get(buildId) as any;
+  const row = db.prepare(`SELECT * FROM checkpoints WHERE build_id = ? ORDER BY timestamp DESC LIMIT 1`).get(buildId) as CheckpointRow | undefined;
   if (!row) return null;
   return { id: row.id, buildId: row.build_id, timestamp: row.timestamp, tasks: JSON.parse(row.tasks), currentPhase: row.current_phase, metadata: JSON.parse(row.metadata || '{}') };
 }
@@ -81,14 +90,32 @@ export function saveBuildState(state: BuildState): void {
     .run(state.buildId, state.prdFile, state.startTime, JSON.stringify(state.tasks), JSON.stringify(state.completedTasks), JSON.stringify(state.failedTasks), state.currentPhase, JSON.stringify(state.logs));
 }
 
+interface BuildStateRow {
+  build_id: string;
+  prd_file: string;
+  start_time: string;
+  tasks: string;
+  completed_tasks: string;
+  failed_tasks: string;
+  current_phase: number;
+  logs: string;
+}
+
 export function loadBuildState(buildId: string): BuildState | null {
-  const row = db.prepare('SELECT * FROM build_states WHERE build_id = ?').get(buildId) as any;
+  const row = db.prepare('SELECT * FROM build_states WHERE build_id = ?').get(buildId) as BuildStateRow | undefined;
   if (!row) return null;
   return { buildId: row.build_id, prdFile: row.prd_file, startTime: row.start_time, tasks: JSON.parse(row.tasks), completedTasks: JSON.parse(row.completed_tasks), failedTasks: JSON.parse(row.failed_tasks), currentPhase: row.current_phase, logs: JSON.parse(row.logs) };
 }
 
+interface SavedBuildRow {
+  build_id: string;
+  prd_file: string;
+  start_time: string;
+  updated_at: string;
+}
+
 export function listSavedBuilds(): Array<{ buildId: string; prdFile: string; startTime: string; updatedAt: string }> {
-  return (db.prepare('SELECT build_id, prd_file, start_time, updated_at FROM build_states ORDER BY updated_at DESC').all() as any[])
+  return (db.prepare('SELECT build_id, prd_file, start_time, updated_at FROM build_states ORDER BY updated_at DESC').all() as SavedBuildRow[])
     .map(row => ({ buildId: row.build_id, prdFile: row.prd_file, startTime: row.start_time, updatedAt: row.updated_at }));
 }
 

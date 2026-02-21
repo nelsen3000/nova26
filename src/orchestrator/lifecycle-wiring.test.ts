@@ -136,11 +136,15 @@ describe('lifecycle-wiring', () => {
       expect(result.featuresWired).toEqual([]);
     });
 
-    it('should handle all 13 feature flags', () => {
+    it('should handle all 24 feature flags', () => {
       const allEnabled: RalphLoopOptions = {
         portfolioEnabled: true,
+        agentMemoryEnabled: true,
         generativeUIEnabled: true,
         autonomousTestingEnabled: true,
+        wellbeingEnabled: true,
+        advancedRecoveryEnabled: true,
+        advancedInitEnabled: true,
         codeReviewEnabled: true,
         migrationEnabled: true,
         debugEngineEnabled: true,
@@ -151,10 +155,17 @@ describe('lifecycle-wiring', () => {
         healthDashboardEnabled: true,
         envManagementEnabled: true,
         orchestrationOptimizationEnabled: true,
+        modelRoutingEnabled: true,
+        perplexityEnabled: true,
+        workflowEngineEnabled: true,
+        infiniteMemoryEnabled: true,
+        cinematicObservabilityEnabled: true,
+        aiModelDatabaseEnabled: true,
+        crdtCollaborationEnabled: true,
       };
 
       const result = wireFeatureHooks(registry, allEnabled);
-      expect(result.wiredCount).toBe(13);
+      expect(result.wiredCount).toBe(24);
     });
   });
 
@@ -178,8 +189,12 @@ describe('lifecycle-wiring', () => {
     it('should handle all feature flags', () => {
       const allEnabled: RalphLoopOptions = {
         portfolioEnabled: true,
+        agentMemoryEnabled: true,
         generativeUIEnabled: true,
         autonomousTestingEnabled: true,
+        wellbeingEnabled: true,
+        advancedRecoveryEnabled: true,
+        advancedInitEnabled: true,
         codeReviewEnabled: true,
         migrationEnabled: true,
         debugEngineEnabled: true,
@@ -190,19 +205,30 @@ describe('lifecycle-wiring', () => {
         healthDashboardEnabled: true,
         envManagementEnabled: true,
         orchestrationOptimizationEnabled: true,
+        modelRoutingEnabled: true,
+        perplexityEnabled: true,
+        workflowEngineEnabled: true,
+        infiniteMemoryEnabled: true,
+        cinematicObservabilityEnabled: true,
+        aiModelDatabaseEnabled: true,
+        crdtCollaborationEnabled: true,
       };
 
       const summary = getWiringSummary(allEnabled);
 
-      expect(summary.wouldWire).toHaveLength(13);
+      expect(summary.wouldWire).toHaveLength(24);
       expect(summary.wouldSkip).toHaveLength(0);
     });
 
     it('should handle all disabled', () => {
       const options: RalphLoopOptions = {
         portfolioEnabled: false,
+        agentMemoryEnabled: false,
         generativeUIEnabled: false,
         autonomousTestingEnabled: false,
+        wellbeingEnabled: false,
+        advancedRecoveryEnabled: false,
+        advancedInitEnabled: false,
         codeReviewEnabled: false,
         migrationEnabled: false,
         debugEngineEnabled: false,
@@ -213,12 +239,19 @@ describe('lifecycle-wiring', () => {
         healthDashboardEnabled: false,
         envManagementEnabled: false,
         orchestrationOptimizationEnabled: false,
+        modelRoutingEnabled: false,
+        perplexityEnabled: false,
+        workflowEngineEnabled: false,
+        infiniteMemoryEnabled: false,
+        cinematicObservabilityEnabled: false,
+        aiModelDatabaseEnabled: false,
+        crdtCollaborationEnabled: false,
       };
 
       const summary = getWiringSummary(options);
 
       expect(summary.wouldWire).toHaveLength(0);
-      expect(summary.wouldSkip).toHaveLength(13);
+      expect(summary.wouldSkip).toHaveLength(24);
     });
   });
 

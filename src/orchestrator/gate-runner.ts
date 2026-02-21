@@ -7,7 +7,6 @@ import { getAgentSchema, hasAgentSchema } from '../llm/structured-output.js';
 import { typescriptCheckGate } from '../gates/typescript-gate.js';
 import { testRunnerGate } from '../gates/test-runner-gate.js';
 import { validateVisually } from '../browser/visual-validator.js';
-import { typeCheck as sandboxTypeCheck } from '../sandbox/docker-executor.js';
 import { callLLM } from '../llm/ollama-client.js';
 
 // Load hard limits configuration
@@ -236,43 +235,6 @@ async function runVisualValidationGate(task: Task, response: LLMResponse): Promi
   }
 }
 
-/**
- * Sandbox type-check gate — runs for code-producing agents
- * Extracts TypeScript code blocks and type-checks them
- */
-async function runSandboxTypeCheckGate(task: Task, response: LLMResponse): Promise<GateResult> {
-  const codeAgents = ['MARS', 'VENUS', 'PLUTO', 'GANYMEDE', 'IO', 'TRITON'];
-  if (!codeAgents.includes(task.agent)) {
-    return { gate: 'sandbox-typecheck', passed: true, message: 'Skipped (not a code agent)' };
-  }
-
-  // Extract TypeScript code blocks from the response
-  const codeBlockRegex = /```(?:typescript|tsx?)\n([\s\S]*?)```/g;
-  const blocks: string[] = [];
-  let match;
-  while ((match = codeBlockRegex.exec(response.content)) !== null) {
-    blocks.push(match[1]);
-  }
-
-  if (blocks.length === 0) {
-    return { gate: 'sandbox-typecheck', passed: true, message: 'No TypeScript code blocks found' };
-  }
-
-  try {
-    const combined = blocks.join('\n\n');
-    const result = await sandboxTypeCheck(combined);
-    return {
-      gate: 'sandbox-typecheck',
-      passed: result.success,
-      message: result.success
-        ? `Type-check passed (${blocks.length} code block(s))`
-        : `Type-check failed: ${result.stderr.substring(0, 300)}`
-    };
-  } catch (error: any) {
-    return { gate: 'sandbox-typecheck', passed: true, message: `Type-check skipped: ${error.message}` };
-  }
-}
-
 async function runGate(
   gateName: string,
   task: Task,
@@ -292,8 +254,6 @@ async function runGate(
       return await testRunnerGate(response, task);
     case 'visual-validation':
       return await runVisualValidationGate(task, response);
-    case 'sandbox-typecheck':
-      return await runSandboxTypeCheckGate(task, response);
     default:
       return {
         gate: gateName,

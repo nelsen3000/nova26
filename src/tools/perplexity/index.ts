@@ -1,26 +1,16 @@
-/**
- * Perplexity Intelligence Division
- * Public barrel export
- */
+// Perplexity Research Integration — KIMI-PERP-01
 
 export type {
   PerplexityResearchBrief,
   PerplexityToolConfig,
-  ResearchOptions,
-  CacheStats,
-  CacheEntry,
+  PerplexityAPIResponse,
+  CachedResearch,
 } from './types.js';
 
-export {
-  PerplexityError,
-  PerplexityRateLimitError,
-  PerplexityServerError,
-  PerplexityTimeoutError,
-} from './types.js';
+export { DEFAULT_PERPLEXITY_CONFIG } from './types.js';
 
 export {
   PerplexityAgent,
   createPerplexityAgent,
-  getPerplexityAgent,
-  resetPerplexityAgent,
+  type ATLASIngestHook,
 } from './perplexity-agent.js';

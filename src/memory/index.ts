@@ -27,6 +27,7 @@ export {
   type BuildEventLog,
   type ExtractionPromptResult,
 } from './consolidation-pipeline.js';
+import type { BuildEventLog, ExtractionPromptResult } from './consolidation-pipeline.js';
 
 // Memory Retrieval & Forgetting Curve
 export {
@@ -70,7 +71,7 @@ export interface MemoryEngineConfig {
  */
 export function createMemoryEngine(
   embeddingFn: (text: string) => Promise<number[]>,
-  extractionFn: (eventLog: any) => Promise<any>,
+  extractionFn: (eventLog: BuildEventLog) => Promise<ExtractionPromptResult>,
   config: MemoryEngineConfig = {}
 ) {
   const store = new AgentMemoryStore(config.store);

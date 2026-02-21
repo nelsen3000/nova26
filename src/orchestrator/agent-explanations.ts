@@ -30,7 +30,7 @@ export interface ChainOfReasoning {
 export function getAgentExplanation(task: Task): AgentExplanation {
   const explanations: Record<string, (task: Task) => AgentExplanation> = {
     'EARTH': (t) => ({
-      emoji: '🌍',
+      emoji: '\u{1F30D}',
       simple: `Planning out the details for "${t.title}"`,
       detailed: `EARTH is writing a product specification that describes what needs to be built, what data is involved, and how users will interact with it. This is like writing a blueprint before construction.`,
       technical: `EARTH is generating a PRD section with user stories, acceptance criteria, Gherkin scenarios, and UI state definitions. Output will define data models, mutations, and queries needed.`,
@@ -46,9 +46,9 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'high'
       }
     }),
-    
+
     'PLUTO': (t) => ({
-      emoji: '🪐',
+      emoji: '\u{1FA90}',
       simple: `Designing the database structure for "${t.title}"`,
       detailed: `PLUTO is creating database tables and relationships. Think of this as designing the filing system where all the app's data will be stored securely.`,
       technical: `PLUTO is defining Convex tables with validators, indexes for query performance, and row-level isolation via companyId. Output: convex/schema.ts additions.`,
@@ -64,12 +64,12 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'high'
       }
     }),
-    
+
     'MARS': (t) => ({
-      emoji: '🔴',
+      emoji: '\u{1F534}',
       simple: `Writing the backend code for "${t.title}"`,
       detailed: `MARS is writing the server-side code that handles saving data, fetching records, and business logic. This is the engine that powers the feature.`,
-      technical: `MARS is implementing Convex mutations (5-step pattern: auth→validate→logic→execute→return) and queries with proper TypeScript types and error handling.`,
+      technical: `MARS is implementing Convex mutations (5-step pattern: auth\u2192validate\u2192logic\u2192execute\u2192return) and queries with proper TypeScript types and error handling.`,
       reasoning: {
         context: `Schema is ready and EARTH has defined requirements. Implementation of "${t.title}" can now begin with proper type safety.`,
         analysis: `The feature requires CRUD operations with authentication checks. The 5-step pattern ensures consistent security and error handling across all mutations.`,
@@ -82,9 +82,9 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'high'
       }
     }),
-    
+
     'VENUS': (t) => ({
-      emoji: '💫',
+      emoji: '\u{1F4AB}',
       simple: `Building the user interface for "${t.title}"`,
       detailed: `VENUS is creating the buttons, forms, and screens that users will see and interact with. Making it look good and work smoothly on all devices.`,
       technical: `VENUS is building React 19 components with Tailwind CSS, shadcn/ui, handling all 5 UI states (loading, empty, error, partial, populated) with framer-motion animations.`,
@@ -100,9 +100,9 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'high'
       }
     }),
-    
+
     'MERCURY': (t) => ({
-      emoji: '☿️',
+      emoji: '\u2640\uFE0F',
       simple: `Checking the quality of "${t.title}"`,
       detailed: `MERCURY is reviewing the work to make sure it meets standards, follows patterns, and doesn't have any issues. Like a code review, but automated.`,
       technical: `MERCURY is running validation gates: type checking, pattern matching, completeness verification. Returns PASS/FAIL with specific issues if found.`,
@@ -118,9 +118,9 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'high'
       }
     }),
-    
+
     'SATURN': (t) => ({
-      emoji: '🪐',
+      emoji: '\u{1FA90}',
       simple: `Writing tests for "${t.title}"`,
       detailed: `SATURN is creating automated tests that will catch bugs before they reach users. Testing happy paths, edge cases, and error scenarios.`,
       technical: `SATURN is writing Vitest unit tests, React Testing Library component tests, and Playwright E2E tests. Enforcing 85%+ coverage thresholds.`,
@@ -136,9 +136,9 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'high'
       }
     }),
-    
+
     'JUPITER': (t) => ({
-      emoji: '🟠',
+      emoji: '\u{1F7E0}',
       simple: `Making architectural decisions for "${t.title}"`,
       detailed: `JUPITER is deciding how different parts of the system should connect and work together, documenting trade-offs and why certain approaches were chosen.`,
       technical: `JUPITER is creating Architecture Decision Records (ADRs) with context, decision, consequences, and alternatives considered. Output: .nova/architecture/adrs/`,
@@ -151,12 +151,12 @@ export function getAgentExplanation(task: Task): AgentExplanation {
           'No documentation (knowledge silos)',
           'Verbal handoffs (subject to forgetting)'
         ],
-        confidence: 'medium' // Architecture decisions involve more uncertainty
+        confidence: 'medium'
       }
     }),
-    
+
     'TITAN': (t) => ({
-      emoji: '🌙',
+      emoji: '\u{1F319}',
       simple: `Adding real-time updates to "${t.title}"`,
       detailed: `TITAN is making the feature update instantly when data changes, without needing to refresh the page. Like Google Docs showing edits live.`,
       technical: `TITAN is implementing Convex subscriptions with useQuery(), optimistic updates via withOptimisticUpdate(), and presence tracking for collaborative features.`,
@@ -172,9 +172,9 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'high'
       }
     }),
-    
+
     'EUROPA': (t) => ({
-      emoji: '🌊',
+      emoji: '\u{1F30A}',
       simple: `Optimizing "${t.title}" for mobile devices`,
       detailed: `EUROPA is ensuring the feature works great on phones and tablets - touch-friendly buttons, fast loading, and responsive layouts.`,
       technical: `EUROPA is defining responsive Tailwind patterns, PWA configurations, service worker patterns, and touch gesture handlers. Guidelines for VENUS implementation.`,
@@ -190,9 +190,9 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'high'
       }
     }),
-    
+
     'ATLAS': (t) => ({
-      emoji: '📚',
+      emoji: '\u{1F4DA}',
       simple: `Learning from the build to improve future work`,
       detailed: `ATLAS is recording what worked well and what didn't, so the system gets smarter over time. Like keeping a journal of lessons learned.`,
       technical: `ATLAS is logging build metrics, storing effective/failure patterns, creating timing benchmarks, and generating pre-task briefings for future similar tasks.`,
@@ -208,12 +208,12 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'medium'
       }
     }),
-    
+
     'SUN': (t) => ({
-      emoji: '☀️',
+      emoji: '\u2600\uFE0F',
       simple: `Coordinating the overall project plan`,
       detailed: `SUN is the project manager, breaking down big ideas into specific tasks and making sure they get done in the right order.`,
-      technical: `SUN is orchestrating the Ralph Loop, managing task dependencies, promoting tasks from pending→ready→running→done, and handling agent coordination.`,
+      technical: `SUN is orchestrating the Ralph Loop, managing task dependencies, promoting tasks from pending\u2192ready\u2192running\u2192done, and handling agent coordination.`,
       reasoning: {
         context: `A new PRD has been loaded with ${t.context?.taskCount || 'multiple'} tasks that need to be completed in the correct order with proper dependencies.`,
         analysis: `Tasks have dependencies (EARTH before MARS, MARS before VENUS). Some can run in parallel. Need a system to track state and coordinate handoffs.`,
@@ -226,9 +226,9 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'high'
       }
     }),
-    
+
     'URANUS': (t) => ({
-      emoji: '🔭',
+      emoji: '\u{1F52D}',
       simple: `Researching best practices for "${t.title}"`,
       detailed: `URANUS is exploring what approaches have worked for similar problems, researching libraries, patterns, and potential pitfalls before implementation starts.`,
       technical: `URANUS performs pre-implementation research: library evaluation, pattern research, competitor analysis, and creating decision matrices for approach selection.`,
@@ -244,9 +244,9 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'medium'
       }
     }),
-    
+
     'NEPTUNE': (t) => ({
-      emoji: '🔵',
+      emoji: '\u{1F535}',
       simple: `Setting up analytics for "${t.title}"`,
       detailed: `NEPTUNE is adding tracking so we can understand how users interact with the feature - what's working well and what needs improvement.`,
       technical: `NEPTUNE implements event tracking, creates dashboard queries, defines success metrics, and sets up anomaly detection for feature performance.`,
@@ -262,9 +262,9 @@ export function getAgentExplanation(task: Task): AgentExplanation {
         confidence: 'high'
       }
     }),
-    
+
     'ANDROMEDA': (t) => ({
-      emoji: '🌌',
+      emoji: '\u{1F30C}',
       simple: `Brainstorming ideas for "${t.title}"`,
       detailed: `ANDROMEDA is exploring creative possibilities and generating alternative approaches that might not be obvious at first glance.`,
       technical: `ANDROMEDA performs divergent thinking exercises, generates "what if" scenarios, and creates idea matrices to explore solution space beyond obvious choices.`,
@@ -277,12 +277,12 @@ export function getAgentExplanation(task: Task): AgentExplanation {
           'Skip ideation (narrow thinking)',
           'Unstructured brainstorming (misses categories)'
         ],
-        confidence: 'low' // Ideation is inherently uncertain
+        confidence: 'low'
       }
     }),
-    
+
     'default': (t) => ({
-      emoji: '🤖',
+      emoji: '\u{1F916}',
       simple: `Working on "${t.title}"`,
       detailed: `${t.agent} is handling its specialized part of this feature according to its domain expertise.`,
       technical: `${t.agent} agent executing task with domain-specific patterns and validation.`,
@@ -295,7 +295,7 @@ export function getAgentExplanation(task: Task): AgentExplanation {
       }
     }),
   };
-  
+
   const getExplanation = explanations[task.agent] || explanations['default'];
   return getExplanation(task);
 }
@@ -305,25 +305,25 @@ export function getAgentExplanation(task: Task): AgentExplanation {
  */
 export function formatReasoning(reasoning: ChainOfReasoning): string {
   const confidenceEmoji = {
-    high: '✅',
-    medium: '⚠️',
-    low: '🔍'
+    high: '\u2705',
+    medium: '\u26A0\uFE0F',
+    low: '\u{1F50D}'
   };
-  
-  return `
-🧠 Chain of Reasoning:
 
-📍 Context:
+  return `
+\u{1F9E0} Chain of Reasoning:
+
+\u{1F4CD} Context:
    ${reasoning.context}
 
-🔍 Analysis:
+\u{1F50D} Analysis:
    ${reasoning.analysis}
 
-💡 Decision:
+\u{1F4A1} Decision:
    ${reasoning.decision}
 
-🔄 Alternatives Considered:
-${reasoning.alternatives.map(a => `   • ${a}`).join('\n')}
+\u{1F504} Alternatives Considered:
+${reasoning.alternatives.map(a => `   \u2022 ${a}`).join('\n')}
 
 ${confidenceEmoji[reasoning.confidence]} Confidence: ${reasoning.confidence.toUpperCase()}
 `;
@@ -333,7 +333,7 @@ ${confidenceEmoji[reasoning.confidence]} Confidence: ${reasoning.confidence.toUp
  * Format explanation for CLI output with optional reasoning
  */
 export function formatExplanation(
-  explanation: AgentExplanation, 
+  explanation: AgentExplanation,
   showDetail: boolean = false,
   showReasoning: boolean = false
 ): string {
@@ -342,250 +342,27 @@ export function formatExplanation(
     `  ${explanation.emoji} ${explanation.simple}`,
     ``,
   ];
-  
+
   if (showDetail) {
-    lines.push(`  📖 ${explanation.detailed}`);
+    lines.push(`  \u{1F4D6} ${explanation.detailed}`);
     lines.push(`  `);
-    lines.push(`  🔧 ${explanation.technical}`);
+    lines.push(`  \u{1F527} ${explanation.technical}`);
   }
-  
+
   if (showReasoning && explanation.reasoning) {
     lines.push('');
     lines.push(formatReasoning(explanation.reasoning).split('\n').map(l => '  ' + l).join('\n'));
   }
-  
+
   if (!showDetail && !showReasoning) {
-    lines.push(`  💡 Press 'e' for details, 'r' for reasoning`);
+    lines.push(`  \u{1F4A1} Press 'e' for details, 'r' for reasoning`);
   }
-  
+
   if (explanation.learnMore) {
     lines.push(`  `);
-    lines.push(`  📚 Learn more: ${explanation.learnMore}`);
+    lines.push(`  \u{1F4DA} Learn more: ${explanation.learnMore}`);
   }
-  
+
   lines.push('');
   return lines.join('\n');
-}
-
-/**
- * Generate HTML version with reasoning
- */
-export function generateExplanationHTML(explanation: AgentExplanation, task: Task): string {
-  const reasoningHTML = explanation.reasoning ? `
-    <details class="explanation-reasoning">
-      <summary>🧠 Chain of Reasoning</summary>
-      <div class="reasoning-content">
-        <div class="reasoning-section">
-          <h5>📍 Context</h5>
-          <p>${explanation.reasoning.context}</p>
-        </div>
-        <div class="reasoning-section">
-          <h5>🔍 Analysis</h5>
-          <p>${explanation.reasoning.analysis}</p>
-        </div>
-        <div class="reasoning-section">
-          <h5>💡 Decision</h5>
-          <p>${explanation.reasoning.decision}</p>
-        </div>
-        <div class="reasoning-section">
-          <h5>🔄 Alternatives Considered</h5>
-          <ul>
-            ${explanation.reasoning.alternatives.map(a => `<li>${a}</li>`).join('')}
-          </ul>
-        </div>
-        <div class="reasoning-confidence ${explanation.reasoning.confidence}">
-          ${explanation.reasoning.confidence === 'high' ? '✅' : explanation.reasoning.confidence === 'medium' ? '⚠️' : '🔍'} 
-          Confidence: ${explanation.reasoning.confidence.toUpperCase()}
-        </div>
-      </div>
-    </details>
-  ` : '';
-  
-  return `
-<div class="agent-explanation" data-agent="${task.agent}">
-  <div class="explanation-header">
-    <span class="agent-emoji">${explanation.emoji}</span>
-    <span class="agent-name">${task.agent}</span>
-    <span class="task-title">${task.title}</span>
-  </div>
-  
-  <div class="explanation-simple">
-    ${explanation.simple}
-  </div>
-  
-  <details class="explanation-details">
-    <summary>What is ${task.agent} doing?</summary>
-    <div class="explanation-detailed">
-      <p>${explanation.detailed}</p>
-    </div>
-    <div class="explanation-technical">
-      <h4>Technical Details:</h4>
-      <p>${explanation.technical}</p>
-    </div>
-  </details>
-  
-  ${reasoningHTML}
-</div>
-
-<style>
-.agent-explanation {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border-radius: 12px;
-  padding: 20px;
-  margin: 16px 0;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.explanation-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.agent-emoji {
-  font-size: 24px;
-}
-
-.agent-name {
-  font-weight: 600;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #60a5fa;
-}
-
-.task-title {
-  color: rgba(255,255,255,0.7);
-  font-size: 14px;
-}
-
-.explanation-simple {
-  font-size: 18px;
-  font-weight: 500;
-  margin-bottom: 16px;
-  line-height: 1.4;
-}
-
-.explanation-details,
-.explanation-reasoning {
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 16px;
-  margin-top: 16px;
-}
-
-.explanation-details summary,
-.explanation-reasoning summary {
-  cursor: pointer;
-  color: #60a5fa;
-  font-size: 14px;
-  user-select: none;
-}
-
-.explanation-details summary:hover,
-.explanation-reasoning summary:hover {
-  color: #93c5fd;
-}
-
-.explanation-detailed {
-  margin-top: 12px;
-  padding: 12px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 8px;
-  line-height: 1.6;
-}
-
-.explanation-technical {
-  margin-top: 12px;
-  padding: 12px;
-  background: rgba(0,0,0,0.2);
-  border-radius: 8px;
-  font-family: 'Monaco', 'Menlo', monospace;
-  font-size: 13px;
-}
-
-.explanation-technical h4 {
-  margin: 0 0 8px 0;
-  color: #fbbf24;
-  font-size: 12px;
-  text-transform: uppercase;
-}
-
-.reasoning-content {
-  margin-top: 16px;
-}
-
-.reasoning-section {
-  margin-bottom: 16px;
-  padding: 12px;
-  background: rgba(255,255,255,0.03);
-  border-radius: 8px;
-}
-
-.reasoning-section h5 {
-  margin: 0 0 8px 0;
-  color: #a78bfa;
-  font-size: 12px;
-  text-transform: uppercase;
-}
-
-.reasoning-section p {
-  margin: 0;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.9);
-}
-
-.reasoning-section ul {
-  margin: 8px 0;
-  padding-left: 20px;
-}
-
-.reasoning-section li {
-  margin: 4px 0;
-  color: rgba(255,255,255,0.7);
-}
-
-.reasoning-confidence {
-  margin-top: 12px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.reasoning-confidence.high {
-  background: rgba(34, 197, 94, 0.2);
-  color: #4ade80;
-}
-
-.reasoning-confidence.medium {
-  background: rgba(234, 179, 8, 0.2);
-  color: #facc15;
-}
-
-.reasoning-confidence.low {
-  background: rgba(239, 68, 68, 0.2);
-  color: #f87171;
-}
-</style>
-`;
-}
-
-/**
- * Interactive CLI prompt with reasoning option
- */
-export function showInteractiveExplanation(task: Task): void {
-  const explanation = getAgentExplanation(task);
-  
-  console.log('\n' + '─'.repeat(60));
-  console.log(`${explanation.emoji} ${task.agent} is working on: ${task.title}`);
-  console.log('─'.repeat(60));
-  console.log();
-  console.log('📋 Simple explanation:');
-  console.log(`   ${explanation.simple}`);
-  console.log();
-  console.log('💡 Press [e] for details, [r] for reasoning, [Enter] to continue...');
-  console.log();
 }
