@@ -28,3 +28,52 @@ export type {
   SyncConflict,
   Transport,
 } from './sync-manager';
+
+// R24-03: Semantic CRDT Core
+export {
+  RealTimeCRDTOrchestrator,
+  DefaultConflictResolver,
+} from './crdt-core.js';
+
+export type {
+  VectorClock,
+  CRDTOperation as SemanticCRDTOperation,
+  SemanticCRDTNode,
+  ConflictMarker,
+  CRDTDocument as SemanticCRDTDocument,
+  CollaborationSession,
+  ApplyChangeResult,
+  ForkResult,
+  OperationType,
+  NodeType,
+  ConflictResolutionStrategy,
+  ConflictResolver,
+} from './crdt-core.js';
+
+// R24-03: Yjs/Automerge Bridge
+export {
+  yjsChangeToCRDTOp,
+  automergePatchToCRDTOp,
+  crdtOpToYjsChange,
+  crdtOpToAutomergePatch,
+  SyncProtocol,
+} from './yjs-automerge-bridge.js';
+
+export type {
+  YjsChange,
+  AutomergePatch,
+} from './yjs-automerge-bridge.js';
+
+// R24-03: Semantic Resolver
+export {
+  SemanticConflictResolver,
+  createSemanticResolver,
+  getStrategyPriority,
+} from './semantic-resolver.js';
+
+export type {
+  SemanticContext,
+  ResolutionCandidate,
+  SemanticResolutionResult,
+  TasteVaultPreferences,
+} from './semantic-resolver.js';

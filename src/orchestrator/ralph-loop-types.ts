@@ -158,6 +158,18 @@ export interface RalphLoopOptions {
   // R23: Persistent Visual Workflow Engine (R23-01)
   visualWorkflowEnabled?: boolean;
   visualWorkflowConfig?: VisualWorkflowEngineConfig;
+  // R23: Infinite Hierarchical Memory (R23-03)
+  infiniteMemoryEnabled?: boolean;
+  infiniteMemoryMaxNodes?: number;
+  // R23: Cinematic Observability (R23-05)
+  cinematicObservabilityEnabled?: boolean;
+  tasteDropAlertThreshold?: number;
+  // R24: AI Model Database (R24-01)
+  aiModelDatabaseEnabled?: boolean;
+  ensembleDebateEnabled?: boolean;
+  // R24: Real-time CRDT Collaboration (R24-03)
+  crdtCollaborationEnabled?: boolean;
+  crdtSemanticResolverEnabled?: boolean;
 }
 
 // Re-export HookRegistry from lifecycle-hooks

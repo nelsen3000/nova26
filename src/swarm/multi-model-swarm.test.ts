@@ -1,7 +1,7 @@
 // Multi-Model Swarm Tests
 // Comprehensive test suite for parallel execution and circuit breakers
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   MultiModelSwarm,
   getMultiModelSwarm,
@@ -11,6 +11,7 @@ import {
 } from './multi-model-swarm.js';
 import { resetCostOptimizer } from '../llm/cost-optimizer.js';
 import { resetModelRouter } from '../llm/model-router.js';
+import * as modelRouter from '../llm/model-router.js';
 
 describe('MultiModelSwarm', () => {
   let swarm: MultiModelSwarm;
@@ -28,6 +29,36 @@ describe('MultiModelSwarm', () => {
     resetCostOptimizer();
     resetModelRouter();
     resetMultiModelSwarm();
+
+    // Mock the model router to avoid constraint issues in tests
+    vi.spyOn(modelRouter, 'getModelRouter').mockReturnValue({
+      route: vi.fn().mockReturnValue({
+        model: {
+          id: 'mock-model',
+          name: 'Mock Model',
+          provider: 'openai',
+          costPerInputToken: 0.000001,
+          costPerOutputToken: 0.000001,
+          maxTokens: 4096,
+          contextWindow: 8192,
+          capabilities: ['chat', 'code-generation'],
+          latencyP50: 100,
+          latencyP99: 500,
+          quality: 0.85,
+        },
+        reason: 'Test mock',
+        confidence: 0.9,
+        estimatedCost: 0.001,
+        estimatedLatency: 100,
+        alternatives: [],
+      }),
+      updateStats: vi.fn(),
+      rankByUCB: vi.fn().mockReturnValue([]),
+      getModelStats: vi.fn(),
+      getAllStats: vi.fn().mockReturnValue({ global: new Map(), byTaskType: new Map() }),
+      resetStats: vi.fn(),
+    } as any);
+
     swarm = new MultiModelSwarm();
   });
 

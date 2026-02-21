@@ -55,10 +55,10 @@
 - [x] `KIMI-R22-01` Implement Agent Model Routing (spec: .nova/specs/grok-r22-01-model-routing.md, 79 tests) — DONE (by Claude) — `src/model-routing/` 10 files, 85 tests passing, wired into ralph-loop-types.ts
 - [x] `KIMI-R23-01` Implement Persistent Visual Workflow Engine — DONE (by Claude) — `src/workflow-engine/` 4 files + `src/atlas/visual-memory-hook.ts`, 53 tests passing
 - [x] ~~`KIMI-R23-02` Implement MicroVM / WASI Ultra-Sandbox~~ **CUT** (Firecracker requires Linux KVM, no macOS)
-- [ ] `KIMI-R23-03` Implement Infinite Hierarchical Memory (spec: .nova/specs/grok-r23-eternal-symphony.md, 70 tests)
+- [x] `KIMI-R23-03` Implement Infinite Hierarchical Memory — DONE (by Claude) — `src/atlas/infinite-memory-core.ts`, `mem0-adapter.ts`, `letta-soul-manager.ts`, `src/taste-vault/memory-taste-scorer.ts`, 64 tests passing
 - [x] ~~`KIMI-R23-04` Implement Agent Debate & Swarm Layer~~ **CUT** (over-engineered, expensive multi-model debate before product exists)
-- [ ] `KIMI-R23-05` Implement Cinematic Observability & Eval Suite (spec: .nova/specs/grok-r23-eternal-symphony.md, 60 tests)
-- [ ] `KIMI-R24-01` Implement AI Model Database (spec: .nova/specs/grok-r24-immortal-omniverse.md, 70 tests)
+- [x] `KIMI-R23-05` Implement Cinematic Observability & Eval Suite — DONE (by Claude) — `src/observability/cinematic-core.ts`, `braintrust-adapter.ts`, `langsmith-bridge.ts`, 47 tests passing
+- [x] `KIMI-R24-01` Implement AI Model Database — DONE (by Claude) — `src/models/ai-model-vault.ts`, `ensemble-engine.ts`, `src/atlas/model-taste-integrator.ts`, 50 tests passing
 - [x] ~~`KIMI-R24-02` Implement Eternal Engine Rust Core~~ **CUT** (no Rust crate exists yet)
 - [ ] `KIMI-R24-03` Implement Real-time CRDT Collaboration (spec: .nova/specs/grok-r24-immortal-omniverse.md, 65 tests)
 - [x] ~~`KIMI-R24-04` Implement Voice & Multimodal Interface~~ **CUT** (premature without working UI)
