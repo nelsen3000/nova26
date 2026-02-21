@@ -65,10 +65,12 @@
 
 ## In Progress
 
-- [ ] Wire 13 unwired R16/R17 modules into ralph-loop.ts (R16-01, R16-03, R16-04, R17-03→R17-12)
-  NOTE: Kimi overnight hardening produced docs + integration tests but did NOT wire ralph-loop.ts.
-  Kimi mega-wiring sprint (KIMI-W-01) assigned to handle this.
-- [ ] CL-20→CL-30 downtime evaluation tasks (see .nova/TASK-BOARD.md)
+- [x] Wire 13 unwired R16/R17 modules into ralph-loop.ts (R16-01, R16-03, R16-04, R17-03→R17-12)
+  ✅ COMPLETED (CL-57): Added factory imports for all 13 modules + ModuleContext interface
+  + initialization code with feature flag checks + pass-through to processTask function.
+  Zero TypeScript errors. All modules now available during task execution.
+- [ ] Evaluate pending KIMI deliverables (KIMI-R22-01, KIMI-PERP-01, KIMI-R23-01/03/05, KIMI-R24-01/03)
+- [ ] Evaluate Grok R22-02 Shannon Patterns spec (when ready)
 
 ## Queued
 
