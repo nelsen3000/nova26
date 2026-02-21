@@ -117,7 +117,7 @@ describe('Hypercore Types & Schemas (S2-01)', () => {
           agentId: fc.string({ minLength: 1, maxLength: 20 }),
           content: fc.string({ maxLength: 200 }),
           tags: fc.array(fc.string({ maxLength: 20 }), { maxLength: 5 }),
-          tasteScore: fc.float({ min: 0, max: 1 }),
+          tasteScore: fc.double({ min: 0, max: 1 }).filter(n => !Number.isNaN(n) && Number.isFinite(n)),
           timestamp: fc.integer({ min: 0 }),
           vectorClock: fc.dictionary(fc.string({ minLength: 1, maxLength: 10 }), fc.integer({ min: 0, max: 1000 })),
         }),
