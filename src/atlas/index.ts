@@ -106,13 +106,30 @@ export interface LogBuildOptions {
   phase: number;
 }
 
+// K3-35: Hindsight hook callback type (avoids circular import)
+export type HindsightBuildHook = (log: BuildLog, project: string, phase: number) => Promise<void>;
+
 export class KronosAtlas {
   private kronos: KronosClient;
   private convex: ConvexAtlasClient;
+  private hindsightHook?: HindsightBuildHook;
 
   constructor(kronosBaseUrl?: string, convexUrl?: string) {
     this.kronos = new KronosClient(kronosBaseUrl);
     this.convex = new ConvexAtlasClient(convexUrl);
+  }
+
+  /**
+   * K3-35: Register an optional Hindsight memory hook.
+   * Called after each successful logBuild() to persist build context in Hindsight.
+   */
+  setHindsightHook(hook: HindsightBuildHook): void {
+    this.hindsightHook = hook;
+  }
+
+  /** Remove the Hindsight hook. */
+  clearHindsightHook(): void {
+    this.hindsightHook = undefined;
   }
 
   /**
@@ -128,6 +145,13 @@ export class KronosAtlas {
       this.ingestToKronos(log, project, phase),
       this.syncToConvex(log, options),
     ]);
+
+    // 4. K3-35: Optional Hindsight hook (best-effort, never fails the build log)
+    if (this.hindsightHook) {
+      this.hindsightHook(log, project, phase).catch((err: unknown) => {
+        console.warn('[Hindsight] Atlas hook failed:', err instanceof Error ? err.message : String(err));
+      });
+    }
   }
 
   /** Search Kronos for relevant patterns. Returns empty result if unavailable. */

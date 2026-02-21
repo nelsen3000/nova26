@@ -76,16 +76,44 @@ export interface VaultSummary {
 // TasteVault Class
 // ============================================================================
 
+// K3-35: Hindsight hook callback types (avoids circular import)
+export type HindsightLearnHook = (node: GraphNode, options?: LearnOptions) => Promise<void>;
+export type HindsightReinforceHook = (nodeId: string, node: GraphNode) => Promise<void>;
+
 export class TasteVault {
   private graph: GraphMemory;
   userId: string;
   tier: TierConfig;
   // private global wisdom tracking reserved for future use
+  private hindsightLearnHook?: HindsightLearnHook;
+  private hindsightReinforceHook?: HindsightReinforceHook;
 
   constructor(userId: string, tier: TierConfig = FREE_TIER) {
     this.userId = userId;
     this.tier = tier;
     this.graph = getGraphMemory(userId);
+  }
+
+  /**
+   * K3-35: Register an optional Hindsight hook for pattern learning.
+   * Called after each successful learn() to persist the pattern in Hindsight.
+   */
+  setHindsightLearnHook(hook: HindsightLearnHook): void {
+    this.hindsightLearnHook = hook;
+  }
+
+  /**
+   * K3-35: Register an optional Hindsight hook for pattern reinforcement.
+   * Called after each successful reinforce() to update Hindsight memory.
+   */
+  setHindsightReinforceHook(hook: HindsightReinforceHook): void {
+    this.hindsightReinforceHook = hook;
+  }
+
+  /** Remove all Hindsight hooks. */
+  clearHindsightHooks(): void {
+    this.hindsightLearnHook = undefined;
+    this.hindsightReinforceHook = undefined;
   }
 
   // --------------------------------------------------------------------------
@@ -143,6 +171,13 @@ export class TasteVault {
       });
     }
 
+    // K3-35: Optional Hindsight hook (best-effort)
+    if (this.hindsightLearnHook) {
+      this.hindsightLearnHook(createdNode, node).catch((err: unknown) => {
+        console.warn('[Hindsight] TasteVault learn hook failed:', err instanceof Error ? err.message : String(err));
+      });
+    }
+
     return createdNode;
   }
 
@@ -162,6 +197,13 @@ export class TasteVault {
       throw new Error(`Node not found: ${nodeId}`);
     }
     this.graph.incrementHelpful(nodeId);
+
+    // K3-35: Optional Hindsight hook (best-effort)
+    if (this.hindsightReinforceHook) {
+      this.hindsightReinforceHook(nodeId, node).catch((err: unknown) => {
+        console.warn('[Hindsight] TasteVault reinforce hook failed:', err instanceof Error ? err.message : String(err));
+      });
+    }
   }
 
   // --------------------------------------------------------------------------

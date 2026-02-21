@@ -86,6 +86,20 @@ export interface OrchestrationModuleConfig {
   retrospectiveAfterBuild?: boolean;
 }
 
+// K3-34: Harness Module Config
+export interface HarnessModuleConfig {
+  /** Max concurrent AgentHarness instances managed by the loop */
+  maxConcurrentHarnesses?: number;
+  /** Auto-checkpoint interval for Dream Mode harnesses (ms) */
+  dreamModeCheckpointIntervalMs?: number;
+  /** Persist harness state at overnight-evolution phase boundaries */
+  overnightPersistenceEnabled?: boolean;
+  /** Default autonomy level for spawned harnesses (1-5) */
+  defaultAutonomyLevel?: number;
+  /** Max tool calls per harness session */
+  maxToolCallsPerHarness?: number;
+}
+
 export interface RalphLoopOptions {
   parallelMode?: boolean;
   concurrency?: number;
@@ -195,6 +209,9 @@ export interface RalphLoopOptions {
   // R24: CRDT Collaboration (R24-03)
   crdtCollaborationEnabled?: boolean;
   crdtCollaborationConfig?: CRDTCollaborationModuleConfig;
+  // K3-34: Agent Harness integration
+  harnessEnabled?: boolean;
+  harnessConfig?: HarnessModuleConfig;
 }
 
 // Re-export HookRegistry from lifecycle-hooks
