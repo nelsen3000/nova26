@@ -214,8 +214,8 @@ Incremental implementation of the Vistara-Labs Hypercore HAL integration into No
     - All new modules exported: HACConfigParser, VSOCKChannel, AgentRegistry, MoltbotDeployer, ImageVerifier, EdgeDeployer, RustHypervisorBridge
     - _Requirements: all_
 
-- [ ] 16. Final checkpoint - All tests pass
-  - Ensure all tests pass, ask the user if questions arise.
+- [x] 16. Final checkpoint - All tests pass
+  - **209/209 hypervisor tests pass. tsc: 0 errors. Spec tasks complete: 1, 2, 4.2, 6, 9, 10, 11, 13, 14 (TS), 15. Deferred: 4.1 (manager.ts), 7.1 (ultra-sandbox), 14.1 (Rust .rs bridge).**
 
 ## Notes
 
