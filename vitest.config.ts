@@ -5,7 +5,6 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     fileParallelism: false,
-    pool: 'forks',
     include: ['src/**/*.test.ts', 'src/**/*-tests.ts', 'convex/**/*.test.ts', 'tests/**/*.test.ts'],
     coverage: {
       provider: 'v8',
