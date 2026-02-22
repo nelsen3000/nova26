@@ -221,11 +221,14 @@ describe('CRDTBridge (S2-07)', () => {
 
   // Property: CRDT append preserves causal metadata
   it('Property: vector clock is preserved through broadcast-poll cycle', () => {
+    // Avoid __proto__, constructor, prototype — these break plain-object property access
+    const safePeerId = fc.string({ minLength: 1, maxLength: 10 })
+      .filter(s => !['__proto__', 'constructor', 'prototype'].includes(s));
     fc.assert(
       fc.property(
         fc.array(
           fc.record({
-            peerId: fc.string({ minLength: 1, maxLength: 10 }),
+            peerId: safePeerId,
             seq: fc.integer({ min: 0, max: 100 }),
           }),
           { minLength: 1, maxLength: 20 },
