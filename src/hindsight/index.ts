@@ -103,6 +103,37 @@ export type {
 } from './namespace-manager.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// Convex Integration
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export type {
+  MemoryFragmentRecord,
+  ConsolidationJobRecord,
+  StoreFragmentInput,
+  CreateConsolidationInput,
+  FragmentQueryOptions,
+  VectorSearchOptions,
+  StorageStats,
+} from './convex-types.js';
+
+export {
+  storeFragment,
+  getFragment,
+  queryFragments,
+  searchByVector,
+  deleteFragment,
+  batchStoreFragments,
+  createConsolidationJob,
+  getConsolidationJob,
+  listConsolidationJobs,
+  getStorageStats,
+  trackFragmentAccess,
+  updateFragmentRelevance,
+} from './convex-bridge.js';
+
+export type { ConvexApi } from './convex-bridge.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // Default Configurations
 // ═══════════════════════════════════════════════════════════════════════════════
 

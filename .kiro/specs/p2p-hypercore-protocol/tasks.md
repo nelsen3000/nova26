@@ -7,20 +7,22 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
 ## Tasks
 
 - [ ] 1. Set up project structure, types, and serialization
-  - [ ] 1.1 Create `src/hypercore/types.ts` with all Zod schemas (MemoryNodeEntrySchema, CRDTUpdateEntrySchema, HypercoreLogEventSchema, StorageMetadataSchema, ManagerStatusSchema, ReplicationStatusSchema, HypercoreErrorSchema) and exported TypeScript types
+  - [x] 1.1 Create `src/hypercore/types.ts` with all Zod schemas (MemoryNodeEntrySchema, CRDTUpdateEntrySchema, HypercoreLogEventSchema, StorageMetadataSchema, ManagerStatusSchema, ReplicationStatusSchema, HypercoreErrorSchema) and exported TypeScript types
     - _Requirements: 2.6, 3.1, 5.4, 8.1_
   - [ ] 1.2 Create `src/hypercore/serialization.ts` with `serialize<T>()` and `deserialize<T>()` functions using length-prefixed JSON encoding over Buffer
     - _Requirements: 2.6_
+    - **GAP: Not implemented. HypercoreStore uses inline JSON.stringify; no dedicated serialization.ts.**
   - [ ]* 1.3 Write property test for serialization round trip in `src/hypercore/__tests__/serialization.property.test.ts`
     - **Property 9: Serialization round trip**
     - **Validates: Requirements 2.6**
-  - [ ] 1.4 Create `src/hypercore/index.ts` barrel export file
+  - [x] 1.4 Create `src/hypercore/index.ts` barrel export file
     - _Requirements: 1.5_
 
 - [ ] 2. Implement ManagedHypercore wrapper
   - [ ] 2.1 Create `src/hypercore/managed-core.ts` implementing the ManagedHypercore interface — wraps a single Hypercore instance with append, get, getRange, verifySignature, and close methods
     - Install `hypercore` and `corestore` npm packages
     - _Requirements: 2.1, 2.2, 2.3, 2.5_
+    - **GAP: No managed-core.ts. HypercoreStore in store.ts is an in-memory stub with similar API (append/get/getRange/verifySignature) but no real Hypercore npm integration and no close().**
   - [ ]* 2.2 Write property tests for append-log operations in `src/hypercore/__tests__/append-log.property.test.ts`
     - **Property 5: Monotonically increasing sequence numbers**
     - **Property 6: Append-read round trip**
@@ -34,6 +36,7 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
 - [ ] 3. Implement HypercoreManager lifecycle and log management
   - [ ] 3.1 Create `src/hypercore/manager.ts` implementing HypercoreManager class with TypedEventEmitter, initialize() (creates Corestore at configurable path, emits 'ready'), close() (flushes and closes all logs), getLog() (idempotent retrieval/creation), and getStatus()
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6_
+    - **GAP: No manager.ts. Corestore class in store.ts provides basic multi-log management (get/list/close) but no EventEmitter, initialize(), or getStatus().**
   - [ ]* 3.2 Write property tests for manager lifecycle in `src/hypercore/__tests__/manager.property.test.ts`
     - **Property 1: Initialization produces ready event with valid metadata**
     - **Property 2: Close flushes all managed logs**
@@ -48,7 +51,7 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 5. Implement ATLAS Memory Adapter
-  - [ ] 5.1 Create `src/hypercore/atlas-adapter.ts` implementing ATLASMemoryAdapter with storeNode(), queryByTimeRange(), queryByAgent(), rebuildIndex(), and getIndex() — maintains in-memory MemoryIndex with incremental updates on append
+  - [x] 5.1 Create `src/hypercore/atlas-adapter.ts` implementing ATLASMemoryAdapter with storeNode(), queryByTimeRange(), queryByAgent(), rebuildIndex(), and getIndex() — maintains in-memory MemoryIndex with incremental updates on append
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
   - [ ]* 5.2 Write property tests for ATLAS adapter in `src/hypercore/__tests__/atlas-adapter.property.test.ts`
     - **Property 10: ATLAS store and query correctness**
@@ -59,7 +62,7 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
     - _Requirements: 3.6_
 
 - [ ] 6. Implement CRDT Bridge
-  - [ ] 6.1 Create `src/hypercore/crdt-bridge.ts` implementing CRDTBridge with broadcast() (appends CRDTUpdateEntry with vector clock to collaboration log) and onUpdate() (subscribes to crdt-update events)
+  - [x] 6.1 Create `src/hypercore/crdt-bridge.ts` implementing CRDTBridge with broadcast() (appends CRDTUpdateEntry with vector clock to collaboration log) and onUpdate() (subscribes to crdt-update events)
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
   - [ ]* 6.2 Write property test for CRDT bridge in `src/hypercore/__tests__/crdt-bridge.property.test.ts`
     - **Property 13: CRDT append preservation with causal metadata**
@@ -72,6 +75,7 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
   - [ ] 7.1 Add replication methods to HypercoreManager: enableReplication() (joins Hyperswarm with discovery key), disableReplication() (leaves swarm, closes streams), getReplicationStatus(), and peer event handling
     - Install `hyperswarm` npm package
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6_
+    - **GAP: No HypercoreManager. However, ReplicationManager in replication.ts covers enable/disable/sync/getReplicationState/addPeer/removePeer, and DiscoveryManager in discovery.ts covers announce/lookup/leave. Functionality complete; needs wiring to HypercoreManager.**
   - [ ]* 7.2 Write property test for replication in `src/hypercore/__tests__/replication.property.test.ts`
     - **Property 12: Replication completeness**
     - **Property 17: Incremental sync transfers only new entries**
@@ -81,6 +85,7 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
   - [ ] 8.1 Add offline resilience to HypercoreManager: local append/read always works regardless of network state, auto-rejoin Hyperswarm on connectivity restore, persist and load replication state from `replication-state.json`
     - Wire into existing OfflineEngine connectivity events from `src/sync/offline-engine.ts`
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
+    - **GAP: Not implemented. No HypercoreManager, no offline-engine wiring, no replication-state.json persistence.**
   - [ ]* 8.2 Write property tests for offline behavior in `src/hypercore/__tests__/offline.property.test.ts`
     - **Property 16: Offline append and read**
     - **Property 18: Replication state persistence round trip**
@@ -90,7 +95,7 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 10. Implement Observability Logger
-  - [ ] 10.1 Create `src/hypercore/observability.ts` implementing ObservabilityLogger — subscribes to HypercoreManager events, emits structured HypercoreLogEvent objects, tracks AggregateMetrics, and emits health-warning when error threshold is exceeded
+  - [x] 10.1 Create `src/hypercore/observability.ts` implementing ObservabilityLogger — subscribes to HypercoreManager events, emits structured HypercoreLogEvent objects, tracks AggregateMetrics, and emits health-warning when error threshold is exceeded
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
   - [ ]* 10.2 Write property tests for observability in `src/hypercore/__tests__/observability.property.test.ts`
     - **Property 19: Operation log events contain required fields**
@@ -101,6 +106,7 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
 - [ ] 11. Implement Security and Access Control
   - [ ] 11.1 Add security features to HypercoreManager: Ed25519 key pair generation per log stored in `keys/` directory, discovery key verification before replication, default read-write local / read-only remote access mode
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
+    - **GAP: Not implemented. No key management, no discovery key verification, no access modes.**
   - [ ]* 11.2 Write property tests for security in `src/hypercore/__tests__/security.property.test.ts`
     - **Property 22: Unique key generation**
     - **Property 23: Default access mode**
@@ -114,20 +120,24 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
   - [ ] 12.1 Create `src-tauri/src/hypercore_bridge.rs` implementing Tauri commands: hypercore_append, hypercore_read, hypercore_length, and NanoClawScope with check_access
     - Add `hypercore` Rust crate to `src-tauri/Cargo.toml`
     - _Requirements: 6.1, 6.3, 6.4, 6.5_
+    - **GAP: No Rust/Tauri bridge implemented.**
   - [ ] 12.2 Create `src/hypercore/rust-bridge.ts` TypeScript client that invokes Tauri commands for append, read, and length operations
     - _Requirements: 6.1, 6.2_
+    - **GAP: No rust-bridge.ts implemented.**
   - [ ]* 12.3 Write property tests for Rust bridge in `src/hypercore/__tests__/rust-bridge.property.test.ts`
     - **Property 14: Cross-runtime append-read round trip**
     - **Property 15: NanoClaw isolation enforcement**
     - **Validates: Requirements 6.2, 6.4**
 
 - [ ] 13. Wire everything together
-  - [ ] 13.1 Update `src/hypercore/index.ts` to export all public APIs: HypercoreManager, ATLASMemoryAdapter, CRDTBridge, ObservabilityLogger, RustHypercoreBridge client, all types and schemas
+  - [x] 13.1 Update `src/hypercore/index.ts` to export all public APIs: HypercoreManager, ATLASMemoryAdapter, CRDTBridge, ObservabilityLogger, RustHypercoreBridge client, all types and schemas
     - _Requirements: 1.5_
   - [ ] 13.2 Wire HypercoreManager into Ralph Loop startup/shutdown in `src/orchestrator/ralph-loop.ts` — initialize on start, close on shutdown
     - _Requirements: 1.1, 1.4_
+    - **GAP: No HypercoreManager; ralph-loop not wired.**
   - [ ] 13.3 Wire ATLASMemoryAdapter into ATLAS module — connect `src/atlas/graph-memory.ts` to use HypercoreManager for persistent storage alongside existing in-memory store
     - _Requirements: 3.1_
+    - **GAP: Not wired.**
 
 - [ ] 14. Final checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
