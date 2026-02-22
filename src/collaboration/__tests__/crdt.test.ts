@@ -543,7 +543,7 @@ describe('CRDTTasteSync', () => {
   });
 
   it('syncOperation returns adjusted score for op above threshold', () => {
-    const op = makeOp({ tasteScore: 0.7 });
+    const op = makeOp({ payload: { content: 'hello world', tasteScore: 0.7 } });
     const score = sync.syncOperation(op, ['architecture']);
     expect(score).not.toBeNull();
     expect(score!).toBeGreaterThanOrEqual(0.7);
@@ -551,18 +551,18 @@ describe('CRDTTasteSync', () => {
 
   it('syncOperation returns null for op below threshold', () => {
     const strictSync = new CRDTTasteSync({ minScoreToSync: 0.9 });
-    const op = makeOp({ tasteScore: 0.2 });
+    const op = makeOp({ payload: { content: 'hello world', tasteScore: 0.2 } });
     expect(strictSync.syncOperation(op)).toBeNull();
   });
 
   it('syncOperation skips when disabled', () => {
     const disabledSync = new CRDTTasteSync({ enabled: false });
-    const op = makeOp({ tasteScore: 0.9 });
+    const op = makeOp({ payload: { content: 'hello world', tasteScore: 0.9 } });
     expect(disabledSync.syncOperation(op)).toBeNull();
   });
 
   it('onConflictDetected decays the op score', () => {
-    const op = makeOp({ tasteScore: 0.8 });
+    const op = makeOp({ payload: { content: 'hello world', tasteScore: 0.8 } });
     sync.syncOperation(op, ['architecture']);
     sync.onConflictDetected(op.id, op.targetNodeId);
     const report = sync.buildReport();
@@ -570,7 +570,7 @@ describe('CRDTTasteSync', () => {
   });
 
   it('onConflictResolved boosts node score', () => {
-    const op = makeOp({ tasteScore: 0.6 });
+    const op = makeOp({ payload: { content: 'hello world', tasteScore: 0.6 } });
     sync.syncOperation(op, []);
     const before = sync.getNodeProfile(op.targetNodeId).currentScore;
     sync.onConflictResolved(op.targetNodeId);
@@ -579,7 +579,7 @@ describe('CRDTTasteSync', () => {
   });
 
   it('computeQueueWeight returns value between 0 and 1', () => {
-    const op = makeOp({ tasteScore: 0.5 });
+    const op = makeOp({ payload: { content: 'hello world', tasteScore: 0.5 } });
     const weight = sync.computeQueueWeight(op);
     expect(weight).toBeGreaterThanOrEqual(0);
     expect(weight).toBeLessThanOrEqual(1);
@@ -605,23 +605,23 @@ describe('CRDTTasteSync', () => {
 
   it('buildReport counts synced and skipped operations', () => {
     const strictSync = new CRDTTasteSync({ minScoreToSync: 0.8 });
-    strictSync.syncOperation(makeOp({ tasteScore: 0.9 }), ['security']);
-    strictSync.syncOperation(makeOp({ id: 'op-low', tasteScore: 0.2 }), []);
+    strictSync.syncOperation(makeOp({ payload: { content: 'hello world', tasteScore: 0.9 } }), ['security']);
+    strictSync.syncOperation(makeOp({ id: 'op-low', payload: { content: 'hello world', tasteScore: 0.2 } }), []);
     const report = strictSync.buildReport();
     expect(report.totalSynced).toBe(1);
     expect(report.totalSkipped).toBe(1);
   });
 
   it('buildReport includes tag frequency', () => {
-    sync.syncOperation(makeOp({ tasteScore: 0.8 }), ['performance', 'security']);
-    sync.syncOperation(makeOp({ id: 'op-2', tasteScore: 0.7 }), ['security']);
+    sync.syncOperation(makeOp({ payload: { content: 'hello world', tasteScore: 0.8 } }), ['performance', 'security']);
+    sync.syncOperation(makeOp({ id: 'op-2', payload: { content: 'hello world', tasteScore: 0.7 } }), ['security']);
     const report = sync.buildReport();
     expect(report.tagFrequency['security']).toBe(2);
     expect(report.tagFrequency['performance']).toBe(1);
   });
 
   it('getNodeHistory returns ops for specific node', () => {
-    const op = makeOp({ tasteScore: 0.7, targetNodeId: 'node-X' });
+    const op = makeOp({ targetNodeId: 'node-X', payload: { content: 'hello world', tasteScore: 0.7 } });
     sync.syncOperation(op, ['arch']);
     const history = sync.getNodeHistory('node-X');
     expect(history.length).toBe(1);
@@ -629,7 +629,7 @@ describe('CRDTTasteSync', () => {
   });
 
   it('reset clears all state', () => {
-    sync.syncOperation(makeOp({ tasteScore: 0.7 }), []);
+    sync.syncOperation(makeOp({ payload: { content: 'hello world', tasteScore: 0.7 } }), []);
     sync.reset();
     const report = sync.buildReport();
     expect(report.totalSynced).toBe(0);
@@ -653,7 +653,7 @@ describe('CRDTTasteSync', () => {
       minScoreToSync: 0.0,
       agentBoosts: { 'JUPITER': 0.1 },
     });
-    const op = makeOp({ peerId: 'JUPITER', tasteScore: 0.5 });
+    const op = makeOp({ peerId: 'JUPITER', payload: { content: 'hello world', tasteScore: 0.5 } });
     const score = boostSync.syncOperation(op);
     expect(score).toBeGreaterThan(0.5);
   });

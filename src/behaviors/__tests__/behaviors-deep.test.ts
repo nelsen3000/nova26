@@ -153,13 +153,13 @@ describe('Behaviors Property Tests', () => {
         resetTimeoutMs: 10000,
       });
 
-      // Execute 3 failures
+      // Execute 3 failures — signature is execute(operation, context)
       for (let i = 0; i < 3; i++) {
         const failOp = async () => { throw new Error('failure'); };
         try {
           await behavior.execute(
-            { agentId: 'test', projectId: 'test', sessionId: 'test', attempt: 1, executionId: `exec-${i}` },
-            failOp
+            failOp,
+            { agentId: 'test', projectId: 'test', sessionId: 'test', attempt: 1, executionId: `exec-${i}` } as any
           );
         } catch {
           // Expected
@@ -177,11 +177,11 @@ describe('Behaviors Property Tests', () => {
         resetTimeoutMs: 60000, // Long timeout so it stays open
       });
 
-      // Trigger failure to open circuit
+      // Trigger failure to open circuit — signature is execute(operation, context)
       try {
         await behavior.execute(
-          { agentId: 'test', projectId: 'test', sessionId: 'test', attempt: 1, executionId: 'exec-1' },
-          async () => { throw new Error('fail'); }
+          async () => { throw new Error('fail'); },
+          { agentId: 'test', projectId: 'test', sessionId: 'test', attempt: 1, executionId: 'exec-1' } as any
         );
       } catch {
         // Expected
@@ -192,8 +192,8 @@ describe('Behaviors Property Tests', () => {
       // Next call should fail immediately with CircuitOpenError
       const successOp = async () => 'should not execute';
       const result = await behavior.execute(
-        { agentId: 'test', projectId: 'test', sessionId: 'test', attempt: 1, executionId: 'exec-2' },
-        successOp
+        successOp,
+        { agentId: 'test', projectId: 'test', sessionId: 'test', attempt: 1, executionId: 'exec-2' } as any
       );
 
       expect(result.success).toBe(false);
