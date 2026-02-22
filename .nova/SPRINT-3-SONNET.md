@@ -2,31 +2,28 @@
 ## February 22–25, 2026 (72 Hours)
 
 > **Provider**: Anthropic (Claude Code terminal)
-> **Sprint 2 Status**: COMPLETE (25 tasks: hypercore, hypervisor, a2a — 336 new tests). NOT YET PUSHED.
-> **Sprint 3 Focus**: Push Sprint 2 + Reconcile conflicts + P2P Hypercore spec completion + Hypervisor spec completion + A2A spec completion + Landing Page UX + New feature specs
+> **Sprint 2 Status**: COMPLETE + PUSHED (hypercore, hypervisor, a2a — all in main)
+> **Sprint 3 Focus**: Spec task reconciliation + P2P Hypercore spec completion + Hypervisor spec completion + Landing Page UX + Dashboard panels + Convex integration
 > **Duration**: 72 hours (6 waves × 12 hours)
 > **Project folder**: `/Users/jonathannelsen/nova26/kiro/nova26`
-> **Spec files**: `.kiro/specs/p2p-hypercore-protocol/`, `.kiro/specs/hypervisor-hypercore/`, `.kiro/specs/a2a-mcp-protocols/`, `.kiro/specs/landing-page-and-ux-validation/`
+> **Git HEAD**: 3f11668 on origin/main
 
 ---
 
-## SPRINT 2 RECAP (Complete, Unpushed)
+## CURRENT CODEBASE STATE
 
-| Module | Files Created | Tests | Status |
-|--------|--------------|-------|--------|
-| P2P Hypercore (`src/hypercore/`) | 8 files | ~80 tests | ✅ Built |
-| Hypervisor (`src/hypervisor/`) | 8 files | ~80 tests | ✅ Built |
-| A2A/MCP (`src/a2a/`) | 13 files | ~176 tests | ✅ Built |
-| **Total Sprint 2** | **29 files** | **~336 tests** | ✅ Unpushed |
-
-**WARNING**: When you push, expect potential conflicts with Haiku's 9badff3 (test fixes) and Kimi's work. Your `crdt-core.ts` rewrite may cause ~119 test failures that need reconciliation.
+- 316 test files, ~8985 tests, 0 real failures (1 flaky saga PBT — known, ignore)
+- 0 TypeScript errors
+- Kimi Sprint 3: COMPLETE — Hindsight, RLM advanced, SAGA advanced, Harness advanced, Eternal Reel, Convex integration all pushed
+- Haiku Sprint 5: IN PROGRESS — model-routing, ACP, compliance, MCP tests done (H5-01 through H5-08)
+- All Sonnet Sprint 2 code is already in main (hypercore, hypervisor, a2a)
 
 ---
 
 ## SPRINT 3 RULES
 
 - TypeScript strict, ESM `.js` imports, vitest, no `any`, mock all I/O
-- All new code in `src/` (not `app/` or `convex/`)
+- All new code in `src/` unless explicitly working on `app/` components
 - Follow Kiro spec task lists exactly — each task references requirements
 - Property-based tests use `fast-check` (already in dependencies)
 - Run `tsc --noEmit` after each task — must be 0 errors
@@ -35,235 +32,231 @@
 
 ---
 
-## DO-NOT-TOUCH ZONES (Other Workers Active)
+## DO-NOT-TOUCH ZONES
 
-| Module | Owner | Sprint |
+| Module | Owner | Status |
 |--------|-------|--------|
-| `src/saga/` | Kimi | Sprint 3 |
-| `src/rlm/` | Kimi | Sprint 3 |
-| `src/harness/` | Kimi | Sprint 3 |
-| `src/hindsight/` | Kimi | Sprint 3 |
-| `src/eternal-reel/` | Kimi | Sprint 3 |
-| `convex/`, `app/` | — | Off-limits for now |
+| `src/saga/` | Kimi | Sprint 3 complete, Sprint 4 incoming |
+| `src/rlm/` | Kimi | Sprint 3 complete, Sprint 4 incoming |
+| `src/harness/` | Kimi | Sprint 3 complete, Sprint 4 incoming |
+| `src/hindsight/` | Kimi | Sprint 3 complete |
+| `src/model-routing/` | Haiku | Sprint 5 in progress |
+| `src/acp/` | Haiku | Sprint 5 done |
+| `src/compliance/` | Haiku | Sprint 5 done |
+| `src/mcp/` | Haiku | Sprint 5 done |
 
 ---
 
-## WAVE 1 (Hours 0–12): Push, Reconcile, Stabilize
+## WAVE 1 (Hours 0–12): Spec Task Reconciliation
 
-> Priority: Get Sprint 2 code merged cleanly into main
+> Priority: Mark completed spec tasks, identify gaps between implementations and specs
 
-### Task S3-01: Push Sprint 2 + Pull Latest
-- `git pull origin main` (get Haiku's 9badff3 and any Kimi work)
-- Resolve merge conflicts (especially `src/collaboration/crdt-core.ts` if touched)
-- `git push origin main`
-- If conflicts are complex, create a reconciliation branch first
+### Task S3-01: P2P Hypercore Spec Reconciliation
+Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` — all 14 tasks are unchecked.
+Read all source files in `src/hypercore/` (8 files).
+For each spec task, verify if the implementation satisfies the requirements.
+Mark completed tasks as `[x]` in tasks.md.
+List any gaps where implementation doesn't fully match spec.
 
-### Task S3-02: Reconcile Test Failures
-- Run `vitest run` — identify all failures
-- Fix failures caused by your Sprint 2 changes conflicting with existing code
-- Focus areas: `crdt-core.ts` type changes, any import path shifts, schema changes
-- Do NOT rewrite other workers' code — adapt your code to match theirs where possible
-- Target: 0 failures, 0 TS errors
+### Task S3-02: Hypervisor Spec Reconciliation
+Read `.kiro/specs/hypervisor-hypercore/tasks.md` — all 16 tasks are unchecked.
+Read all source files in `src/hypervisor/` (8 files).
+Same process: verify implementations, mark completed, list gaps.
 
-### Task S3-03: Mark Spec Tasks Complete
-- Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` — mark all tasks that your Sprint 2 code satisfies as `[x]`
-- Read `.kiro/specs/hypervisor-hypercore/tasks.md` — same
-- Read `.kiro/specs/a2a-mcp-protocols/tasks.md` — same (most already marked)
-- Be honest: only mark tasks where the implementation genuinely satisfies the requirements
+### Task S3-03: A2A Spec Verification
+Read `.kiro/specs/a2a-mcp-protocols/tasks.md` — 14/14 top-level done, but 15 sub-tasks unchecked (mostly optional PBTs).
+Verify all marked-complete tasks are genuinely complete.
+Identify which optional PBT sub-tasks should be implemented.
 
 ### Task S3-04: Wave 1 Checkpoint
 Run `tsc --noEmit` — 0 errors.
 Run ALL tests — must pass.
-Commit + push: `feat(S3-04): Sprint 2 merged, reconciled, spec tasks updated`
+Commit + push: `docs(S3-04): Spec task reconciliation — hypercore, hypervisor, a2a`
 
 ---
 
 ## WAVE 2 (Hours 12–24): P2P Hypercore Spec Completion
 
 > Spec: `.kiro/specs/p2p-hypercore-protocol/tasks.md`
-> Target: Complete remaining unchecked tasks (ATLAS adapter, CRDT bridge, replication, offline resilience, observability, security, Rust bridge, wiring)
+> Target: Fill gaps identified in Wave 1
 
 ### Task S3-05: P2P Hypercore — ATLAS Memory Adapter
-Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` Task 5 (all sub-tasks).
-Review existing `src/hypercore/atlas-adapter.ts` — extend if needed.
+Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` Task 5.
+Review existing `src/hypercore/atlas-adapter.ts` — extend if spec requirements aren't met.
 Ensure ATLAS memory nodes can be stored/retrieved via Hypercore.
 Property tests: ATLAS ↔ Hypercore round-trip integrity.
 
-### Task S3-06: P2P Hypercore — CRDT Bridge Completion
-Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` Task 6 (all sub-tasks).
-Review existing `src/hypercore/crdt-bridge.ts` — ensure full spec compliance.
-CRDT operations stored as Hypercore entries, replicated via Hypercore protocol.
-Handle the two CRDTDocument types (types.ts spec/view vs crdt-core.ts implementation).
-Property tests: CRDT convergence over Hypercore replication.
+### Task S3-06: P2P Hypercore — Offline Resilience
+Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` Task 8.
+Implement offline-first resilience if not already present:
+- Queue operations when offline
+- Sync on reconnect
+- Conflict resolution for divergent states
+Property tests: offline queue ordering, sync convergence.
 
-### Task S3-07: P2P Hypercore — Replication + Offline Resilience
-Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` Tasks 7–8 (all sub-tasks).
-Review existing `src/hypercore/replication.ts` — extend for full P2P replication.
-Implement offline-first resilience: queue operations when offline, sync on reconnect.
-Property tests: replication convergence, offline queue ordering.
+### Task S3-07: P2P Hypercore — Security + Access Control
+Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` Task 11.
+Implement security and access control layer:
+- Per-store access permissions
+- Encryption at rest
+- Peer authentication
+Unit tests for security boundaries.
 
-### Task S3-08: P2P Hypercore — Observability + Security + Rust Bridge
-Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` Tasks 10–12 (all sub-tasks).
-Review existing `src/hypercore/observability.ts` — extend for full spec.
-Implement security and access control layer.
-Implement Rust Eternal Engine Bridge stub (returns unavailable, with interface ready).
-Unit tests for each.
-
-### Task S3-09: P2P Hypercore — Wire Everything + Final
-Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` Tasks 13–14.
-Wire all Hypercore components together via `src/hypercore/index.ts`.
+### Task S3-08: P2P Hypercore — Rust Bridge Stub + Wiring
+Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` Tasks 12-13.
+Implement Rust Eternal Engine Bridge stub (returns unavailable, interface ready).
+Wire all components together via `src/hypercore/index.ts`.
 Ensure public API exports are complete.
-Run all Hypercore tests — must pass.
 
-### Task S3-10: Wave 2 Checkpoint
+### Task S3-09: P2P Hypercore — Final Checkpoint
+Read `.kiro/specs/p2p-hypercore-protocol/tasks.md` Task 14.
 Run `tsc --noEmit` — 0 errors.
 Run `vitest run src/hypercore/` — all pass.
-Commit + push: `feat(S3-10): P2P Hypercore spec complete — all 14 tasks done`
+Mark all completed tasks in spec.
+Commit + push: `feat(S3-09): P2P Hypercore spec complete`
 
 ---
 
 ## WAVE 3 (Hours 24–36): Hypervisor Spec Completion
 
 > Spec: `.kiro/specs/hypervisor-hypercore/tasks.md`
-> Target: Complete remaining unchecked tasks (config parser, manager lifecycle, VSOCK, sandbox, Moltbot, security, observability, edge/cloud, Rust bridge, wiring)
+> Target: Fill gaps identified in Wave 1
 
-### Task S3-11: Hypervisor — Config Parser (hac.toml)
-Read `.kiro/specs/hypervisor-hypercore/tasks.md` Tasks 2–3 (all sub-tasks).
+### Task S3-10: Hypervisor — Config Parser (hac.toml)
+Read `.kiro/specs/hypervisor-hypercore/tasks.md` Task 2.
 Implement `hac.toml` config parser and pretty printer.
-If TOML parsing is needed, use a lightweight approach (regex or simple parser — avoid heavy deps).
+Lightweight approach — regex or simple parser, avoid heavy deps.
 Property tests: parse → pretty-print → parse round-trip.
 
-### Task S3-12: Hypervisor — Manager Lifecycle + VSOCK
-Read `.kiro/specs/hypervisor-hypercore/tasks.md` Tasks 4–6 (all sub-tasks).
-Review existing `src/hypervisor/sandbox-manager.ts` — extend for full HypervisorManager lifecycle.
-Implement VSOCK communication channel for sandbox ↔ host communication.
-Property tests: lifecycle state machine validity.
+### Task S3-11: Hypervisor — VSOCK Communication
+Read `.kiro/specs/hypervisor-hypercore/tasks.md` Task 6.
+Implement VSOCK communication channel for sandbox ↔ host.
+Message framing, serialization, bidirectional communication.
+Unit tests for channel lifecycle.
 
-### Task S3-13: Hypervisor — Sandbox + Moltbot + Security
-Read `.kiro/specs/hypervisor-hypercore/tasks.md` Tasks 7–10 (all sub-tasks).
-Implement Ultra-Sandbox adapter.
+### Task S3-12: Hypervisor — Moltbot + Image Verifier + Security
+Read `.kiro/specs/hypervisor-hypercore/tasks.md` Tasks 9-10.
 Implement Moltbot deployer and agent registry.
 Implement image verifier and security auditing.
-Property tests: sandbox isolation, image verification.
+Property tests: image verification, sandbox isolation.
 
-### Task S3-14: Hypervisor — Observability + Edge/Cloud + Rust Bridge
-Read `.kiro/specs/hypervisor-hypercore/tasks.md` Tasks 11–14 (all sub-tasks).
-Review existing `src/hypervisor/observability.ts` — extend for full spec.
+### Task S3-13: Hypervisor — Edge/Cloud + Rust Bridge + Wiring
+Read `.kiro/specs/hypervisor-hypercore/tasks.md` Tasks 13-15.
 Implement edge/cloud deployment provisioning.
 Implement Rust Hypervisor Bridge stub.
-Property tests: health monitoring accuracy.
+Wire all components together, integrate with Nova26 modules.
 
-### Task S3-15: Hypervisor — Wire Everything + Final
-Read `.kiro/specs/hypervisor-hypercore/tasks.md` Tasks 15–16.
-Wire all Hypervisor components together.
-Ensure integration with existing Nova26 modules (observability, orchestrator).
-Run all Hypervisor tests — must pass.
-
-### Task S3-16: Wave 3 Checkpoint
+### Task S3-14: Hypervisor — Final Checkpoint
+Read `.kiro/specs/hypervisor-hypercore/tasks.md` Task 16.
 Run `tsc --noEmit` — 0 errors.
 Run `vitest run src/hypervisor/` — all pass.
-Commit + push: `feat(S3-16): Hypervisor spec complete — all 16 tasks done`
+Mark all completed tasks in spec.
+Commit + push: `feat(S3-14): Hypervisor spec complete`
 
 ---
 
-## WAVE 4 (Hours 36–48): A2A Spec Gaps + Optional PBTs
+## WAVE 4 (Hours 36–48): A2A Optional PBTs + Landing Page Spec
 
-> Spec: `.kiro/specs/a2a-mcp-protocols/tasks.md`
-> Target: Complete any remaining optional PBT tasks, fill gaps
+> Spec: `.kiro/specs/a2a-mcp-protocols/tasks.md` (optional PBTs)
+> Spec: `.kiro/specs/landing-page-and-ux-validation/` (requirements exist, needs design + tasks)
 
-### Task S3-17: A2A — Optional Property-Based Tests
-Read `.kiro/specs/a2a-mcp-protocols/tasks.md` — find all `[ ]*` (optional) tasks.
-Implement the optional PBTs that were skipped in Sprint 2:
+### Task S3-15: A2A — Optional Property-Based Tests
+Implement the optional PBT sub-tasks skipped in Sprint 2:
 - Property 4: Agent Card serialization round trip
 - Property 7: A2A Envelope serialization round trip
 - Property 9: Message type validation
-- Any other optional PBT tasks
-Use `fast-check` for all property tests.
+- Property tests for swarm coordinator consensus, task negotiation termination
+Use `fast-check` for all.
 
-### Task S3-18: A2A — CRDT Sync + Discovery Integration Tests
-Review `src/a2a/crdt-sync.ts` and `src/a2a/swarm-coordinator.ts`.
-Ensure existing tests in `src/a2a/__tests__/` cover all spec requirements.
-Add missing integration tests for:
-- CRDT sync over A2A channels
-- Discovery integration with Hyperswarm
-- Task negotiation end-to-end flow
-
-### Task S3-19: A2A — Swarm Coordinator + Task Negotiator Hardening
-Deep test `src/a2a/swarm-coordinator.ts` and `src/a2a/task-negotiator.ts`.
-Property tests: swarm consensus, task allocation fairness, negotiation termination.
-
-### Task S3-20: Wave 4 Checkpoint
-Run `tsc --noEmit` — 0 errors.
-Run `vitest run src/a2a/` — all pass.
-Commit + push: `feat(S3-20): A2A spec complete — all tasks + optional PBTs done`
-
----
-
-## WAVE 5 (Hours 48–60): Landing Page UX + Desktop/Mobile Polish
-
-> Spec: `.kiro/specs/landing-page-and-ux-validation/` (requirements exist, needs design + tasks)
-> Target: Complete the landing page spec, implement UX validation, polish desktop/mobile
-
-### Task S3-21: Landing Page — Create Design + Tasks
+### Task S3-16: Landing Page — Create Design + Tasks
 Read `.kiro/specs/landing-page-and-ux-validation/requirements.md`.
-Create `.kiro/specs/landing-page-and-ux-validation/design.md` — design document.
-Create `.kiro/specs/landing-page-and-ux-validation/tasks.md` — implementation task list.
+Create `.kiro/specs/landing-page-and-ux-validation/design.md`.
+Create `.kiro/specs/landing-page-and-ux-validation/tasks.md`.
 Focus: hero section, CTA, feature showcase, responsive layout, accessibility.
 
-### Task S3-22: Landing Page — Implement Core Components
+### Task S3-17: Landing Page — Core Components
 Follow the tasks.md you just created.
-Implement landing page components in `app/` (this is the one exception to the src-only rule).
+Implement landing page components in `app/`.
 Hero section, feature cards, CTA buttons, navigation.
 Tailwind + shadcn/ui. Mobile-first responsive.
+Handle all 5 UI states per VENUS agent guidelines.
 
-### Task S3-23: Landing Page — UX Validation + Accessibility
-Implement UX validation tests.
-Accessibility audit: ARIA labels, keyboard navigation, color contrast, screen reader flow.
+### Task S3-18: Landing Page — UX Validation + Accessibility
+Accessibility audit: ARIA labels, keyboard navigation, color contrast.
 Responsive breakpoint testing: mobile (375px), tablet (768px), desktop (1280px).
+Unit tests for component rendering.
 
-### Task S3-24: Desktop + Mobile Polish
-Review `src/desktop/` (6 src files) and `src/mobile-launch/` (7 src files).
-Fix any rough edges, ensure consistent UX patterns.
-Add missing error states, loading states, empty states per VENUS agent guidelines.
-
-### Task S3-25: Wave 5 Checkpoint
+### Task S3-19: Wave 4 Checkpoint
 Run `tsc --noEmit` — 0 errors.
 Run ALL tests — must pass.
-Commit + push: `feat(S3-25): Landing page + UX validation + desktop/mobile polish`
+Commit + push: `feat(S3-19): A2A PBTs + Landing page complete`
 
 ---
 
-## WAVE 6 (Hours 60–72): Cross-Module Wiring + Dashboard Integration
+## WAVE 5 (Hours 48–60): Dashboard Integration Panels
 
-> Target: Wire Sonnet's modules into the dashboard, create unified views
+> Target: Wire Sonnet's modules into the dashboard with live status panels
 
-### Task S3-26: Dashboard — Hypercore Status Panel
+### Task S3-20: Dashboard — Hypercore Status Panel
 Create dashboard component showing Hypercore store status:
 - Active stores, entry counts, replication peer count
 - Sync status indicators (synced/syncing/offline)
-- Wire into existing dashboard layout (`app/dashboard/`)
+- Wire into existing dashboard layout
 
-### Task S3-27: Dashboard — Hypervisor Sandbox Panel
+### Task S3-21: Dashboard — Hypervisor Sandbox Panel
 Create dashboard component showing Hypervisor sandbox status:
 - Active sandboxes, resource usage per sandbox
 - Lifecycle state indicators
 - Network policy summary
 
-### Task S3-28: Dashboard — A2A Agent Communication Panel
+### Task S3-22: Dashboard — A2A Communication Panel
 Create dashboard component showing A2A message flow:
 - Active channels, message throughput
 - Agent tier visualization
 - Recent routing events
 
-### Task S3-29: Observability Wiring
-Ensure all 3 modules (hypercore, hypervisor, a2a) emit telemetry to `src/observability/`.
+### Task S3-23: Dashboard — Eternal Data Reel Overview
+Create unified dashboard panel for Eternal Data Reel:
+- Harness status (active harnesses, checkpoints)
+- SAGA evolution progress (generation, fitness)
+- Hindsight memory stats (fragments, consolidation)
+- RLM compression metrics
+Wire into Kimi's `src/eternal-reel/` exports.
+
+### Task S3-24: Wave 5 Checkpoint
+Run `tsc --noEmit` — 0 errors.
+Run ALL tests — must pass.
+Commit + push: `feat(S3-24): Dashboard panels — hypercore, hypervisor, a2a, eternal reel`
+
+---
+
+## WAVE 6 (Hours 60–72): Desktop/Mobile Polish + Observability + Final
+
+> Target: Polish UX, wire observability, final sweep
+
+### Task S3-25: Desktop + Mobile Polish
+Review `src/desktop/` (6 src) and `src/mobile-launch/` (7 src).
+Fix rough edges, ensure consistent UX patterns.
+Add missing error/loading/empty states per VENUS guidelines.
+
+### Task S3-26: Observability Wiring
+Ensure hypercore, hypervisor, and a2a all emit telemetry to `src/observability/`.
 Wire metrics into existing NovaTracer and EventStore.
 Verify structured logs are consistent with project conventions.
 
-### Task S3-30: Final Checkpoint
+### Task S3-27: Generative UI + Design Pipeline Review
+Review `src/generative-ui/` (3 src) and `src/design-pipeline/` (5 src).
+Ensure these modules are wired correctly and have adequate test coverage.
+Add tests if coverage is thin.
+
+### Task S3-28: Full Test Suite Sweep
+Run `vitest run` — full suite.
+Fix any failures.
 Run `tsc --noEmit` — 0 errors.
+
+### Task S3-29: Final Checkpoint
 Run ALL tests — must pass.
-Commit + push: `feat(S3-30): Sprint 3 complete — specs done, dashboard panels, observability wired`
+Commit + push: `feat(S3-29): Sprint 3 complete — 3 specs done, landing page, dashboard, polish`
 
 ---
 
@@ -271,34 +264,24 @@ Commit + push: `feat(S3-30): Sprint 3 complete — specs done, dashboard panels,
 
 | Wave | Hours | Tasks | Focus |
 |------|-------|-------|-------|
-| Wave 1 | 0–12 | S3-01 → S3-04 | Push, reconcile, stabilize |
-| Wave 2 | 12–24 | S3-05 → S3-10 | P2P Hypercore spec completion (14 tasks) |
-| Wave 3 | 24–36 | S3-11 → S3-16 | Hypervisor spec completion (16 tasks) |
-| Wave 4 | 36–48 | S3-17 → S3-20 | A2A spec gaps + optional PBTs |
-| Wave 5 | 48–60 | S3-21 → S3-25 | Landing page + UX + desktop/mobile |
-| Wave 6 | 60–72 | S3-26 → S3-30 | Dashboard panels + observability wiring |
-| **TOTAL** | **72h** | **30 tasks** | **3 specs completed + landing page + dashboard** |
+| Wave 1 | 0–12 | S3-01 → S3-04 | Spec task reconciliation |
+| Wave 2 | 12–24 | S3-05 → S3-09 | P2P Hypercore spec completion |
+| Wave 3 | 24–36 | S3-10 → S3-14 | Hypervisor spec completion |
+| Wave 4 | 36–48 | S3-15 → S3-19 | A2A PBTs + Landing page |
+| Wave 5 | 48–60 | S3-20 → S3-24 | Dashboard integration panels |
+| Wave 6 | 60–72 | S3-25 → S3-29 | Desktop/mobile + observability + sweep |
+| **TOTAL** | **72h** | **29 tasks** | **3 specs completed + landing page + dashboard + polish** |
 
 ---
 
 ## PRIORITY ORDER (If Running Behind)
 
-1. **Wave 1** (Push + Reconcile) — CRITICAL, blocks everyone
+1. **Wave 1** (Spec reconciliation) — unblocks everything, low effort
 2. **Wave 2** (P2P Hypercore) — complete the spec
 3. **Wave 3** (Hypervisor) — complete the spec
-4. **Wave 4** (A2A gaps) — polish existing work
-5. **Wave 5** (Landing page) — user-facing, high impact
-6. **Wave 6** (Dashboard) — nice-to-have integration
-
----
-
-## CROSS-REFERENCES
-
-- `src/collaboration/crdt-core.ts` — Your rewrite may conflict with existing tests. Reconcile in Wave 1.
-- `src/observability/` — All modules emit telemetry here
-- `src/orchestrator/ralph-loop.ts` — Kimi is wiring harness into this in Sprint 3
-- `app/dashboard/` — Dashboard components live here
-- `.kiro/specs/landing-page-and-ux-validation/` — Requirements exist, needs design + tasks
+4. **Wave 4** (Landing page) — user-facing, high impact
+5. **Wave 5** (Dashboard) — integration visibility
+6. **Wave 6** (Polish) — nice-to-have
 
 ---
 

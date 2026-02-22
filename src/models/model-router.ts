@@ -14,6 +14,7 @@ import {
   TasteProfile,
 } from './types.js';
 import { AIModelVault } from './ai-model-vault.js';
+import { LRUCache } from '../cache/lru-cache.js';
 
 // ============================================================================
 // Task Type Classification
@@ -116,7 +117,7 @@ interface CacheEntry {
 
 export class ModelRouter {
   private vault: AIModelVault;
-  private cache: Map<string, CacheEntry> = new Map();
+  private cache: LRUCache<CacheEntry>;
   private tasteProfile: TasteProfile;
   private affinityScores: Map<string, number> = new Map();
   private readonly CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -125,6 +126,7 @@ export class ModelRouter {
   constructor(vault: AIModelVault) {
     this.vault = vault;
     this.tasteProfile = this.createDefaultTasteProfile();
+    this.cache = new LRUCache<CacheEntry>({ maxSize: this.MAX_CACHE_SIZE, ttlMs: this.CACHE_TTL_MS });
   }
 
   // --------------------------------------------------------------------------
@@ -142,9 +144,9 @@ export class ModelRouter {
   ): Promise<ModelRoute> {
     const cacheKey = this.generateCacheKey(agentId, taskDescription);
 
-    // Check cache first (hot path)
+    // Check cache first (hot path) — TTL enforced by LRUCache
     const cached = this.cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL_MS) {
+    if (cached) {
       cached.hitCount++;
       return cached.route;
     }
@@ -210,7 +212,7 @@ export class ModelRouter {
     };
 
     // Clear cache since preferences changed
-    this.cache.clear();
+    this.cache.clear(); // LRUCache.clear() resets stats too — acceptable on profile update
   }
 
   /**
@@ -399,24 +401,7 @@ export class ModelRouter {
   }
 
   private cacheRoute(cacheKey: string, route: ModelRoute): void {
-    // Evict oldest entries if cache is full
-    if (this.cache.size >= this.MAX_CACHE_SIZE) {
-      let oldestKey: string | null = null;
-      let oldestTime = Date.now();
-
-      const cacheEntries = Array.from(this.cache.entries());
-    for (const [key, entry] of cacheEntries) {
-        if (entry.timestamp < oldestTime) {
-          oldestTime = entry.timestamp;
-          oldestKey = key;
-        }
-      }
-
-      if (oldestKey) {
-        this.cache.delete(oldestKey);
-      }
-    }
-
+    // LRUCache handles size limits and TTL eviction automatically
     this.cache.set(cacheKey, {
       route,
       timestamp: Date.now(),
@@ -425,12 +410,9 @@ export class ModelRouter {
   }
 
   private invalidateCacheForAgent(agentId: string): void {
-    const cacheEntries = Array.from(this.cache.entries());
-    for (const [key, entry] of cacheEntries) {
-      if (entry.route.agentId === agentId) {
-        this.cache.delete(key);
-      }
-    }
+    // LRUCache doesn't expose iteration; rebuild by clearing and relying on TTL
+    // This is a conservative invalidation — only needed on feedback incorporation
+    this.cache.clear();
   }
 
   private generateCacheKey(agentId: string, description: string): string {
