@@ -50,3 +50,53 @@ export type {
   HypervisorObserverListener,
   ObserverConfig,
 } from './observability.js';
+export { HACConfigParser } from './hac-config.js';
+export type { HostCapacity, ValidationResult } from './hac-config.js';
+export {
+  VSOCKChannel,
+  serializePayload,
+  serializeResult,
+  parseFrame,
+  deserializePayload,
+  deserializeResult,
+  MSG_TYPE_PAYLOAD,
+  MSG_TYPE_RESULT,
+  HEADER_SIZE,
+} from './vsock-channel.js';
+export type { VSOCKFrame, PendingTask, VSOCKChannelStats } from './vsock-channel.js';
+export {
+  AgentRegistry,
+  AgentNotFoundError,
+  AgentAlreadyRegisteredError,
+} from './agent-registry.js';
+export {
+  MoltbotDeployer,
+  MoltbotDeployError,
+  MoltbotUndeployError,
+  defaultAgentConfigLoader,
+} from './moltbot-deployer.js';
+export type { AgentConfigLoader } from './moltbot-deployer.js';
+export {
+  ImageVerifier,
+  ImageVerificationError,
+  ManifestNotFoundError,
+  sha256,
+} from './image-verifier.js';
+export {
+  EdgeDeployer,
+  TargetUnreachableError,
+  HALNotAvailableError,
+} from './edge-deployer.js';
+export type {
+  DeploymentTarget,
+  TargetValidation,
+  TargetResourceMetrics,
+  RemoteProvisionResult,
+  QueuedRemoteOp,
+} from './edge-deployer.js';
+export {
+  RustHypervisorBridge,
+  HypervisorBridgeUnavailableError,
+  HypervisorBridgeOperationError,
+} from './rust-bridge.js';
+export type { RustSpawnResult, HypervisorBridgeStatus } from './rust-bridge.js';
