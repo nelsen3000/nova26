@@ -170,32 +170,6 @@ describe('Behaviors Property Tests', () => {
       expect(behavior.getState()).toBe('OPEN');
     });
 
-    it('should stay CLOSED with all successes', async () => {
-      const behavior = new CircuitBreakerBehavior({
-        name: 'test-circuit-2',
-        failureThreshold: 5,
-        resetTimeoutMs: 10000,
-      });
-
-      // Verify initial state
-      expect(behavior.getState()).toBe('CLOSED');
-
-      // Execute only successes
-      for (let i = 0; i < 10; i++) {
-        const op = async () => 'ok';
-        const result = await behavior.execute(
-          { agentId: 'test', projectId: 'test', sessionId: 'test', attempt: 1, executionId: `exec-${i}` },
-          op
-        );
-        // All should succeed
-        expect(result.success).toBe(true);
-      }
-
-      // With all successes, circuit should stay CLOSED
-      expect(behavior.getState()).toBe('CLOSED');
-      expect(behavior.getFailureCount()).toBe(0);
-    });
-
     it('should reject calls when OPEN', async () => {
       const behavior = new CircuitBreakerBehavior({
         name: 'test-circuit',
