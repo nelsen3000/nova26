@@ -53,11 +53,11 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
 - [ ] 5. Implement ATLAS Memory Adapter
   - [x] 5.1 Create `src/hypercore/atlas-adapter.ts` implementing ATLASMemoryAdapter with storeNode(), queryByTimeRange(), queryByAgent(), rebuildIndex(), and getIndex() — maintains in-memory MemoryIndex with incremental updates on append
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
-  - [ ]* 5.2 Write property tests for ATLAS adapter in `src/hypercore/__tests__/atlas-adapter.property.test.ts`
+  - [x]* 5.2 Write property tests for ATLAS adapter in `src/hypercore/__tests__/atlas-adapter.property.test.ts`
     - **Property 10: ATLAS store and query correctness**
     - **Property 11: Index rebuild consistency**
     - **Validates: Requirements 3.1, 3.2, 3.3, 3.5**
-  - [ ]* 5.3 Write unit tests for ATLAS adapter edge cases in `src/hypercore/__tests__/atlas-adapter.test.ts`
+  - [x]* 5.3 Write unit tests for ATLAS adapter edge cases in `src/hypercore/__tests__/atlas-adapter.test.ts`
     - Test PAYLOAD_TOO_LARGE error for >1MB nodes
     - _Requirements: 3.6_
 
