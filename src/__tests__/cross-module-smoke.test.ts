@@ -386,10 +386,13 @@ describe('Smoke Tests: Stress Scenarios', () => {
     }
 
     // Send message from each module to all others
+    let messageCount = 0;
     for (const source of modules) {
       for (const target of modules) {
         if (source !== target) {
-          hub.sendMessage(source, target, 'mesh-msg', {}, source.charCodeAt(0) % 2 === 0);
+          const delivered = messageCount % 2 === 0; // Alternate delivery pattern
+          hub.sendMessage(source, target, 'mesh-msg', {}, delivered);
+          messageCount++;
         }
       }
     }
