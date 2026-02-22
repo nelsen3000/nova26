@@ -38,6 +38,7 @@ export type { RalphLoopOptions };
 import { HookRegistry } from './lifecycle-hooks.js';
 import type { TaskContext, TaskResult } from './lifecycle-hooks.js';
 import { startBuild, completeBuild } from './build-lifecycle.js';
+import { sanitizeTaskInputs } from '../security/input-sanitizer.js';
 
 // --- Planning phases (pre-execution plan approval) ---
 
@@ -653,6 +654,20 @@ async function processTask(
 ): Promise<void> {
   const trace = tracer.startTrace(sessionId, task.id, task.agent);
   const taskStartTime = Date.now();
+
+  // --- GLM-04: Sanitize task inputs at entry point ---
+  const sanitizeResult = sanitizeTaskInputs({
+    title: task.title,
+    description: task.description,
+    agent: task.agent,
+  });
+  if (!sanitizeResult.ok) {
+    const msg = `Input validation failed: ${sanitizeResult.errors.join('; ')}`;
+    updateTaskStatus(prd, task.id, 'failed', msg);
+    savePRD(prd, prdPath);
+    tracer.endTrace(trace, 'failed', msg);
+    throw new Error(msg);
+  }
 
   // Event store: task_start
   eventStore?.emit('task_start', { title: task.title, agent: task.agent, phase: task.phase }, task.id, task.agent);
