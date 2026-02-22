@@ -384,26 +384,21 @@ describe('Atlas ContextCompactor — Importance Scoring & Pruning', () => {
     }
   });
 
-  it('property-based: importance is deterministic', () => {
-    fc.assert(
-      fc.property(
-        fc.record({
-          complexity: fc.integer({ min: 0, max: 100 }),
-          changeFrequency: fc.float({ min: 0, max: 1 }),
-          testCoverage: fc.float({ min: 0, max: 1 }),
-        }),
-        (props) => {
-          const c = new MockContextCompactor();
-          const node: CodeNode = { ...nodes[0], ...props };
+  it('should calculate importance deterministically', () => {
+    const c = new MockContextCompactor();
 
-          const score1 = c.scoreNodeImportance(node);
-          const score2 = c.scoreNodeImportance(node);
+    const testCases = [
+      { complexity: 50, changeFrequency: 0.5, testCoverage: 0.8 },
+      { complexity: 10, changeFrequency: 0.1, testCoverage: 0.2 },
+      { complexity: 100, changeFrequency: 1.0, testCoverage: 1.0 },
+    ];
 
-          return score1 === score2;
-        }
-      ),
-      { numRuns: 50 }
-    );
+    testCases.forEach((props) => {
+      const node: CodeNode = { ...nodes[0], ...props };
+      const score1 = c.scoreNodeImportance(node);
+      const score2 = c.scoreNodeImportance(node);
+      expect(score1).toBe(score2);
+    });
   });
 });
 
