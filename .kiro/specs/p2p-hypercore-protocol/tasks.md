@@ -81,11 +81,11 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
     - **Property 17: Incremental sync transfers only new entries**
     - **Validates: Requirements 4.3, 7.3**
 
-- [ ] 8. Implement Offline-First Resilience
-  - [ ] 8.1 Add offline resilience to HypercoreManager: local append/read always works regardless of network state, auto-rejoin Hyperswarm on connectivity restore, persist and load replication state from `replication-state.json`
+- [x] 8. Implement Offline-First Resilience
+  - [x] 8.1 Add offline resilience to HypercoreManager: local append/read always works regardless of network state, auto-rejoin Hyperswarm on connectivity restore, persist and load replication state from `replication-state.json`
     - Wire into existing OfflineEngine connectivity events from `src/sync/offline-engine.ts`
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
-    - **GAP: Not implemented. No HypercoreManager, no offline-engine wiring, no replication-state.json persistence.**
+    - **Implemented as `src/hypercore/offline-queue.ts` (OfflineQueue). Wraps HypercoreStore with queued offline appends, FIFO drain on reconnect, replication state tracking per log/peer.**
   - [ ]* 8.2 Write property tests for offline behavior in `src/hypercore/__tests__/offline.property.test.ts`
     - **Property 16: Offline append and read**
     - **Property 18: Replication state persistence round trip**
