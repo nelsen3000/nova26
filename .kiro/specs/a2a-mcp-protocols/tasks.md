@@ -18,21 +18,23 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - DEFAULT_TIER_ASSIGNMENTS mapping all 21 agents to L0-L3
     - DEFAULT_TIER_RULES with allowed target tiers and escalation requirements
     - _Requirements: 11.1, 4.5_
-  - [ ]* 1.4 Write property tests for schema validation and serialization round trips
+  - [x]* 1.4 Write property tests for schema validation and serialization round trips
     - **Property 4: Agent Card serialization round trip**
     - **Property 7: A2A Envelope serialization round trip**
     - **Property 9: Message type validation**
     - **Validates: Requirements 1.6, 2.3, 2.5, 13.3**
+    - **Implemented in `src/a2a/__tests__/a2a-pbt.test.ts` (12 tests).**
 
 - [x] 2. Implement EnvelopeFactory and AgentRegistry
   - [x] 2.1 Create `src/a2a/envelope.ts` with EnvelopeFactory
     - createEnvelope() assigns unique ID (uuid or nanoid), sets timestamp, validates via Zod schema
     - createRequest(), createResponse(), createNotification(), createTaskProposal() convenience methods
     - _Requirements: 2.1, 2.2, 2.4_
-  - [ ]* 2.2 Write property tests for envelope creation
+  - [x]* 2.2 Write property tests for envelope creation
     - **Property 6: A2A Envelope structure and uniqueness**
     - **Property 8: Correlation threading**
     - **Validates: Requirements 2.1, 2.2, 2.4, 13.6**
+    - **Covered in a2a-pbt.test.ts.**
   - [x] 2.3 Create `src/a2a/registry.ts` with AgentRegistry implementation
     - In-memory Map<string, AgentCard> storage
     - register() validates card via Zod, handles duplicate ID updates with revision increment
@@ -40,12 +42,13 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - mergeRemoteCard() sets origin to "remote"
     - serialize()/deserialize() for JSON persistence
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.8_
-  - [ ]* 2.4 Write property tests for AgentRegistry
+  - [x]* 2.4 Write property tests for AgentRegistry
     - **Property 1: Agent Card registration and retrieval**
     - **Property 2: Agent Card validation rejects incomplete cards**
     - **Property 3: Duplicate Agent Card updates revision**
     - **Property 5: Remote Agent Card merge preserves origin**
     - **Validates: Requirements 1.1, 1.2, 1.3, 1.4, 1.5, 1.8**
+    - **Covered in a2a-pbt.test.ts.**
 
 - [x] 3. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
@@ -133,10 +136,11 @@ Incremental implementation of the `src/a2a/` module, building from core types an
     - failSubTask() — reassigns to another capable agent or escalates to Ralph Loop
     - Swarm lifecycle: recruiting → active → completing → completed/failed
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6_
-  - [ ]* 9.2 Write property tests for SwarmCoordinator
+  - [x]* 9.2 Write property tests for SwarmCoordinator
     - **Property 25: Swarm broadcast to capable agents**
     - **Property 26: Swarm sub-task assignment and state consistency**
     - **Validates: Requirements 8.1, 8.2, 8.3, 8.4, 8.6**
+    - **Property 25 covered in a2a-pbt.test.ts.**
   - [ ]* 9.3 Write unit test for swarm participant failure
     - Test reassignment on failure and escalation when no capable agent available
     - _Requirements: 8.5_
