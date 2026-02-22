@@ -39,6 +39,7 @@ import { HookRegistry } from './lifecycle-hooks.js';
 import type { TaskContext, TaskResult } from './lifecycle-hooks.js';
 import { startBuild, completeBuild } from './build-lifecycle.js';
 import { sanitizeTaskInputs } from '../security/input-sanitizer.js';
+import { scanTaskOutput } from '../security/secret-scanner.js';
 
 // --- Planning phases (pre-execution plan approval) ---
 
@@ -955,6 +956,9 @@ async function processTask(
     }
   }
   
+  // GLM-05: Scan task output for leaked secrets before persisting
+  scanTaskOutput(task.id, task.agent, response.content);
+
   // Execute onAfterTask lifecycle hooks (MX-02)
   if (hookRegistry) {
     const taskResult: TaskResult = {
