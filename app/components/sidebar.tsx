@@ -9,6 +9,7 @@ import {
   Settings,
   Zap,
   ChevronLeft,
+  Server,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, exact: true },
   { href: '/dashboard/builds', label: 'Builds', icon: Hammer },
   { href: '/dashboard/agents', label: 'Agents', icon: Bot },
+  { href: '/dashboard/infrastructure', label: 'Infrastructure', icon: Server },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
