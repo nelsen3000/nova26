@@ -239,6 +239,39 @@ export type {
 } from './saga-engine.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// Convex Integration
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export type {
+  GoalGenomeRecord,
+  EvolutionSessionRecord,
+  PersistGenomeInput,
+  CreateSessionInput,
+  UpdateSessionInput,
+  GenomeQueryOptions,
+  SessionQueryOptions,
+  FitnessScoreRecord,
+} from './convex-types.js';
+
+export {
+  persistGenome,
+  persistGeneration,
+  getLatestPopulation,
+  getGenomesByFitness,
+  getGenomeByGeneration,
+  getGenomeLineage,
+  getPortfolioSeeds,
+  pruneOldGenomes,
+  createEvolutionSession,
+  persistSessionState,
+  restoreSessionState,
+  listEvolutionSessions,
+  logNotableFitness,
+} from './convex-bridge.js';
+
+export type { ConvexApi } from './convex-bridge.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // Default Configurations
 // ═══════════════════════════════════════════════════════════════════════════════
 

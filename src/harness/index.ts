@@ -154,6 +154,42 @@ export {
 } from './observability-emitter.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// Convex Integration
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export type {
+  AgentHarnessRecord,
+  HarnessEventRecord,
+  CreateHarnessInput,
+  UpdateHarnessStatusInput,
+  LogHarnessEventInput,
+  HarnessQueryOptions,
+  HarnessEventQueryOptions,
+  HarnessStats,
+  HarnessEventType,
+  HarnessResultRecord,
+} from './convex-types.js';
+
+export {
+  createHarness,
+  updateHarnessStatus,
+  getHarness,
+  listHarnesses,
+  deleteHarness,
+  logHarnessEvent,
+  getHarnessEvents,
+  logStateTransition,
+  logToolCall,
+  logSubAgentEvent,
+  logCheckpointEvent,
+  getHarnessStats,
+  batchUpdateHarnessStatuses,
+  getSubAgentHarnesses,
+} from './convex-bridge.js';
+
+export type { ConvexApi } from './convex-bridge.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // Factory Functions
 // ═══════════════════════════════════════════════════════════════════════════════
 
