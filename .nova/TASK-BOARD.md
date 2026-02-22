@@ -1,8 +1,8 @@
-# NOVA26 TASK BOARD — February 20, 2026
+# NOVA26 TASK BOARD — February 21, 2026
 
 > **5-Agent Terminal System** — Color-coded AI agents building Nova26 in parallel.
 > **Repo**: https://github.com/nelsen3000/nova26 | **Branch**: `main`
-> **Current state**: 9,282 tests (4 failing in store.test.ts), 0 TS errors, 329 test files
+> **Current state**: 9,884 tests (0 failing), 0 TS errors, 363 test files
 > **Coordinator**: Claude (Red) — evaluates output, writes prompts, resolves conflicts
 > **How it works**: Find your section below. Do every task in order. Run quality gates after each task.
 > When you finish all tasks, report your results to Jon.
@@ -351,14 +351,23 @@ ALL MINIMAX tasks complete (MX-01→12, done by Claude)
 ALL SONNET tasks complete (SN-01→21)
 ALL GLM-5 tasks complete (GLM-01→07, GLM-02→07 done by Sonnet accidentally)
 
-⚠️  4 failing tests in src/persistence/__tests__/store.test.ts (GLM-07 clear() bug)
-    Sonnet to fix before starting Sprint 3.
-
-ACTIVE SPRINTS:
-  Sonnet Sprint 3: NOT STARTED (29 tasks — spec completion, landing page, dashboard)
-  Kimi Sprint 4: K4-01 done, K4-02→K4-27 NOT STARTED (implementation work)
+COMPLETED SPRINTS:
   Haiku Sprint 5: COMPLETE (H5-01→H5-17)
-  Haiku Sprint 6: NOT STARTED (17 tasks — deep coverage, PBT sweep)
+  Haiku Sprint 6: COMPLETE (H6-01→H6-17, 229 tests added)
+  Kimi Sprint 4: COMPLETE (K4-01→K4-28, 2,446 tests, 51 new, all 4 specs done)
+  Sonnet Sprint 3 Waves 1-4: COMPLETE (S3-01→S3-19)
+    - Wave 1: Spec reconciliation (hypercore, hypervisor, a2a)
+    - Wave 2: P2P Hypercore spec completion
+    - Wave 3: Hypervisor spec completion
+    - Wave 4: A2A PBTs + Landing page spec docs
+
+IN PROGRESS:
+  Sonnet Sprint 3 Wave 6: S3-25→S3-29 (desktop/mobile polish, observability, sweep)
+
+NEXT SPRINTS NEEDED:
+  Haiku Sprint 7: TBD
+  Kimi Sprint 5: TBD
+  Sonnet Sprint 4: TBD (after Sprint 3 completes)
 ```
 
 ---
