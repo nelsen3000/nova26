@@ -362,12 +362,14 @@ COMPLETED SPRINTS:
     - Wave 4: A2A PBTs + Landing page spec docs
 
 IN PROGRESS:
-  Sonnet Sprint 3 Wave 6: S3-25→S3-29 (desktop/mobile polish, observability, sweep)
+  Sonnet Sprint 4: S4-01→S4-30 (Convex wiring, dashboard live data, auth, landing polish, E2E tests)
+  Kimi Sprint 5: K5-01→K5-28 (SAGA/RLM deep tests, thin module coverage, CLI commands, Eternal Reel hardening)
+  Haiku Sprint 7: H7-01→H7-27 (reconciliation, desktop/mobile, PBT sweep, integration PBTs, production validation)
 
-NEXT SPRINTS NEEDED:
-  Haiku Sprint 7: TBD
-  Kimi Sprint 5: TBD
-  Sonnet Sprint 4: TBD (after Sprint 3 completes)
+COMPLETED SPRINTS:
+  Sonnet Sprint 3: COMPLETE (S3-01→S3-29, 29 tasks, 6 waves)
+  Kimi Sprint 4: COMPLETE (K4-01→K4-28, 28 tasks, 6 waves, all 4 specs done)
+  Haiku Sprint 6: COMPLETE (H6-01→H6-17, 17 tasks, 229 tests)
 ```
 
 ---
