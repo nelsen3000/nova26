@@ -71,6 +71,12 @@
 - [x] Cross-module integration tests (CL-55): 51 tests in r22-r24-integration.test.ts
 - [x] Updated TASK-BOARD.md + CLAUDE.md (CL-56)
 - [x] Current state: 0 TS errors, 4,603 tests passing, 159 test files
+- [x] Sprint 5 "The Eternal Sentinel" — 48-hour test coverage hardening (H5-01→H5-17):
+  Wave 1: Model Routing (5 tasks, 161 tests)
+  Wave 2: ACP/Compliance/MCP/Models/Integration (5 tasks, 187 tests)
+  Wave 3: Hypercore/Hypervisor/Integration (5 tasks, 90 tests)
+  Wave 4: Behaviors/Final System (2 tasks, 42 tests)
+  Total: 17 tasks, 480+ new tests, 9,116 total tests passing, 99.98% pass rate
 
 ## In Progress
 
