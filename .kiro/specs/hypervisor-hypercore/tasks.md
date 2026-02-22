@@ -12,23 +12,26 @@ Incremental implementation of the Vistara-Labs Hypercore HAL integration into No
   - [x] 1.2 Create `src/hypervisor/index.ts` barrel export file
     - _Requirements: all_
 
-- [ ] 2. Implement hac.toml config parser and pretty printer
-  - [ ] 2.1 Create `src/hypervisor/hac-config.ts` with HACConfigParser class
-    - Implement `parse(toml: string): VMSpec` using a TOML parsing library (e.g., `@iarna/toml`)
+- [x] 2. Implement hac.toml config parser and pretty printer
+  - [x] 2.1 Create `src/hypervisor/hac-config.ts` with HACConfigParser class
+    - Implement `parse(toml: string): VMSpec` using lightweight custom TOML parser (no external deps)
     - Implement `format(spec: VMSpec): string` pretty printer
     - Implement `validate(spec: VMSpec, hostCapacity: HostCapacity): ValidationResult`
     - Implement `getDefaultTemplate(provider: HypervisorProvider): VMSpec` for each of the 3 providers
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
-    - **GAP: Not implemented. No hac-config.ts, no TOML parsing.**
-  - [ ]* 2.2 Write property test for hac.toml round-trip
+    - **Implemented. parse/format/validate/getDefaultTemplate with 3 provider templates. 24 tests.**
+  - [x]* 2.2 Write property test for hac.toml round-trip
     - **Property 1: hac.toml round-trip consistency**
     - **Validates: Requirements 3.1, 3.3, 3.4**
-  - [ ]* 2.3 Write property test for invalid config error reporting
+    - **Covered in hac-config.test.ts (50 property runs).**
+  - [x]* 2.3 Write property test for invalid config error reporting
     - **Property 2: Invalid config produces descriptive errors**
     - **Validates: Requirements 3.2**
-  - [ ]* 2.4 Write property test for resource validation
+    - **Covered in hac-config.test.ts.**
+  - [x]* 2.4 Write property test for resource validation
     - **Property 3: Resource validation against host capacity**
     - **Validates: Requirements 3.5, 5.3**
+    - **Covered in hac-config.test.ts.**
 
 - [ ] 3. Checkpoint - Config parser tests pass
   - Ensure all tests pass, ask the user if questions arise.
