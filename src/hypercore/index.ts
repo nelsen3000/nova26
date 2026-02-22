@@ -14,3 +14,19 @@ export { CRDTBridge } from './crdt-bridge.js';
 export type { BroadcastResult } from './crdt-bridge.js';
 export { ObservabilityLogger } from './observability.js';
 export type { AggregateMetrics, HealthStatus } from './observability.js';
+export { OfflineQueue } from './offline-queue.js';
+export type { QueuedOperation, DrainResult, ReplicationState as OfflineReplicationState, OfflineQueueStats } from './offline-queue.js';
+export {
+  AccessControlList,
+  generateEncryptionKey,
+  encryptPayload,
+  decryptPayload,
+  generateKeyPair,
+  signChallenge,
+  verifyChallenge,
+  deriveDiscoveryKey,
+  PeerAuthenticator,
+} from './access-control.js';
+export type { AccessMode, AccessPolicy, AccessCheckResult, KeyPair, PeerCredential, EncryptedPayload } from './access-control.js';
+export { RustHypercoreBridge, RustBridgeUnavailableError, RustBridgeOperationError } from './rust-bridge.js';
+export type { RustAppendResult, RustReadResult, RustBridgeStatus } from './rust-bridge.js';

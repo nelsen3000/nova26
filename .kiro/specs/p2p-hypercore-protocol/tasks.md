@@ -122,10 +122,10 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
   - [ ] 12.1 Create `src-tauri/src/hypercore_bridge.rs` implementing Tauri commands: hypercore_append, hypercore_read, hypercore_length, and NanoClawScope with check_access
     - Add `hypercore` Rust crate to `src-tauri/Cargo.toml`
     - _Requirements: 6.1, 6.3, 6.4, 6.5_
-    - **GAP: No Rust/Tauri bridge implemented.**
-  - [ ] 12.2 Create `src/hypercore/rust-bridge.ts` TypeScript client that invokes Tauri commands for append, read, and length operations
+    - **GAP: No Rust/Tauri bridge implemented. Deferred — Tauri build environment not ready.**
+  - [x] 12.2 Create `src/hypercore/rust-bridge.ts` TypeScript client that invokes Tauri commands for append, read, and length operations
     - _Requirements: 6.1, 6.2_
-    - **GAP: No rust-bridge.ts implemented.**
+    - **Implemented as `src/hypercore/rust-bridge.ts`: RustHypercoreBridge class with append/read/length/checkAccess. Degrades gracefully with RustBridgeUnavailableError when Tauri unavailable.**
   - [ ]* 12.3 Write property tests for Rust bridge in `src/hypercore/__tests__/rust-bridge.property.test.ts`
     - **Property 14: Cross-runtime append-read round trip**
     - **Property 15: NanoClaw isolation enforcement**
