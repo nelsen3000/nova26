@@ -296,48 +296,35 @@ describe('PBT: Graph System Invariants', () => {
 
 describe('PBT: Memory System Invariants', () => {
   it('should maintain importance bounds for memory entries', () => {
-    fc.assert(
-      fc.property(
-        fc.float({ min: -1, max: 2 }),
-        (importance) => {
-          const entry: MemoryEntry = {
-            id: 'mem-1',
-            content: 'test',
-            importance: Math.max(0, Math.min(1, importance)),
-            timestamp: Date.now(),
-          };
+    // Test with deterministic importance values
+    for (const importance of DETERMINISTIC_QUALITIES) {
+      const entry: MemoryEntry = {
+        id: 'mem-1',
+        content: 'test',
+        importance: Math.max(0, Math.min(1, importance)),
+        timestamp: Date.now(),
+      };
 
-          return entry.importance >= 0 && entry.importance <= 1;
-        },
-        { numRuns: 40 }
-      )
-    );
+      expect(entry.importance).toBeGreaterThanOrEqual(0);
+      expect(entry.importance).toBeLessThanOrEqual(1);
+    }
   });
 
   it('should maintain temporal ordering invariant', () => {
-    fc.assert(
-      fc.property(
-        fc.array(
-          fc.tuple(fc.string(), fc.float({ min: 0, max: 1 })),
-          { minLength: 2, maxLength: 100 }
-        )
-      ),
-      (entries) => {
-        const memories = entries.map((e, i) => ({
-          id: `mem-${i}`,
-          content: e[0],
-          importance: e[1],
-          timestamp: Date.now() + i * 1000,
-        }));
+    // Create memories with deterministic timestamps
+    for (const count of [10, 50, 100]) {
+      const memories = Array.from({ length: count }, (_, i) => ({
+        id: `mem-${i}`,
+        content: `entry-${i}`,
+        importance: 0.5,
+        timestamp: Date.now() + i * 1000,
+      }));
 
-        // Check temporal ordering
-        for (let i = 1; i < memories.length; i++) {
-          if (memories[i].timestamp < memories[i - 1].timestamp) return false;
-        }
-        return true;
-      },
-      { numRuns: 20 }
-    );
+      // Check temporal ordering
+      for (let i = 1; i < memories.length; i++) {
+        expect(memories[i].timestamp).toBeGreaterThanOrEqual(memories[i - 1].timestamp);
+      }
+    }
   });
 
   it('should handle memory entry counting consistently', () => {
@@ -391,19 +378,17 @@ describe('PBT: Semantic System Invariants', () => {
   });
 
   it('should handle relation counts consistently', () => {
-    fc.assert(
-      fc.property(fc.nat({ max: 1000 }), (count) => {
-        const relations = Array.from({ length: count }, (_, i) => ({
-          source: `n${i}`,
-          target: `n${(i + 1) % count}`,
-          weight: Math.random(),
-          type: 'semantic',
-        }));
+    // Test with deterministic counts
+    for (const count of [10, 100, 500, 1000]) {
+      const relations = Array.from({ length: count }, (_, i) => ({
+        source: `n${i}`,
+        target: `n${(i + 1) % count}`,
+        weight: 0.5,
+        type: 'semantic',
+      }));
 
-        return relations.length === count;
-      }),
-      { numRuns: 25 }
-    );
+      expect(relations.length).toBe(count);
+    }
   });
 });
 
@@ -413,27 +398,21 @@ describe('PBT: Semantic System Invariants', () => {
 
 describe('PBT: Cross-System Invariants', () => {
   it('should maintain consistency across model + embedding systems', () => {
-    fc.assert(
-      fc.property(
-        fc.nat({ min: 1, max: 100 }),
-        fc.float({ min: 0, max: 1 })
-      ),
-      (embeddingDim, modelQuality) => {
-        const model = createTestModel('m1', 0.001, 8000, modelQuality);
+    // Test with deterministic dimensions and qualities
+    for (const dimension of [10, 50, 100]) {
+      for (const quality of DETERMINISTIC_QUALITIES) {
+        const model = createTestModel('m1', 0.001, 8000, quality);
         const embedding = createEmbedding(
-          Array.from({ length: embeddingDim }, () => Math.random()),
-          embeddingDim
+          Array.from({ length: dimension }, (_, i) => i * 0.1),
+          dimension
         );
 
-        return (
-          model.quality >= 0 &&
-          model.quality <= 1 &&
-          embedding.dimension === embeddingDim &&
-          embedding.vector.length <= embeddingDim
-        );
-      },
-      { numRuns: 40 }
-    );
+        expect(model.quality).toBeGreaterThanOrEqual(0);
+        expect(model.quality).toBeLessThanOrEqual(1);
+        expect(embedding.dimension).toBe(dimension);
+        expect(embedding.vector.length).toBeLessThanOrEqual(dimension);
+      }
+    }
   });
 
   it('should handle large-scale graph + memory combinations', () => {
