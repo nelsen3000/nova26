@@ -121,6 +121,33 @@ export type {
 } from './crdt-integration.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// Convex Integration
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export type {
+  RlmConfig,
+  RlmConfigInput,
+  RlmAuditLog,
+  RlmAuditLogInput,
+  RlmAuditStats,
+  RlmAuditQueryOptions,
+  RlmStatsQueryOptions,
+} from './convex-types.js';
+
+export {
+  getRlmConfig,
+  updateRlmConfig,
+  listRlmConfigs,
+  deleteRlmConfig,
+  logAuditEntry,
+  getAuditHistory,
+  getAuditStats,
+  batchLogAuditEntries,
+} from './convex-bridge.js';
+
+export type { ConvexApi } from './convex-bridge.js';
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // Default Configurations
 // ═══════════════════════════════════════════════════════════════════════════════
 

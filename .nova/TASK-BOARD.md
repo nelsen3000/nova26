@@ -2,7 +2,7 @@
 
 > **5-Agent Terminal System** — Color-coded AI agents building Nova26 in parallel.
 > **Repo**: https://github.com/nelsen3000/nova26 | **Branch**: `main`
-> **Current state**: 6,357 tests, 0 TS errors, 217 test files
+> **Current state**: 9,282 tests (4 failing in store.test.ts), 0 TS errors, 329 test files
 > **Coordinator**: Claude (Red) — evaluates output, writes prompts, resolves conflicts
 > **How it works**: Find your section below. Do every task in order. Run quality gates after each task.
 > When you finish all tasks, report your results to Jon.
@@ -185,22 +185,22 @@ Nova26 has 21 agents that hand off work to each other. The handoff needs to carr
 `src/orchestrator/ralph-loop.ts` is 1,074 lines — too large. Split it into focused modules.
 
 - [x] `GLM-01` Extract task execution ✅ (27b669a — `src/orchestrator/task-executor.ts`, 35 tests)
-- [ ] `GLM-02` Extract build lifecycle — move `startBuild()`, `completeBuild()`, and build-level logic to `src/orchestrator/build-lifecycle.ts`. ralph-loop.ts becomes a thin coordinator that delegates to task-executor and build-lifecycle. Write `src/orchestrator/__tests__/build-lifecycle.test.ts` (25 tests)
+- [x] `GLM-02` Extract build lifecycle ✅ (6ef899e — done by Sonnet, `src/orchestrator/build-lifecycle.ts`)
 
 **Phase 2: Caching Layer**
 Several modules do repeated lookups. Add a proper caching layer.
 
-- [ ] `GLM-03` LRU cache module — `src/cache/lru-cache.ts` with generic typed LRU cache. TTL support, size limits, hit/miss stats. Replace the ad-hoc Map caches in `src/models/model-router.ts` (line 119) and `src/model-routing/router.ts` with this. Write `src/cache/__tests__/lru-cache.test.ts` (30 tests)
+- [x] `GLM-03` LRU cache module ✅ (3184fea — done by Sonnet, `src/cache/lru-cache.ts`)
 
 **Phase 3: Security Hardening**
 
-- [ ] `GLM-04` Input sanitization — `src/security/input-sanitizer.ts` that validates and sanitizes all external inputs: task descriptions (XSS), file paths (path traversal), config values (injection). Wire into processTask() entry point. Write `src/security/__tests__/input-sanitizer.test.ts` (30 tests)
-- [ ] `GLM-05` Secret detection — `src/security/secret-scanner.ts` that scans task outputs and agent responses for accidentally leaked secrets (API keys, tokens, passwords). Regex patterns for common formats (AWS, GitHub, OpenAI, Anthropic keys). Wire into onAfterTask hook. Write `src/security/__tests__/secret-scanner.test.ts` (25 tests)
+- [x] `GLM-04` Input sanitization ✅ (d5a2575 — done by Sonnet, `src/security/input-sanitizer.ts`)
+- [x] `GLM-05` Secret detection ✅ (a5e8da7 — done by Sonnet, `src/security/secret-scanner.ts`)
 
 **Phase 4: Persistence Layer Upgrade**
 
-- [ ] `GLM-06` Migration system — `src/persistence/migration-runner.ts` that manages SQLite schema migrations. Version tracking, up/down migrations, atomic transactions. Replace the raw `db.prepare()` calls in `src/persistence/checkpoint-system.ts` with proper migration-managed schemas. Write `src/persistence/__tests__/migration-runner.test.ts` (30 tests)
-- [ ] `GLM-07` Persistence abstraction — `src/persistence/store.ts` with a `Store<T>` interface that abstracts over SQLite, providing type-safe CRUD operations. Use in checkpoint-system, analytics, and memory modules. Write `src/persistence/__tests__/store.test.ts` (25 tests)
+- [x] `GLM-06` Migration system ✅ (c1ab14c — done by Sonnet, `src/persistence/migration-runner.ts`, 20 tests)
+- [x] `GLM-07` Persistence abstraction ✅ (e1fa0bc — done by Sonnet, `src/persistence/store.ts`, 28/32 tests — 4 failing, fix pending)
 
 ---
 
@@ -349,10 +349,16 @@ Verify the system handles extreme conditions gracefully.
 ALL KIMI tasks complete (KMS-01→25)
 ALL MINIMAX tasks complete (MX-01→12, done by Claude)
 ALL SONNET tasks complete (SN-01→21)
+ALL GLM-5 tasks complete (GLM-01→07, GLM-02→07 done by Sonnet accidentally)
 
-Remaining: GLM-5 GLM-02→07 (6 tasks)
-  ✅ GLM-01 ──→ GLM-02 (GLM-01 done, GLM-02 ready)
-  GLM-03→07 are independent — can work in parallel after GLM-02
+⚠️  4 failing tests in src/persistence/__tests__/store.test.ts (GLM-07 clear() bug)
+    Sonnet to fix before starting Sprint 3.
+
+ACTIVE SPRINTS:
+  Sonnet Sprint 3: NOT STARTED (29 tasks — spec completion, landing page, dashboard)
+  Kimi Sprint 4: K4-01 done, K4-02→K4-27 NOT STARTED (implementation work)
+  Haiku Sprint 5: COMPLETE (H5-01→H5-17)
+  Haiku Sprint 6: NOT STARTED (17 tasks — deep coverage, PBT sweep)
 ```
 
 ---

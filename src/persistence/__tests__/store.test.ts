@@ -57,13 +57,20 @@ function createInMemoryDb(): SqliteDatabase {
             }
           }
         } else if (/DELETE FROM/i.test(sql)) {
-          const m = sql.match(/DELETE FROM\s+(\w+)\s+WHERE\s+(\w+)\s*=\s*\?/i);
-          if (m) {
-            const [, tbl, col] = m;
+          const whereMatch = sql.match(/DELETE FROM\s+(\w+)\s+WHERE\s+(\w+)\s*=\s*\?/i);
+          const noWhereMatch = !whereMatch && sql.match(/DELETE FROM\s+(\w+)\s*$/i);
+          if (whereMatch) {
+            const [, tbl, col] = whereMatch;
             const before = (tables[tbl!] ?? []).length;
             tables[tbl!] = (tables[tbl!] ?? []).filter(r => r[col!] !== args[0]);
             const after = (tables[tbl!] ?? []).length;
             return { changes: before - after };
+          } else if (noWhereMatch) {
+            // Full-table delete (e.g. clear())
+            const tbl = noWhereMatch[1]!;
+            const before = (tables[tbl] ?? []).length;
+            tables[tbl] = [];
+            return { changes: before };
           }
         }
         return { changes: 1 };
