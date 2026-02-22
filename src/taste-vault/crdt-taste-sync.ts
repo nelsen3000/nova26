@@ -1,7 +1,8 @@
 // CRDT Taste Sync — Bridges CRDT operations with Taste Vault preferences
 // KIMI-R24-03 | Feb 2026
 
-import type { CRDTOperation, SemanticCRDTNode } from '../collaboration/crdt-core.js';
+import type { CRDTOperation } from '../collaboration/crdt-core.js';
+import type { SemanticCRDTNode } from '../collaboration/types.js';
 
 export interface TasteSyncConfig {
   enabled?: boolean;
@@ -66,7 +67,7 @@ export class CRDTTasteSync {
   syncOperation(op: CRDTOperation, tags: string[] = []): number | null {
     if (!this.config.enabled) return null;
 
-    const baseScore = op.tasteScore ?? 0.5;
+    const baseScore = (op.payload.tasteScore as number | undefined) ?? 0.5;
     const agentBoost = this.config.agentBoosts[op.peerId] ?? 0;
     let adjustedScore = baseScore + agentBoost;
 
@@ -130,7 +131,7 @@ export class CRDTTasteSync {
     const profile = this.nodeProfiles.get(op.targetNodeId);
     const nodeScore = profile?.currentScore ?? 0.5;
     const agentBoost = this.config.agentBoosts[op.peerId] ?? 0;
-    const opScore = (op.tasteScore ?? 0.5) + agentBoost;
+    const opScore = ((op.payload.tasteScore as number | undefined) ?? 0.5) + agentBoost;
 
     // Blend node profile score with op score
     return (nodeScore * 0.4 + opScore * 0.6);

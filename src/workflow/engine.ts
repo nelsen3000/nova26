@@ -5,12 +5,8 @@ import {
   type Workflow,
   type WorkflowRun,
   type WorkflowNode,
-  type WorkflowEdge,
   WorkflowRunStateSchema,
-  type AgentNodeConfig,
   type DecisionNodeConfig,
-  type ParallelNodeConfig,
-  type LoopNodeConfig,
 } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -217,7 +213,6 @@ export class WorkflowEngine {
 
     // Handle decision node
     if (currentNode?.type === 'decision' && context) {
-      const config = currentNode.config as DecisionNodeConfig;
       for (const edge of edges) {
         if (edge.condition) {
           try {

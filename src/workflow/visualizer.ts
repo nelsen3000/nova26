@@ -1,7 +1,7 @@
 // Workflow Visualizer - DOT/graph visualization and execution trace
 // Spec: .nova/specs/grok-r24-immortal-omniverse.md (R24-02)
 
-import type { Workflow, WorkflowRun, WorkflowNode, WorkflowEdge } from './types';
+import type { Workflow, WorkflowRun } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Type Definitions
