@@ -86,3 +86,16 @@ export type {
   LangSmithRunInput,
   LangSmithFeedback,
 } from './langsmith-bridge.js';
+
+// ============================================================================
+// Infrastructure Bridge (S3-26)
+// ============================================================================
+
+export {
+  createInfrastructureBridge,
+} from './infrastructure-bridge.js';
+
+export type {
+  InfrastructureBridgeOptions,
+  InfrastructureBridge,
+} from './infrastructure-bridge.js';

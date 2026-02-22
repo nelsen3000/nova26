@@ -69,13 +69,21 @@ export class RehearsalStage {
       return undefined;
     }
 
-    const capture = session.captures[session.captures.length - 1];
-    if (capture) {
-      capture.interactions.push({
-        ...interaction,
-        timestamp: Date.now(),
-      });
+    let capture = session.captures[session.captures.length - 1];
+    if (!capture) {
+      // Auto-create a capture if none has been started yet
+      capture = {
+        deviceId: session.deviceId,
+        flowName: session.flowName,
+        durationMs: 0,
+        interactions: [],
+      };
+      session.captures.push(capture);
     }
+    capture.interactions.push({
+      ...interaction,
+      timestamp: Date.now(),
+    });
 
     return session;
   }

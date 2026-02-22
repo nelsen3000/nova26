@@ -20,10 +20,22 @@ export class OllamaBridgeImpl implements OllamaBridge {
   }
 
   /**
-   * Start Ollama service
+   * Start Ollama service with exponential backoff retry
    */
-  async start(): Promise<void> {
-    await this.bridge.invoke('spawn_ollama');
+  async start(maxRetries: number = 3): Promise<void> {
+    let lastError: unknown;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        await this.bridge.invoke('spawn_ollama');
+        return;
+      } catch (err) {
+        lastError = err;
+        if (attempt < maxRetries - 1) {
+          await this.delay(500 * Math.pow(2, attempt));
+        }
+      }
+    }
+    throw lastError;
   }
 
   /**

@@ -210,6 +210,27 @@ export class LivePreviewSessionManager {
       .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
   }
 
+  /**
+   * Stop and remove sessions that have not been updated within `thresholdMs`
+   * (default: 1 hour). Sessions already in 'stopped' status are skipped.
+   * Returns the number of sessions cleaned up.
+   */
+  cleanupStaleSessions(thresholdMs: number = 60 * 60 * 1000): number {
+    const cutoff = Date.now() - thresholdMs;
+    let cleaned = 0;
+    for (const [id, session] of this.sessions) {
+      if (session.status === 'stopped') continue;
+      const lastUpdated = new Date(session.lastUpdatedAt).getTime();
+      if (lastUpdated < cutoff) {
+        session.status = 'stopped';
+        session.lastUpdatedAt = new Date().toISOString();
+        this.sessions.delete(id);
+        cleaned++;
+      }
+    }
+    return cleaned;
+  }
+
   // ---- Framework Detection ----
 
   detectFramework(dependencies?: Record<string, string>): FrameworkDetectionResult {

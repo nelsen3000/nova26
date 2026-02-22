@@ -235,6 +235,74 @@ describe('LivePreviewSessionManager', () => {
     });
   });
 
+  describe('cleanupStaleSessions()', () => {
+    it('removes sessions older than threshold', () => {
+      const session = manager.createSession('project-stale');
+      // Wind the lastUpdatedAt back by 2 hours
+      const staleTime = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+      (session as { lastUpdatedAt: string }).lastUpdatedAt = staleTime;
+
+      const count = manager.cleanupStaleSessions();
+
+      expect(count).toBe(1);
+      expect(manager.getSession(session.id)).toBeUndefined();
+    });
+
+    it('does not remove sessions within threshold', () => {
+      const session = manager.createSession('project-fresh');
+      manager.startSession(session.id);
+
+      const count = manager.cleanupStaleSessions();
+
+      expect(count).toBe(0);
+      expect(manager.getSession(session.id)).toBeDefined();
+    });
+
+    it('skips sessions already stopped', () => {
+      const session = manager.createSession('project-stopped');
+      manager.startSession(session.id);
+      manager.stopSession(session.id);
+      // Wind back time to look stale
+      const staleTime = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+      (session as { lastUpdatedAt: string }).lastUpdatedAt = staleTime;
+
+      const count = manager.cleanupStaleSessions();
+
+      expect(count).toBe(0);
+    });
+
+    it('respects custom threshold', () => {
+      const session = manager.createSession('project-custom');
+      // 5 minutes old
+      const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      (session as { lastUpdatedAt: string }).lastUpdatedAt = fiveMinAgo;
+
+      // 3-minute threshold → session should be cleaned
+      const count = manager.cleanupStaleSessions(3 * 60 * 1000);
+
+      expect(count).toBe(1);
+    });
+
+    it('only cleans up stale sessions, leaves fresh ones', () => {
+      const stale = manager.createSession('project-stale');
+      const fresh = manager.createSession('project-fresh');
+
+      // Make stale session 2 hours old
+      const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+      (stale as { lastUpdatedAt: string }).lastUpdatedAt = twoHoursAgo;
+
+      const count = manager.cleanupStaleSessions();
+
+      expect(count).toBe(1);
+      expect(manager.getSession(stale.id)).toBeUndefined();
+      expect(manager.getSession(fresh.id)).toBeDefined();
+    });
+
+    it('returns 0 when no sessions exist', () => {
+      expect(manager.cleanupStaleSessions()).toBe(0);
+    });
+  });
+
   describe('default config', () => {
     it('has correct default values', () => {
       const defaultConfig: LivePreviewConfig = {

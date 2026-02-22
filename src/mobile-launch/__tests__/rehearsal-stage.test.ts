@@ -102,6 +102,47 @@ describe('RehearsalStage', () => {
       expect(updated).toBeDefined();
     });
 
+    it('auto-creates capture when none exists', () => {
+      stage.registerDevice({
+        id: 'device-1',
+        name: 'Test Device',
+        platform: 'ios',
+        screenSize: { width: 400, height: 800 },
+        osVersion: '17',
+      });
+
+      const session = stage.startSession('device-1', 'test-flow')!;
+      // No startCapture() call — interaction should still be recorded
+      const updated = stage.recordInteraction(session.id, {
+        type: 'tap',
+        target: 'button',
+      });
+
+      expect(updated).toBeDefined();
+      expect(updated?.captures).toHaveLength(1);
+      expect(updated?.captures[0].interactions).toHaveLength(1);
+      expect(updated?.captures[0].flowName).toBe('test-flow');
+    });
+
+    it('auto-creates capture with correct deviceId', () => {
+      stage.registerDevice({
+        id: 'device-abc',
+        name: 'Test Device',
+        platform: 'android',
+        screenSize: { width: 400, height: 800 },
+        osVersion: '14',
+      });
+
+      const session = stage.startSession('device-abc', 'login-flow')!;
+      stage.recordInteraction(session.id, { type: 'tap', target: 'email' });
+      stage.recordInteraction(session.id, { type: 'type', target: 'email', value: 'test@test.com' });
+
+      const updated = stage.getSession(session.id)!;
+      expect(updated.captures).toHaveLength(1);
+      expect(updated.captures[0].deviceId).toBe('device-abc');
+      expect(updated.captures[0].interactions).toHaveLength(2);
+    });
+
     it('should return undefined for non-recording session', () => {
       stage.registerDevice({
         id: 'device-1',

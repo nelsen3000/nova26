@@ -1,9 +1,10 @@
 // Ollama Bridge Tests — R20-02
 // Comprehensive vitest tests for MockOllamaBridge
 
-import { describe, it, expect, beforeEach } from 'vitest';
-import { MockOllamaBridge } from '../ollama-bridge.js';
-import type { OllamaStatus } from '../types.js';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { MockOllamaBridge, OllamaBridgeImpl } from '../ollama-bridge.js';
+import type { NativeBridge } from '../types.js';
+import type { OllamaStatus, NativeBridge, FileChangeEvent, GitStatus } from '../types.js';
 
 describe('MockOllamaBridge', () => {
   let bridge: MockOllamaBridge;
@@ -228,5 +229,74 @@ describe('MockOllamaBridge', () => {
       expect(hasCodellama).toBe(true);
       expect(hasUnknown).toBe(false);
     });
+  });
+});
+
+// ─── OllamaBridgeImpl retry tests ────────────────────────────────────────────
+
+function makeMockNativeBridge(invokeImpl: NativeBridge['invoke']): NativeBridge {
+  return {
+    invoke: invokeImpl,
+    listen: vi.fn() as unknown as NativeBridge['listen'],
+    fileSystem: {
+      readFile: vi.fn<[string], Promise<string>>(),
+      writeFile: vi.fn<[string, string], Promise<void>>(),
+      watchDir: vi.fn<[string, (event: FileChangeEvent) => void], () => void>(),
+    },
+    git: {
+      commit: vi.fn<[string, string[]], Promise<string>>(),
+      status: vi.fn<[], Promise<GitStatus>>(),
+    },
+    notifications: {
+      send: vi.fn<[string, string], Promise<void>>(),
+    },
+  };
+}
+
+describe('OllamaBridgeImpl start() retry', () => {
+  it('succeeds on first attempt with no retries', async () => {
+    const invokeFn = vi.fn<[string, Record<string, unknown>?], Promise<void>>().mockResolvedValue(undefined);
+    const nativeBridge = makeMockNativeBridge(invokeFn as unknown as NativeBridge['invoke']);
+    const ollama = new OllamaBridgeImpl(nativeBridge);
+
+    await expect(ollama.start()).resolves.toBeUndefined();
+
+    expect(invokeFn).toHaveBeenCalledTimes(1);
+    expect(invokeFn).toHaveBeenCalledWith('spawn_ollama');
+  });
+
+  it('retries and succeeds after one failure', async () => {
+    let callCount = 0;
+    const invokeFn = vi.fn().mockImplementation(async (cmd: string) => {
+      if (cmd === 'spawn_ollama') {
+        callCount++;
+        if (callCount < 2) throw new Error('spawn failed');
+      }
+    });
+    const nativeBridge = makeMockNativeBridge(invokeFn as unknown as NativeBridge['invoke']);
+    const ollama = new OllamaBridgeImpl(nativeBridge);
+
+    await expect(ollama.start(2)).resolves.toBeUndefined();
+
+    expect(callCount).toBe(2);
+  }, 5000);
+
+  it('throws the last error after maxRetries=1 is exhausted', async () => {
+    const invokeFn = vi.fn().mockRejectedValue(new Error('persistent failure'));
+    const nativeBridge = makeMockNativeBridge(invokeFn as unknown as NativeBridge['invoke']);
+    const ollama = new OllamaBridgeImpl(nativeBridge);
+
+    await expect(ollama.start(1)).rejects.toThrow('persistent failure');
+    // maxRetries=1: only one attempt, no delays
+    expect(invokeFn).toHaveBeenCalledTimes(1);
+  });
+
+  it('attempts exactly maxRetries times before giving up', async () => {
+    const invokeFn = vi.fn().mockRejectedValue(new Error('always fails'));
+    const nativeBridge = makeMockNativeBridge(invokeFn as unknown as NativeBridge['invoke']);
+    const ollama = new OllamaBridgeImpl(nativeBridge);
+
+    await expect(ollama.start(1)).rejects.toThrow();
+    expect(invokeFn).toHaveBeenCalledTimes(1);
   });
 });

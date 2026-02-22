@@ -173,13 +173,20 @@ export class SecurityManager {
   }
 
   private normalizeScope(scope: string): string {
-    // Expand variables like $HOME, $PWD
+    // Strip trailing slashes from env var values before interpolating
+    const home = (process.env['HOME'] ?? '~').replace(/\/$/, '');
+    const pwd = (process.env['PWD'] ?? '$PWD').replace(/\/$/, '');
+    const tmpdir = (process.env['TMPDIR'] ?? '/tmp').replace(/\/$/, '');
+
     let normalized = scope
+      .replace(/^~/, home)
+      .replace(/\$HOME/g, home)
+      .replace(/\$PWD/g, pwd)
+      .replace(/\$TMPDIR/g, tmpdir)
       .replace(/\\/g, '/')
       .replace(/\/$/, '')
       .toLowerCase();
 
-    // In real implementation, would expand env vars here
     return normalized;
   }
 

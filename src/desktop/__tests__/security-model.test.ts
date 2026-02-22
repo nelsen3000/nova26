@@ -195,6 +195,48 @@ describe('SecurityManager', () => {
     });
   });
 
+  describe('Env var expansion in normalizeScope', () => {
+    it('expands $HOME in fsScope', () => {
+      const home = process.env['HOME'] ?? '/home/testuser';
+      const model = createMockSecurityModel({ fsScope: ['$HOME/projects'] });
+      const manager = createSecurityManager(model);
+
+      const result = manager.validateFilePath(`${home}/projects/foo.ts`);
+
+      expect(result.valid).toBe(true);
+    });
+
+    it('expands tilde in fsScope', () => {
+      const home = process.env['HOME'] ?? '/home/testuser';
+      const model = createMockSecurityModel({ fsScope: ['~/projects'] });
+      const manager = createSecurityManager(model);
+
+      const result = manager.validateFilePath(`${home}/projects/foo.ts`);
+
+      expect(result.valid).toBe(true);
+    });
+
+    it('expands $TMPDIR in fsScope', () => {
+      const tmpdir = (process.env['TMPDIR'] ?? '/tmp').replace(/\/$/, '');
+      const model = createMockSecurityModel({ fsScope: ['$TMPDIR/nova26'] });
+      const manager = createSecurityManager(model);
+
+      const result = manager.validateFilePath(`${tmpdir}/nova26/cache.json`);
+
+      expect(result.valid).toBe(true);
+    });
+
+    it('expands $PWD in fsScope', () => {
+      const pwd = process.env['PWD'] ?? process.cwd();
+      const model = createMockSecurityModel({ fsScope: ['$PWD/src'] });
+      const manager = createSecurityManager(model);
+
+      const result = manager.validateFilePath(`${pwd}/src/main.ts`);
+
+      expect(result.valid).toBe(true);
+    });
+  });
+
   describe('Additional methods', () => {
     it('validateModel validates complete security model', () => {
       const model = createMockSecurityModel();
