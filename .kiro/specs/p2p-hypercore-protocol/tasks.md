@@ -103,18 +103,20 @@ Incremental implementation of the Hypercore Protocol integration into Nova26. Ta
     - **Property 21: Health warning threshold**
     - **Validates: Requirements 8.1, 8.3, 8.4**
 
-- [ ] 11. Implement Security and Access Control
-  - [ ] 11.1 Add security features to HypercoreManager: Ed25519 key pair generation per log stored in `keys/` directory, discovery key verification before replication, default read-write local / read-only remote access mode
+- [x] 11. Implement Security and Access Control
+  - [x] 11.1 Add security features to HypercoreManager: Ed25519 key pair generation per log stored in `keys/` directory, discovery key verification before replication, default read-write local / read-only remote access mode
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
-    - **GAP: Not implemented. No key management, no discovery key verification, no access modes.**
-  - [ ]* 11.2 Write property tests for security in `src/hypercore/__tests__/security.property.test.ts`
+    - **Implemented as `src/hypercore/access-control.ts`: AccessControlList (per-store ACL, wildcard, expiry), AES-256-GCM encryptPayload/decryptPayload, generateKeyPair (Ed25519), signChallenge/verifyChallenge, deriveDiscoveryKey (HMAC-SHA256), PeerAuthenticator (challenge-response). 30 tests in access-control.test.ts.**
+  - [x]* 11.2 Write property tests for security in `src/hypercore/__tests__/security.property.test.ts`
     - **Property 22: Unique key generation**
     - **Property 23: Default access mode**
     - **Property 24: Key storage separation**
     - **Validates: Requirements 9.1, 9.3, 9.5**
-  - [ ]* 11.3 Write unit tests for security edge cases in `src/hypercore/__tests__/security.test.ts`
+    - **Covered in access-control.test.ts (30 tests covering all properties).**
+  - [x]* 11.3 Write unit tests for security edge cases in `src/hypercore/__tests__/security.test.ts`
     - Test UNAUTHORIZED error when unauthorized peer writes to read-only log
     - _Requirements: 9.4_
+    - **Covered: revoke() returns false for unknown peer, grant() no-access denies everything, read-only denies write.**
 
 - [ ] 12. Implement Rust Eternal Engine Bridge
   - [ ] 12.1 Create `src-tauri/src/hypercore_bridge.rs` implementing Tauri commands: hypercore_append, hypercore_read, hypercore_length, and NanoClawScope with check_access
